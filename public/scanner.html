@@ -23,6 +23,7 @@
         <div><h2>VisitManager</h2><p>Visitor Management System</p></div>
       </div>
       <nav class="sidebar-nav">
+        <a href="/dashboard.html"><span class="icon">&#9776;</span> Dashboard</a>
         <a href="/"><span class="icon">&#9998;</span> Register Visitor</a>
         <a href="/scanner.html" class="active"><span class="icon">&#128247;</span> Scan QR</a>
       </nav>
@@ -86,6 +87,45 @@
       <div class="modal-body" id="visitorModalBody">
         <div class="loading" id="modalLoading"><div class="spinner"></div><p>Loading visitor...</p></div>
         <div id="modalContent" style="display:none"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="passModal">
+    <div class="modal" style="max-width:450px">
+      <div class="modal-header">
+        <h2>Visitor Pass</h2>
+        <button class="modal-close" onclick="closePassModal()">&times;</button>
+      </div>
+      <div class="modal-body" id="passModalBody" style="text-align:center">
+        <div id="passLoading" class="loading"><div class="spinner"></div><p>Loading pass...</p></div>
+        <div id="passContent" style="display:none">
+          <div style="text-align:center;border:2px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:var(--shadow-lg)">
+            <div style="background:var(--primary);color:#fff;padding:16px 20px">
+              <div style="width:56px;height:56px;background:rgba(255,255,255,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 6px">&#127970;</div>
+              <h2 style="font-size:16px;font-weight:600">VisitManager</h2>
+              <p style="font-size:12px;opacity:0.8">Visitor Management System</p>
+            </div>
+            <div style="padding:20px">
+              <div id="passPhotoContainer" style="margin-bottom:8px"></div>
+              <h3 id="passName" style="font-size:20px;margin-bottom:4px"></h3>
+              <div id="passVisitorId" style="color:var(--text-light);font-size:14px;margin-bottom:12px;font-family:monospace"></div>
+              <div style="text-align:left;margin:16px 0;padding:12px;background:var(--bg);border-radius:8px">
+                <div style="display:flex;justify-content:space-between;padding:6px 0;font-size:13px;border-bottom:1px solid var(--border)"><span style="color:var(--text-light)">Person to Meet</span><span id="passPersonToMeet"></span></div>
+                <div style="display:flex;justify-content:space-between;padding:6px 0;font-size:13px;border-bottom:1px solid var(--border)"><span style="color:var(--text-light)">Company</span><span id="passCompany"></span></div>
+                <div style="display:flex;justify-content:space-between;padding:6px 0;font-size:13px;border-bottom:1px solid var(--border)"><span style="color:var(--text-light)">Entry Time</span><span id="passEntryTime"></span></div>
+                <div style="display:flex;justify-content:space-between;padding:6px 0;font-size:13px;border-bottom:1px solid var(--border)"><span style="color:var(--text-light)">Purpose</span><span id="passPurpose"></span></div>
+                <div style="display:flex;justify-content:space-between;padding:6px 0;font-size:13px"><span style="color:var(--text-light)">Status</span><span id="passStatus"></span></div>
+              </div>
+              <div style="text-align:center;margin:12px 0"><div id="passQRContainer"></div></div>
+            </div>
+            <div style="padding:12px 20px;text-align:center;border-top:1px solid var(--border);font-size:11px;color:var(--text-light)">Valid for date of visit only | Present this badge at all times</div>
+          </div>
+          <div style="margin-top:12px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+            <button class="btn btn-primary" onclick="window.print()">Print</button>
+            <button class="btn btn-outline" onclick="closePassModal()">Close</button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -235,7 +275,7 @@
             <div class="popup-row"><span>Vehicle</span><span>${escHtml(v.vehicleNumber) || 'N/A'}</span></div>
           </div>
           <div class="flex gap-2 justify-center mt-4">
-            <a href="/pass.html?id=${v.visitorId}" class="btn btn-sm btn-outline" target="_blank">View Pass</a>
+            <button class="btn btn-sm btn-outline" onclick="showPassModal('${v.visitorId}')">View Pass</button>
             ${v.status === 'Active'
               ? '<button class="btn btn-sm btn-secondary" onclick="quickCheckout(' + v.id + ')">Check Out</button>'
               : '<button class="btn btn-sm btn-primary" onclick="quickCheckin(' + v.id + ')">Check In</button>'}
@@ -277,6 +317,42 @@
 
     function closeVisitorModal() {
       document.getElementById('visitorModal').classList.remove('active');
+    }
+
+    async function showPassModal(visitorId) {
+      document.getElementById('passModal').classList.add('active');
+      document.getElementById('passLoading').style.display = 'block';
+      document.getElementById('passContent').style.display = 'none';
+      try {
+        const res = await fetch('/api/visitors/' + encodeURIComponent(visitorId));
+        if (!res.ok) { showStatus('Visitor not found', 'error'); document.getElementById('passModal').classList.remove('active'); return; }
+        const v = await res.json();
+        document.getElementById('passLoading').style.display = 'none';
+        document.getElementById('passContent').style.display = 'block';
+        if (v.photo) {
+          document.getElementById('passPhotoContainer').innerHTML = '<img src="/uploads/' + v.photo + '?t=' + Date.now() + '" style="width:100px;height:100px;border-radius:50%;object-fit:cover;border:3px solid var(--border);margin-bottom:8px" alt="">';
+        } else {
+          document.getElementById('passPhotoContainer').innerHTML = '<div style="width:100px;height:100px;border-radius:50%;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:36px;color:var(--text-light);margin:0 auto 8px;border:3px dashed var(--border)">' + v.fullName.charAt(0).toUpperCase() + '</div>';
+        }
+        document.getElementById('passName').textContent = v.fullName;
+        document.getElementById('passVisitorId').textContent = v.visitorId;
+        document.getElementById('passPersonToMeet').textContent = v.personToMeet;
+        document.getElementById('passCompany').textContent = v.company;
+        document.getElementById('passEntryTime').textContent = v.entryDate + ' ' + v.entryTime;
+        document.getElementById('passPurpose').textContent = v.purpose;
+        document.getElementById('passStatus').innerHTML = v.status === 'Active'
+          ? '<span class="badge badge-active">Active</span>'
+          : '<span class="badge badge-checkout">Checked Out</span>';
+        const qrUrl = '/qrcodes/' + v.visitorId + '.png?t=' + Date.now();
+        document.getElementById('passQRContainer').innerHTML = '<img src="' + qrUrl + '" style="max-width:130px" alt="QR Code">';
+      } catch (err) {
+        showStatus('Error: ' + err.message, 'error');
+        document.getElementById('passModal').classList.remove('active');
+      }
+    }
+
+    function closePassModal() {
+      document.getElementById('passModal').classList.remove('active');
     }
 
     function lookupVisitor() {
