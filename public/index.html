@@ -441,18 +441,89 @@
 
     .pass-3d-wrap {
       width: 100%;
-      height: 320px;
-      margin: 12px 0;
-      border-radius: 16px;
+      height: 420px;
+      border-radius: 24px;
       overflow: hidden;
-      background: rgba(0,0,0,0.25);
+      background: rgba(0,0,0,0.35);
       position: relative;
-      border: 1px solid rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: 0 24px 80px rgba(0,0,0,0.5);
     }
     .pass-3d-wrap canvas {
       display: block;
       width: 100% !important;
       height: 100% !important;
+    }
+    .success-immersive {
+      width: 100%;
+    }
+    .success-immersive .success-hdr {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      gap: 12px;
+    }
+    .success-immersive .success-hdr h2 {
+      font-size: 22px;
+      font-weight: 700;
+      color: #fff;
+    }
+    .success-immersive .success-hdr .visitor-id {
+      font-size: 12px;
+      color: rgba(255,255,255,0.4);
+      font-family: monospace;
+      background: rgba(255,255,255,0.06);
+      padding: 6px 14px;
+      border-radius: 20px;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .pass-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 16px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .pass-actions .btn-act {
+      padding: 10px 18px;
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 12px;
+      background: rgba(255,255,255,0.06);
+      backdrop-filter: blur(12px);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 500;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.2s;
+      min-width: 100px;
+      text-align: center;
+      text-decoration: none;
+    }
+    .pass-actions .btn-act:hover {
+      background: rgba(255,255,255,0.12);
+      border-color: rgba(255,255,255,0.2);
+      transform: translateY(-1px);
+    }
+    .pass-actions .btn-act.primary {
+      background: rgba(59,130,246,0.25);
+      border-color: rgba(59,130,246,0.3);
+    }
+    .pass-actions .btn-act.primary:hover {
+      background: rgba(59,130,246,0.35);
+    }
+    .pass-actions .btn-act.success {
+      background: rgba(16,185,129,0.25);
+      border-color: rgba(16,185,129,0.3);
+    }
+    .pass-actions .btn-act.success:hover {
+      background: rgba(16,185,129,0.35);
+    }
+
+    @media (max-width: 480px) {
+      .pass-3d-wrap { height: 340px; }
+      .pass-actions .btn-act { font-size: 12px; padding: 8px 14px; min-width: 80px; }
     }
 
     .footer-text {
@@ -573,31 +644,29 @@
       </form>
     </div>
 
-    <div class="glass-card" id="successCard" style="display:none">
-      <div class="success-card">
-        <div class="success-icon-wrap"><span>&#10003;</span></div>
-        <h2>Registered!</h2>
-        <div class="visitor-id" id="successVisitorId"></div>
+    <div id="successCard" style="display:none" class="success-immersive">
+      <div class="success-hdr">
+        <h2>Registered! &#10003;</h2>
+        <span class="visitor-id" id="successVisitorId"></span>
+      </div>
 
-        <div class="pass-3d-wrap" id="pass3dContainer">
-          <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.3);font-size:14px;gap:8px;">
-            <div class="spinner" style="width:18px;height:18px;border:2px solid rgba(255,255,255,0.2);border-top-color:#fff;border-radius:50%;animation:spin 0.6s linear infinite;"></div>
-            Loading pass...
-          </div>
+      <div class="pass-3d-wrap" id="pass3dContainer">
+        <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.3);font-size:14px;gap:8px;flex-direction:column">
+          <div class="spinner" style="width:24px;height:24px;border:2px solid rgba(255,255,255,0.2);border-top-color:#fff;border-radius:50%;animation:spin 0.6s linear infinite;"></div>
+          <span style="margin-top:8px">Loading your pass...</span>
         </div>
-        <div class="qr-box" style="display:none;margin-top:8px;padding:10px" id="qrFallbackBox">
-          <img id="qrCodeImg" alt="QR Code" style="max-width:140px">
-        </div>
-        <img id="qrCodeImgHidden" alt="" style="display:none">
+      </div>
 
-        <div class="qr-actions">
-          <button class="btn-action primary" onclick="downloadQR()">Download QR</button>
-          <button class="btn-action success" onclick="downloadPass()">Get Pass</button>
-        </div>
-        <div class="qr-actions" style="margin-top:6px">
-          <button class="btn-action" onclick="printQR()">Print QR</button>
-          <button class="btn-action" onclick="registerAnother()">New Visitor</button>
-        </div>
+      <div class="qr-box" style="display:none;margin-top:12px;padding:12px;text-align:center" id="qrFallbackBox">
+        <img id="qrCodeImg" alt="QR Code" style="max-width:140px">
+      </div>
+      <img id="qrCodeImgHidden" alt="" style="display:none">
+
+      <div class="pass-actions">
+        <button class="btn-act primary" onclick="downloadQR()">Download QR</button>
+        <button class="btn-act success" onclick="downloadPass()">Get Pass</button>
+        <button class="btn-act" onclick="printQR()">Print QR</button>
+        <button class="btn-act" onclick="registerAnother()">New Visitor</button>
       </div>
     </div>
 
