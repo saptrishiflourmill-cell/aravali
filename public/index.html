@@ -5,13 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Visitor Registration</title>
   <link rel="stylesheet" href="/css/style.css">
-  <script type="importmap">
-  {
-    "imports": {
-      "ogl": "https://esm.sh/ogl@1.0.11"
-    }
-  }
-  </script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
@@ -446,6 +439,22 @@
       to { opacity: 1; transform: translateX(-50%) translateY(0); }
     }
 
+    .pass-3d-wrap {
+      width: 100%;
+      height: 320px;
+      margin: 12px 0;
+      border-radius: 16px;
+      overflow: hidden;
+      background: rgba(0,0,0,0.25);
+      position: relative;
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+    .pass-3d-wrap canvas {
+      display: block;
+      width: 100% !important;
+      height: 100% !important;
+    }
+
     .footer-text {
       text-align: center;
       margin-top: 20px;
@@ -570,10 +579,13 @@
         <h2>Registered!</h2>
         <div class="visitor-id" id="successVisitorId"></div>
 
-        <div class="qr-box">
-          <img id="qrCodeImg" alt="QR Code">
-          <p style="font-size:12px;color:rgba(255,255,255,0.35);margin-top:8px;word-break:break-all" id="qrDataText"></p>
+        <div class="pass-3d-wrap" id="pass3dContainer">
+          <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.3);font-size:14px;gap:8px;">
+            <div class="spinner" style="width:18px;height:18px;border:2px solid rgba(255,255,255,0.2);border-top-color:#fff;border-radius:50%;animation:spin 0.6s linear infinite;"></div>
+            Loading pass...
+          </div>
         </div>
+        <img id="qrCodeImg" alt="" style="display:none">
 
         <div class="qr-actions">
           <button class="btn-action primary" onclick="downloadQR()">Download QR</button>
@@ -595,34 +607,27 @@
     const container = document.getElementById('fluid-bg');
     let cleanup = null;
 
-    async function initFluid() {
-      try {
-        cleanup = await createFerrofluid(container, {
-          colors: ['#4F46E5', '#06B6D4', '#0EA5E9', '#6366F1'],
-          speed: 0.5,
-          scale: 1.6,
-          turbulence: 1.2,
-          fluidity: 0.15,
-          rimWidth: 0.25,
-          sharpness: 2.5,
-          shimmer: 1.5,
-          glow: 2.5,
-          flowDirection: 'down',
-          opacity: 0.9,
-          mouseInteraction: true,
-          mouseStrength: 1.2,
-          mouseRadius: 0.35,
-          mouseDampening: 0.15
-        });
-      } catch (e) {
-        console.log('Fluid background unavailable:', e.message);
-      }
+    try {
+      cleanup = createFerrofluid(container, {
+        speed: 0.5,
+        scale: 1.6,
+        turbulence: 1.2,
+        fluidity: 0.15,
+        rimWidth: 0.25,
+        sharpness: 2.5,
+        shimmer: 1.5,
+        glow: 2.5,
+        opacity: 0.9,
+        mouseStrength: 1.0,
+        mouseRadius: 0.35
+      });
+    } catch (e) {
+      console.log('Fluid background:', e.message);
     }
-
-    initFluid();
 
     window.addEventListener('beforeunload', () => {
       if (cleanup) cleanup();
+      if (window._pass3dCleanup) window._pass3dCleanup();
     });
   </script>
 
@@ -675,9 +680,35 @@
           document.getElementById('successCard').style.display = 'block';
           document.getElementById('successVisitorId').textContent = data.visitor.visitorId;
           document.getElementById('qrCodeImg').src = data.qrCodeUrl + '?t=' + Date.now();
-          document.getElementById('qrDataText').textContent = data.qrData;
           window.lastQRData = data;
           showToast('Visitor registered successfully!', 'success');
+
+          window._pass3dCancel = false;
+          if (window._pass3dCleanup) { window._pass3dCleanup(); window._pass3dCleanup = null; }
+          const passContainer = document.getElementById('pass3dContainer');
+          passContainer.innerHTML = '';
+          import('/js/pass3d.js').then(mod => {
+            if (window._pass3dCancel) return;
+            const photoUrl = data.visitor.photo ? '/uploads/' + data.visitor.photo + '?t=' + Date.now() : null;
+            mod.createPass3D(passContainer, {
+              fullName: data.visitor.fullName || 'Visitor',
+              visitorId: data.visitor.visitorId || '',
+              company: data.visitor.company || '',
+              personToMeet: data.visitor.personToMeet || '',
+              entryDate: data.visitor.entryDate || '',
+              entryTime: data.visitor.entryTime || '',
+              phone: data.visitor.phone || '',
+              purpose: data.visitor.purpose || '',
+              photoUrl: photoUrl,
+              qrDataUrl: data.qrCodeUrl + '?t=' + Date.now(),
+            }).then(handle => {
+              window._pass3dCleanup = handle.cleanup;
+            }).catch(() => {
+              passContainer.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:rgba(255,255,255,0.3);font-size:13px">Pass unavailable</div>';
+            });
+          }).catch(() => {
+            passContainer.innerHTML = '';
+          });
         } catch (err) {
           showToast('Error: ' + err.message, 'error');
           btn.disabled = false;
@@ -728,8 +759,11 @@
     }
 
     function registerAnother() {
+      window._pass3dCancel = true;
+      if (window._pass3dCleanup) { window._pass3dCleanup(); window._pass3dCleanup = null; }
       document.getElementById('formCard').style.display = 'block';
       document.getElementById('successCard').style.display = 'none';
+      document.getElementById('pass3dContainer').innerHTML = '';
       resetForm();
       document.getElementById('submitBtn').disabled = false;
       const today = new Date().toISOString().split('T')[0];
