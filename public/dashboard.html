@@ -17,7 +17,6 @@
         </div>
       </div>
       <nav class="sidebar-nav">
-        <a href="/"><span class="icon">&#9998;</span> Register Visitor</a>
         <a href="/dashboard.html" class="active"><span class="icon">&#9776;</span> Dashboard</a>
         <a href="/scanner.html"><span class="icon">&#128247;</span> Scan QR</a>
       </nav>
@@ -31,7 +30,6 @@
         </div>
         <div class="flex gap-2 items-center">
           <span id="userDisplay" style="font-size:13px;color:var(--text-light);display:none"></span>
-          <a href="/" class="btn btn-primary">+ New Visitor</a>
           <button class="btn btn-outline" onclick="logout()" id="logoutBtn" style="display:none">Logout</button>
         </div>
       </div>
@@ -128,6 +126,41 @@
         <div class="form-actions">
           <button class="btn btn-outline" onclick="closeConfirmModal()">Cancel</button>
           <button class="btn btn-danger" id="confirmBtn">Confirm</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="viewModal">
+    <div class="modal" style="max-width:600px">
+      <div class="modal-header">
+        <h2 id="viewVisitorId">Visitor Details</h2>
+        <button class="modal-close" onclick="closeViewModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div style="display:flex;gap:16px;flex-wrap:wrap">
+          <div style="flex-shrink:0">
+            <div id="viewPhotoContainer" style="width:100px;height:100px;border-radius:12px;overflow:hidden;background:var(--bg-secondary);display:flex;align-items:center;justify-content:center;font-size:36px;font-weight:700;color:var(--text-light);border:1px solid var(--border)"></div>
+          </div>
+          <div style="flex:1;min-width:200px">
+            <h3 id="viewFullName" style="font-size:22px;font-weight:700;color:var(--text);margin-bottom:2px"></h3>
+            <p id="viewCompany" style="font-size:14px;color:var(--text-light);margin-bottom:8px"></p>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px 20px;font-size:13px">
+              <span style="color:var(--text-light)">Phone:</span><span id="viewPhone" style="color:var(--text)"></span>
+              <span style="color:var(--text-light)">Email:</span><span id="viewEmail" style="color:var(--text)"></span>
+              <span style="color:var(--text-light)">Meeting:</span><span id="viewPersonToMeet" style="color:var(--text)"></span>
+              <span style="color:var(--text-light)">Purpose:</span><span id="viewPurpose" style="color:var(--text)"></span>
+              <span style="color:var(--text-light)">Date:</span><span id="viewEntryDate" style="color:var(--text)"></span>
+              <span style="color:var(--text-light)">Time:</span><span id="viewEntryTime" style="color:var(--text)"></span>
+              <span style="color:var(--text-light)">Exit:</span><span id="viewExitTime" style="color:var(--text)"></span>
+              <span style="color:var(--text-light)">Vehicle:</span><span id="viewVehicleNumber" style="color:var(--text)"></span>
+              <span style="color:var(--text-light)">Status:</span><span id="viewStatus" style="color:var(--text)"></span>
+            </div>
+          </div>
+        </div>
+        <div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap">
+          <a id="viewPassLink" href="#" class="btn btn-primary" target="_blank">View Pass</a>
+          <button class="btn btn-outline" onclick="closeViewModal()">Close</button>
         </div>
       </div>
     </div>
@@ -268,9 +301,9 @@
           <td>
             <div class="actions">
               ${v.status === 'Active' ? `<button class="btn btn-sm btn-secondary" onclick="checkOutVisitor(${v.id})">Check Out</button>` : `<button class="btn btn-sm btn-primary" onclick="checkInVisitor(${v.id})">Check In</button>`}
+              <button class="btn btn-sm btn-outline" onclick="viewVisitor('${v.visitorId}')">View</button>
               <button class="btn btn-sm btn-outline" onclick="editVisitor(${v.id})">Edit</button>
               <button class="btn btn-sm btn-danger" onclick="deleteVisitor(${v.id})">Delete</button>
-              <a href="/pass.html?id=${v.visitorId}" class="btn btn-sm btn-outline" target="_blank">Pass</a>
               <button class="btn btn-sm btn-outline" onclick="downloadQR('${v.visitorId}')">QR</button>
             </div>
           </td>
@@ -313,6 +346,43 @@
           showToast('Error: ' + err.message, 'error');
         }
       });
+    }
+
+    async function viewVisitor(visitorId) {
+      try {
+        const res = await authFetch('/api/visitors/' + encodeURIComponent(visitorId));
+        const v = await res.json();
+        if (!res.ok) { showToast('Visitor not found', 'error'); return; }
+        document.getElementById('viewVisitorId').textContent = 'Visitor: ' + v.visitorId;
+        document.getElementById('viewFullName').textContent = v.fullName;
+        document.getElementById('viewCompany').textContent = v.company || '';
+        document.getElementById('viewPhone').textContent = v.phone;
+        document.getElementById('viewEmail').textContent = v.email || 'Not provided';
+        document.getElementById('viewPersonToMeet').textContent = v.personToMeet;
+        document.getElementById('viewPurpose').textContent = v.purpose;
+        document.getElementById('viewEntryDate').textContent = v.entryDate;
+        document.getElementById('viewEntryTime').textContent = v.entryTime;
+        document.getElementById('viewExitTime').textContent = v.exitTime || 'Not checked out';
+        document.getElementById('viewVehicleNumber').textContent = v.vehicleNumber || 'Not provided';
+        const badge = v.status === 'Active'
+          ? '<span class="badge badge-active">Active</span>'
+          : '<span class="badge badge-checkout">Checked Out</span>';
+        document.getElementById('viewStatus').innerHTML = badge;
+        const pc = document.getElementById('viewPhotoContainer');
+        if (v.photo) {
+          pc.innerHTML = '<img src="/uploads/' + v.photo + '?t=' + Date.now() + '" style="width:100%;height:100%;object-fit:cover" alt="">';
+        } else {
+          pc.textContent = v.fullName.charAt(0).toUpperCase();
+        }
+        document.getElementById('viewPassLink').href = '/pass.html?id=' + v.visitorId;
+        document.getElementById('viewModal').classList.add('active');
+      } catch (err) {
+        showToast('Error: ' + err.message, 'error');
+      }
+    }
+
+    function closeViewModal() {
+      document.getElementById('viewModal').classList.remove('active');
     }
 
     async function editVisitor(id) {

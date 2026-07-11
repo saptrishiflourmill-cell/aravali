@@ -461,43 +461,50 @@
       align-items: center;
       justify-content: space-between;
       margin-bottom: 14px;
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      padding: 12px 18px;
+      border-radius: 18px;
+      border: 1px solid rgba(0,0,0,0.06);
+      box-shadow: 0 2px 12px rgba(0,0,0,0.04);
     }
     .pass-card-wrap .p-header h2 {
       font-size: 20px;
       font-weight: 700;
-      color: #fff;
+      color: #1a1a2e;
     }
     .pass-card-wrap .p-header .p-id {
       font-size: 11px;
-      color: rgba(255,255,255,0.4);
+      color: #6366f1;
       font-family: monospace;
-      background: rgba(255,255,255,0.06);
+      font-weight: 600;
+      background: rgba(99,102,241,0.1);
       padding: 5px 12px;
       border-radius: 16px;
-      border: 1px solid rgba(255,255,255,0.08);
+      border: 1px solid rgba(99,102,241,0.15);
     }
 
     .qr-glow-box {
-      background: rgba(255,255,255,0.05);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border: 1px solid rgba(255,255,255,0.1);
+      background: #ffffff;
+      border: 1px solid rgba(0,0,0,0.08);
       border-radius: 24px;
-      padding: 20px;
+      padding: 24px;
       text-align: center;
       position: relative;
       overflow: hidden;
+      box-shadow: 0 4px 24px rgba(99,102,241,0.08);
     }
     .qr-glow-box::before {
       content: '';
       position: absolute;
       inset: -2px;
       border-radius: 26px;
-      background: linear-gradient(135deg, #6366f1, #8b5cf6, #6366f1, #8b5cf6);
+      background: linear-gradient(135deg, #6366f1, #8b5cf6, #a78bfa, #6366f1);
       background-size: 300% 300%;
       z-index: -1;
       animation: borderGlow 3s ease infinite;
-      opacity: 0.4;
+      opacity: 0.5;
     }
     @keyframes borderGlow {
       0% { background-position: 0% 50%; }
@@ -505,7 +512,7 @@
       100% { background-position: 0% 50%; }
     }
     .qr-glow-box img {
-      max-width: 200px;
+      max-width: 220px;
       width: 100%;
       height: auto;
       display: block;
@@ -514,82 +521,82 @@
     }
     .qr-scan-line {
       position: absolute;
-      left: 24px;
-      right: 24px;
+      left: 28px;
+      right: 28px;
       height: 2px;
-      background: linear-gradient(90deg, transparent, #818cf8, transparent);
+      background: linear-gradient(90deg, transparent, #6366f1, transparent);
       animation: scanLine 2.5s ease-in-out infinite;
-      opacity: 0.6;
+      opacity: 0.5;
     }
     @keyframes scanLine {
-      0% { top: 28px; opacity: 0; }
+      0% { top: 32px; opacity: 0; }
       20% { opacity: 0.6; }
       80% { opacity: 0.6; }
-      100% { top: calc(100% - 28px); opacity: 0; }
+      100% { top: calc(100% - 32px); opacity: 0; }
     }
 
     .p-details {
       margin-top: 14px;
-      background: rgba(255,255,255,0.04);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border: 1px solid rgba(255,255,255,0.08);
+      background: #ffffff;
+      border: 1px solid rgba(0,0,0,0.06);
       border-radius: 18px;
-      padding: 16px;
+      padding: 18px;
       display: flex;
       gap: 14px;
       align-items: center;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.04);
     }
     .p-details .p-photo {
-      width: 60px;
-      height: 60px;
+      width: 64px;
+      height: 64px;
       border-radius: 14px;
       object-fit: cover;
       flex-shrink: 0;
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(99,102,241,0.06);
+      border: 2px solid rgba(99,102,241,0.15);
     }
     .p-details .p-photo-initial {
-      width: 60px;
-      height: 60px;
+      width: 64px;
+      height: 64px;
       border-radius: 14px;
       flex-shrink: 0;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 24px;
+      font-size: 28px;
       font-weight: 700;
-      color: rgba(255,255,255,0.5);
-      background: rgba(99,102,241,0.15);
-      border: 1px solid rgba(255,255,255,0.1);
+      color: #6366f1;
+      background: rgba(99,102,241,0.1);
+      border: 2px solid rgba(99,102,241,0.15);
     }
     .p-details .p-info {
       flex: 1;
       min-width: 0;
     }
     .p-details .p-info .p-name {
-      font-size: 18px;
+      font-size: 20px;
       font-weight: 700;
-      color: #fff;
+      color: #1a1a2e;
       margin-bottom: 2px;
     }
     .p-details .p-info .p-company {
-      font-size: 13px;
-      color: rgba(255,255,255,0.5);
-      margin-bottom: 4px;
+      font-size: 14px;
+      color: #6366f1;
+      font-weight: 500;
+      margin-bottom: 6px;
     }
     .p-details .p-info .p-meta {
       display: flex;
       flex-wrap: wrap;
-      gap: 4px 12px;
+      gap: 4px 16px;
     }
     .p-details .p-info .p-meta span {
       font-size: 12px;
-      color: rgba(255,255,255,0.35);
+      color: #94a3b8;
     }
     .p-details .p-info .p-meta span strong {
-      color: rgba(255,255,255,0.6);
-      font-weight: 500;
+      color: #334155;
+      font-weight: 600;
     }
 
     .p-actions {
@@ -601,45 +608,50 @@
     .p-actions .p-btn {
       flex: 1;
       min-width: calc(50% - 4px);
-      padding: 12px;
-      border: 1px solid rgba(255,255,255,0.1);
+      padding: 13px;
       border-radius: 14px;
-      background: rgba(255,255,255,0.04);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      color: #fff;
-      font-size: 13px;
-      font-weight: 500;
+      font-size: 14px;
+      font-weight: 600;
       font-family: inherit;
       cursor: pointer;
       transition: all 0.2s;
       text-align: center;
       text-decoration: none;
       -webkit-tap-highlight-color: transparent;
+      border: none;
     }
     .p-actions .p-btn:active {
       transform: scale(0.96);
-      background: rgba(255,255,255,0.1);
     }
     .p-actions .p-btn.dl {
-      background: rgba(59,130,246,0.2);
-      border-color: rgba(59,130,246,0.25);
+      background: #6366f1;
+      color: #fff;
     }
+    .p-actions .p-btn.dl:hover { background: #4f46e5; }
     .p-actions .p-btn.print {
-      background: rgba(16,185,129,0.2);
-      border-color: rgba(16,185,129,0.25);
+      background: #10b981;
+      color: #fff;
     }
+    .p-actions .p-btn.print:hover { background: #059669; }
     .p-actions .p-btn.pass {
-      background: rgba(99,102,241,0.2);
-      border-color: rgba(99,102,241,0.25);
+      background: #f59e0b;
+      color: #fff;
     }
+    .p-actions .p-btn.pass:hover { background: #d97706; }
+    .p-actions .p-btn.again {
+      background: #f1f5f9;
+      color: #475569;
+      border: 1px solid #e2e8f0;
+    }
+    .p-actions .p-btn.again:hover { background: #e2e8f0; }
 
     @media (max-width: 480px) {
       .qr-glow-box img { max-width: 160px; }
+      .qr-glow-box { padding: 18px; }
       .p-details { padding: 14px; }
-      .p-details .p-photo, .p-details .p-photo-initial { width: 50px; height: 50px; font-size: 20px; }
-      .p-details .p-info .p-name { font-size: 16px; }
-      .p-actions .p-btn { font-size: 12px; padding: 11px; }
+      .p-details .p-photo, .p-details .p-photo-initial { width: 50px; height: 50px; font-size: 22px; }
+      .p-details .p-info .p-name { font-size: 17px; }
+      .p-actions .p-btn { font-size: 13px; padding: 12px; }
     }
 
     .footer-text {
@@ -790,7 +802,7 @@
           <button class="p-btn dl" onclick="downloadQR()">Download QR</button>
           <button class="p-btn print" onclick="printQR()">Print QR</button>
           <button class="p-btn pass" onclick="downloadPass()">Get Pass</button>
-          <button class="p-btn" onclick="registerAnother()">New Visitor</button>
+          <button class="p-btn again" onclick="registerAnother()">New Visitor</button>
         </div>
       </div>
 
@@ -975,7 +987,7 @@
           if (p.x > w + 10) p.x = -10;
           ctx.beginPath();
           ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-          ctx.fillStyle = 'rgba(129,140,248,' + p.o + ')';
+          ctx.fillStyle = 'rgba(99,102,241,' + p.o + ')';
           ctx.fill();
         }
         _particleAnimId = requestAnimationFrame(frame);
