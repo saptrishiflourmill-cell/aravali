@@ -4,6 +4,7 @@ const multer = require('multer');
 const path = require('path');
 const { body } = require('express-validator');
 const controller = require('../controllers/visitorController');
+const { authenticateToken } = require('./authMiddleware');
 
 const DATA_DIR = process.env.DATA_DIR || path.join(__dirname, '..');
 
@@ -49,15 +50,15 @@ const validateVisitor = [
   body('email').optional({ values: 'falsy' }).isEmail().withMessage('Invalid email'),
 ];
 
-router.get('/stats', controller.getStats);
-router.get('/', controller.getAll);
+router.get('/stats', authenticateToken, controller.getStats);
+router.get('/', authenticateToken, controller.getAll);
 router.get('/download-qr/:id', controller.getQRCode);
 router.get('/:id', controller.getById);
 router.post('/', upload.single('photo'), validateVisitor, controller.create);
-router.put('/:id', upload.single('photo'), controller.update);
-router.delete('/:id', controller.delete);
-router.put('/:id/checkin', controller.checkIn);
-router.put('/:id/checkout', controller.checkOut);
-router.post('/upload-photo', upload.single('photo'), controller.uploadPhoto);
+router.put('/:id', authenticateToken, upload.single('photo'), controller.update);
+router.delete('/:id', authenticateToken, controller.delete);
+router.put('/:id/checkin', authenticateToken, controller.checkIn);
+router.put('/:id/checkout', authenticateToken, controller.checkOut);
+router.post('/upload-photo', authenticateToken, upload.single('photo'), controller.uploadPhoto);
 
 module.exports = router;

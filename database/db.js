@@ -1,10 +1,15 @@
 const initSqlJs = require('sql.js');
+const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
 
 const DATA_DIR = process.env.DATA_DIR || path.join(__dirname, '..');
 const DB_PATH = path.join(DATA_DIR, 'database', 'visitors.db');
 let db = null;
+
+function hashPassword(password) {
+  return crypto.createHash('sha256').update(password).digest('hex');
+}
 
 async function initDb() {
   const dbDir = path.join(DATA_DIR, 'database');
@@ -19,8 +24,23 @@ async function initDb() {
   } else {
     db = new SQL.Database();
   }
+
   const schema = fs.readFileSync(path.join(__dirname, 'schema.sql'), 'utf8');
   db.run(schema);
+
+  const stmt = db.prepare('SELECT COUNT(*) as count FROM users');
+  const exists = stmt.step() ? stmt.getAsObject() : { count: 0 };
+  stmt.free();
+
+  if (exists.count === 0) {
+    const defaultUser = process.env.ADMIN_USER || 'admin';
+    const defaultPass = process.env.ADMIN_PASS || 'admin123';
+    const insert = db.prepare('INSERT INTO users (username, password, role) VALUES (?, ?, ?)');
+    insert.run([defaultUser, hashPassword(defaultPass), 'admin']);
+    insert.free();
+    console.log('Default admin user created (admin/admin123)');
+  }
+
   saveDb();
   return db;
 }

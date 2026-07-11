@@ -29,7 +29,11 @@
           <button class="hamburger" onclick="toggleSidebar()">&#9776;</button>
           <h1>Dashboard</h1>
         </div>
-        <a href="/" class="btn btn-primary">+ New Visitor</a>
+        <div class="flex gap-2 items-center">
+          <span id="userDisplay" style="font-size:13px;color:var(--text-light);display:none"></span>
+          <a href="/" class="btn btn-primary">+ New Visitor</a>
+          <button class="btn btn-outline" onclick="logout()" id="logoutBtn" style="display:none">Logout</button>
+        </div>
       </div>
 
       <div class="cards" id="statsCards">
@@ -144,14 +148,60 @@
       searchTimer = setTimeout(() => loadVisitors(1), 300);
     }
 
-    document.addEventListener('DOMContentLoaded', function() {
+    async function checkAuth() {
+      const token = localStorage.getItem('authToken');
+      if (!token) {
+        window.location.href = '/login.html?redirect=/dashboard.html';
+        return;
+      }
+      try {
+        const res = await fetch('/api/auth/check', {
+          headers: { 'Authorization': 'Bearer ' + token }
+        });
+        const data = await res.json();
+        if (!data.authenticated) {
+          localStorage.removeItem('authToken');
+          window.location.href = '/login.html?redirect=/dashboard.html';
+          return;
+        }
+        document.getElementById('userDisplay').textContent = data.username;
+        document.getElementById('userDisplay').style.display = 'inline';
+        document.getElementById('logoutBtn').style.display = 'inline-block';
+      } catch (e) {
+        window.location.href = '/login.html?redirect=/dashboard.html';
+      }
+    }
+
+    function logout() {
+      const token = localStorage.getItem('authToken');
+      if (token) {
+        fetch('/api/auth/logout', {
+          method: 'POST',
+          headers: { 'Authorization': 'Bearer ' + token }
+        }).catch(() => {});
+      }
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('authUser');
+      window.location.href = '/login.html';
+    }
+
+    document.addEventListener('DOMContentLoaded', async function() {
+      await checkAuth();
       loadStats();
       loadVisitors(1);
     });
 
+    function authFetch(url, options = {}) {
+      const token = localStorage.getItem('authToken');
+      const headers = options.headers || {};
+      headers['Authorization'] = 'Bearer ' + token;
+      return fetch(url, { ...options, headers });
+    }
+
     async function loadStats() {
       try {
-        const res = await fetch('/api/visitors/stats');
+        const res = await authFetch('/api/visitors/stats');
+        if (res.status === 401) { window.location.href = '/login.html?redirect=/dashboard.html'; return; }
         const data = await res.json();
         document.getElementById('statTotal').textContent = data.total;
         document.getElementById('statActive').textContent = data.active;
@@ -173,7 +223,7 @@
 
       try {
         const params = new URLSearchParams({ page, limit: 10, search, date });
-        const res = await fetch('/api/visitors?' + params);
+        const res = await authFetch('/api/visitors?' + params);
         const data = await res.json();
         currentData = data;
 
@@ -241,7 +291,7 @@
 
     async function checkInVisitor(id) {
       try {
-        const res = await fetch('/api/visitors/' + id + '/checkin', { method: 'PUT' });
+        const res = await authFetch('/api/visitors/' + id + '/checkin', { method: 'PUT' });
         if (!res.ok) { showToast('Check-in failed', 'error'); return; }
         showToast('Visitor checked in successfully', 'success');
         loadStats();
@@ -254,7 +304,7 @@
     async function checkOutVisitor(id) {
       showConfirm('Check out this visitor?', async () => {
         try {
-          const res = await fetch('/api/visitors/' + id + '/checkout', { method: 'PUT' });
+          const res = await authFetch('/api/visitors/' + id + '/checkout', { method: 'PUT' });
           if (!res.ok) { showToast('Check-out failed', 'error'); return; }
           showToast('Visitor checked out successfully', 'success');
           loadStats();
@@ -267,7 +317,7 @@
 
     async function editVisitor(id) {
       try {
-        const res = await fetch('/api/visitors/' + id);
+        const res = await authFetch('/api/visitors/' + id);
         const v = await res.json();
         if (!res.ok) { showToast('Visitor not found', 'error'); return; }
         document.getElementById('editId').value = v.id;
@@ -307,7 +357,8 @@
       if (photoFile) formData.append('photo', photoFile);
 
       try {
-        const res = await fetch('/api/visitors/' + id, { method: 'PUT', body: formData });
+        const token = localStorage.getItem('authToken');
+        const res = await fetch('/api/visitors/' + id, { method: 'PUT', body: formData, headers: { 'Authorization': 'Bearer ' + token } });
         const data = await res.json();
         if (!res.ok) { showToast(data.error || 'Update failed', 'error'); return; }
         showToast('Visitor updated successfully', 'success');
@@ -326,7 +377,7 @@
     function deleteVisitor(id) {
       showConfirm('Delete this visitor? This action cannot be undone.', async () => {
         try {
-          const res = await fetch('/api/visitors/' + id, { method: 'DELETE' });
+          const res = await authFetch('/api/visitors/' + id, { method: 'DELETE' });
           if (!res.ok) { showToast('Delete failed', 'error'); return; }
           showToast('Visitor deleted successfully', 'success');
           loadStats();

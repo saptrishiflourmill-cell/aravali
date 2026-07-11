@@ -121,9 +121,10 @@
               <img id="qrCodeImg" alt="QR Code">
               <p style="margin-top:8px;font-size:13px;color:var(--text-light);word-break:break-all" id="qrDataText"></p>
             </div>
-            <div class="qr-actions">
+            <div class="qr-actions" style="flex-wrap:wrap">
               <button class="btn btn-primary" onclick="downloadQR()">Download QR</button>
               <button class="btn btn-secondary" onclick="printQR()">Print QR</button>
+              <button class="btn btn-warning" onclick="downloadPass()">Download Pass</button>
               <button class="btn btn-outline" onclick="registerAnother()">Register Another</button>
             </div>
           </div>
@@ -203,6 +204,12 @@
         link.download = window.lastQRData.visitor.visitorId + '-qr.png';
         link.href = document.getElementById('qrCodeImg').src;
         link.click();
+      }
+    }
+
+    function downloadPass() {
+      if (window.lastQRData) {
+        window.open('/pass.html?id=' + window.lastQRData.visitor.visitorId, '_blank');
       }
     }
 

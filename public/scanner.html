@@ -6,6 +6,14 @@
   <title>QR Scanner - Visitor Management System</title>
   <link rel="stylesheet" href="/css/style.css">
   <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+  <style>
+    .visitor-popup { max-width:500px }
+    .popup-photo { width:80px;height:80px;border-radius:50%;object-fit:cover;border:2px solid var(--border);margin:0 auto 12px;display:block }
+    .popup-no-photo { width:80px;height:80px;border-radius:50%;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:28px;color:var(--text-light);margin:0 auto 12px;border:2px dashed var(--border) }
+    .popup-row { display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:13px }
+    .popup-row:last-child { border-bottom:none }
+    .popup-row span:first-child { color:var(--text-light);font-weight:500 }
+  </style>
 </head>
 <body>
   <div class="layout">
@@ -27,33 +35,37 @@
           <button class="hamburger" onclick="toggleSidebar()">&#9776;</button>
           <h1>QR Scanner</h1>
         </div>
+        <div class="flex gap-2 items-center">
+          <span id="userDisplay" style="font-size:13px;color:var(--text-light);display:none"></span>
+          <button class="btn btn-outline" onclick="logout()" id="logoutBtn" style="display:none">Logout</button>
+        </div>
       </div>
 
       <div class="content-card">
+        <div class="card-header">
+          <h2>Scan Visitor QR Code</h2>
+        </div>
         <div class="card-body">
-          <div id="initialView">
-            <div style="text-align:center;padding:20px 0">
-              <div style="font-size:64px;margin-bottom:12px">&#128247;</div>
-              <h2 style="margin-bottom:8px">Upload QR Code Image</h2>
-              <p style="color:var(--text-light);margin-bottom:20px;max-width:400px;margin:0 auto 20px">
-                Take a photo of the visitor's QR code and upload it. This works on any browser.
-              </p>
-              <input type="file" id="qrFileInput" accept="image/*" style="display:none" onchange="handleFile(event)">
-              <button class="btn btn-primary" onclick="document.getElementById('qrFileInput').click()" style="padding:12px 32px;font-size:16px">
-                Choose Photo
-              </button>
-            </div>
+          <div class="scanner-container">
+            <div id="scannerStatus" class="scanner-result" style="display:none"></div>
 
-            <div id="secureCamera" style="display:none;text-align:center;padding:20px 0;border-top:1px solid var(--border);margin-top:20px">
-              <p style="color:var(--text-light);margin-bottom:12px">Or use your camera to scan</p>
-              <button class="btn btn-secondary" onclick="startCamera()">Start Camera</button>
-              <div id="cameraContainer" style="display:none;margin-top:16px">
-                <div id="reader" style="max-width:400px;margin:0 auto;border-radius:var(--radius-lg);overflow:hidden;background:#000"></div>
-                <button class="btn btn-danger mt-2" onclick="stopCamera()">Stop Camera</button>
+            <div style="text-align:center;padding:20px 0">
+              <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:12px">
+                <button class="btn btn-primary" onclick="startCameraScan()" style="padding:12px 24px;font-size:15px">
+                  &#128247; Scan with Camera
+                </button>
+                <button class="btn btn-secondary" onclick="document.getElementById('qrFileInput').click()" style="padding:12px 24px;font-size:15px">
+                  &#128206; Upload QR Image
+                </button>
+              </div>
+              <input type="file" id="qrFileInput" accept="image/*" style="display:none" onchange="handleFile(event)">
+              <div id="cameraFeed" style="display:none;max-width:400px;margin:16px auto">
+                <div id="reader" style="border:2px dashed var(--border);border-radius:var(--radius-lg);overflow:hidden;background:#000"></div>
+                <button class="btn btn-danger mt-2" onclick="stopCameraScan()" style="margin-top:8px">Stop Camera</button>
               </div>
             </div>
 
-            <div style="margin-top:24px;padding:16px;background:var(--bg);border-radius:var(--radius)">
+            <div style="margin-top:16px;padding:16px;background:var(--bg);border-radius:var(--radius)">
               <label style="font-weight:500;display:block;margin-bottom:8px">Manual Entry:</label>
               <div style="display:flex;gap:8px">
                 <input type="text" id="manualVisitorId" placeholder="Enter Visitor ID (e.g., VIS-000001)" style="flex:1;padding:10px 12px;border:1px solid var(--border);border-radius:var(--radius);font-size:14px">
@@ -61,44 +73,102 @@
               </div>
             </div>
           </div>
-
-          <div id="scanningView" style="display:none;text-align:center;padding:40px 0">
-            <div class="spinner" style="margin:0 auto 16px"></div>
-            <h3 id="scanStatusText">Processing...</h3>
-          </div>
-
-          <div id="resultView" style="display:none;text-align:center;padding:20px 0">
-            <div id="resultIcon" style="font-size:48px;margin-bottom:12px"></div>
-            <h3 id="resultTitle"></h3>
-            <p id="resultMsg" style="color:var(--text-light);margin:8px 0 20px"></p>
-            <div class="flex gap-2 justify-center">
-              <button class="btn btn-primary" id="resultActionBtn" style="display:none"></button>
-              <button class="btn btn-outline" onclick="resetView()">Scan Another</button>
-            </div>
-          </div>
         </div>
       </div>
     </main>
   </div>
 
+  <div class="modal-overlay" id="visitorModal">
+    <div class="modal visitor-popup">
+      <div class="modal-header">
+        <h2>Visitor Details</h2>
+        <button class="modal-close" onclick="closeVisitorModal()">&times;</button>
+      </div>
+      <div class="modal-body" id="visitorModalBody">
+        <div class="loading" id="modalLoading"><div class="spinner"></div><p>Loading visitor...</p></div>
+        <div id="modalContent" style="display:none"></div>
+      </div>
+    </div>
+  </div>
+
   <script>
+    function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
+
+    async function checkAuth() {
+      const token = localStorage.getItem('authToken');
+      if (!token) { window.location.href = '/login.html?redirect=/scanner.html'; return; }
+      try {
+        const res = await fetch('/api/auth/check', { headers: { 'Authorization': 'Bearer ' + token } });
+        const data = await res.json();
+        if (!data.authenticated) {
+          localStorage.removeItem('authToken');
+          window.location.href = '/login.html?redirect=/scanner.html'; return;
+        }
+        document.getElementById('userDisplay').textContent = data.username;
+        document.getElementById('userDisplay').style.display = 'inline';
+        document.getElementById('logoutBtn').style.display = 'inline-block';
+      } catch (e) { window.location.href = '/login.html?redirect=/scanner.html'; }
+    }
+
+    function logout() {
+      const token = localStorage.getItem('authToken');
+      if (token) fetch('/api/auth/logout', { method: 'POST', headers: { 'Authorization': 'Bearer ' + token } }).catch(() => {});
+      localStorage.removeItem('authToken'); localStorage.removeItem('authUser');
+      window.location.href = '/login.html';
+    }
+
     let html5QrCode = null;
     let cameraActive = false;
 
-    function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
+    document.addEventListener('DOMContentLoaded', async function() { await checkAuth(); });
 
-    document.addEventListener('DOMContentLoaded', function() {
-      document.getElementById('secureCamera').style.display = 'block';
-      const isSecure = window.location.protocol === 'https:' || window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-      if (!isSecure) {
-        document.querySelector('#secureCamera p').textContent = 'Camera requires HTTPS - use https://192.168.1.192:3443 or Upload Image above';
+    async function startCameraScan() {
+      const cameraFeed = document.getElementById('cameraFeed');
+      const status = document.getElementById('scannerStatus');
+      status.style.display = 'none';
+
+      if (html5QrCode && cameraActive) { stopCameraScan(); return; }
+
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+        stream.getTracks().forEach(t => t.stop());
+
+        cameraFeed.style.display = 'block';
+        html5QrCode = new Html5Qrcode("reader");
+        await html5QrCode.start(
+          { facingMode: "environment" },
+          { fps: 10, qrbox: { width: 250, height: 250 } },
+          function(decodedText) {
+            stopCameraScan();
+            lookupQRCode(decodedText);
+          },
+          function() {}
+        );
+        cameraActive = true;
+        showStatus('Camera active. Point at a QR code.', 'success');
+      } catch (err) {
+        cameraFeed.style.display = 'none';
+        if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+          showStatus('Camera access denied. Use Upload QR Image or Manual Entry.', 'error');
+        } else if (err.name === 'NotReadableError' || err.name === 'TrackStartError') {
+          showStatus('Camera is being used by another app. Close it and try again.', 'error');
+        } else {
+          showStatus('Camera not available on this connection. Use Upload Image instead.', 'error');
+        }
       }
-    });
+    }
+
+    function stopCameraScan() {
+      if (html5QrCode && cameraActive) {
+        html5QrCode.stop().then(() => { cameraActive = false; }).catch(() => {});
+      }
+      document.getElementById('cameraFeed').style.display = 'none';
+    }
 
     function handleFile(event) {
       const file = event.target.files[0];
       if (!file) return;
-      showScanning('Scanning QR code from image...');
+      showStatus('Scanning...', 'info');
       scanFile(file);
       event.target.value = '';
     }
@@ -108,47 +178,13 @@
         const codeScanner = new Html5Qrcode("reader");
         const decodedText = await codeScanner.scanFile(file, false);
         codeScanner.clear();
-        processResult(decodedText);
+        lookupQRCode(decodedText);
       } catch (err) {
-        showError('Could not read QR code from this image. Try:<br>1. Take a clearer photo<br>2. Make sure the QR code is well-lit and in focus<br>3. Use Manual Entry below');
+        showStatus('Could not read QR code. Try a clearer photo or use Manual Entry.', 'error');
       }
     }
 
-    async function startCamera() {
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
-        stream.getTracks().forEach(t => t.stop());
-
-        document.querySelector('#secureCamera .btn-secondary').style.display = 'none';
-        document.getElementById('cameraContainer').style.display = 'block';
-
-        html5QrCode = new Html5Qrcode("reader");
-        await html5QrCode.start(
-          { facingMode: "environment" },
-          { fps: 10, qrbox: { width: 250, height: 250 } },
-          function(decodedText) {
-            stopCamera();
-            processResult(decodedText);
-          },
-          function() {}
-        );
-        cameraActive = true;
-      } catch (err) {
-        showError('Camera access denied or not available. Use Upload Image instead.');
-        document.querySelector('#secureCamera .btn-secondary').style.display = 'inline-block';
-        document.getElementById('cameraContainer').style.display = 'none';
-      }
-    }
-
-    function stopCamera() {
-      if (html5QrCode && cameraActive) {
-        html5QrCode.stop().then(() => { cameraActive = false; }).catch(() => {});
-      }
-      document.querySelector('#secureCamera .btn-secondary').style.display = 'inline-block';
-      document.getElementById('cameraContainer').style.display = 'none';
-    }
-
-    function processResult(decodedText) {
+    function lookupQRCode(decodedText) {
       let visitorId = null;
       if (decodedText.includes('/visitor/')) {
         const parts = decodedText.split('/visitor/');
@@ -158,58 +194,118 @@
       }
 
       if (visitorId && /^VIS-\d{6}$/.test(visitorId)) {
-        showResult('success', '&#10003;', 'Visitor Found!', 'Visitor ID: ' + visitorId, 'View Details', function() {
-          window.location.href = '/visitor.html?id=' + visitorId;
-        });
+        showVisitorPopup(visitorId);
       } else {
-        showError('Invalid QR code. This is not a valid visitor QR code.<br>Use Manual Entry below.');
+        showStatus('Invalid QR code. Not a valid visitor QR code.', 'error');
       }
+    }
+
+    async function showVisitorPopup(id) {
+      document.getElementById('visitorModal').classList.add('active');
+      document.getElementById('modalLoading').style.display = 'block';
+      document.getElementById('modalContent').style.display = 'none';
+
+      try {
+        const res = await fetch('/api/visitors/' + encodeURIComponent(id));
+        if (!res.ok) throw new Error('Not found');
+        const v = await res.json();
+
+        const statusBadge = v.status === 'Active'
+          ? '<span class="badge badge-active">Active</span>'
+          : '<span class="badge badge-checkout">Checked Out</span>';
+
+        const photoHtml = v.photo
+          ? '<img src="/uploads/' + v.photo + '?t=' + Date.now() + '" class="popup-photo">'
+          : '<div class="popup-no-photo">' + v.fullName.charAt(0).toUpperCase() + '</div>';
+
+        document.getElementById('modalContent').innerHTML = `
+          ${photoHtml}
+          <h3 style="text-align:center;margin-bottom:4px">${escHtml(v.fullName)}</h3>
+          <p style="text-align:center;color:var(--text-light);font-size:13px;margin-bottom:12px;font-family:monospace">${v.visitorId}</p>
+          <div style="text-align:center;margin-bottom:12px">${statusBadge}</div>
+          <div>
+            <div class="popup-row"><span>Phone</span><span>${escHtml(v.phone)}</span></div>
+            <div class="popup-row"><span>Email</span><span>${escHtml(v.email) || 'Not provided'}</span></div>
+            <div class="popup-row"><span>Company</span><span>${escHtml(v.company)}</span></div>
+            <div class="popup-row"><span>Person to Meet</span><span>${escHtml(v.personToMeet)}</span></div>
+            <div class="popup-row"><span>Purpose</span><span>${escHtml(v.purpose)}</span></div>
+            <div class="popup-row"><span>Entry Date</span><span>${v.entryDate}</span></div>
+            <div class="popup-row"><span>Entry Time</span><span>${v.entryTime}</span></div>
+            <div class="popup-row"><span>Exit Time</span><span>${v.exitTime || 'Not checked out'}</span></div>
+            <div class="popup-row"><span>Address</span><span>${escHtml(v.address)}</span></div>
+            <div class="popup-row"><span>Vehicle</span><span>${escHtml(v.vehicleNumber) || 'N/A'}</span></div>
+          </div>
+          <div class="flex gap-2 justify-center mt-4">
+            <a href="/pass.html?id=${v.visitorId}" class="btn btn-sm btn-outline" target="_blank">View Pass</a>
+            ${v.status === 'Active'
+              ? '<button class="btn btn-sm btn-secondary" onclick="quickCheckout(' + v.id + ')">Check Out</button>'
+              : '<button class="btn btn-sm btn-primary" onclick="quickCheckin(' + v.id + ')">Check In</button>'}
+          </div>
+        `;
+        document.getElementById('modalLoading').style.display = 'none';
+        document.getElementById('modalContent').style.display = 'block';
+        document.getElementById('scannerStatus').style.display = 'none';
+      } catch (err) {
+        document.getElementById('modalLoading').style.display = 'none';
+        showStatus('Visitor not found: ' + id, 'error');
+        closeVisitorModal();
+      }
+    }
+
+    async function quickCheckout(id) {
+      const token = localStorage.getItem('authToken');
+      try {
+        const res = await fetch('/api/visitors/' + id + '/checkout', {
+          method: 'PUT', headers: { 'Authorization': 'Bearer ' + token }
+        });
+        if (!res.ok) throw new Error('Failed');
+        showStatus('Visitor checked out', 'success');
+        closeVisitorModal();
+      } catch (e) { showStatus('Checkout failed', 'error'); }
+    }
+
+    async function quickCheckin(id) {
+      const token = localStorage.getItem('authToken');
+      try {
+        const res = await fetch('/api/visitors/' + id + '/checkin', {
+          method: 'PUT', headers: { 'Authorization': 'Bearer ' + token }
+        });
+        if (!res.ok) throw new Error('Failed');
+        showStatus('Visitor checked in', 'success');
+        closeVisitorModal();
+      } catch (e) { showStatus('Checkin failed', 'error'); }
+    }
+
+    function closeVisitorModal() {
+      document.getElementById('visitorModal').classList.remove('active');
     }
 
     function lookupVisitor() {
       const id = document.getElementById('manualVisitorId').value.trim().toUpperCase();
-      if (!id) return showError('Please enter a Visitor ID');
-      if (!/^VIS-\d{6}$/.test(id)) return showError('Invalid format. Use VIS-000001');
-      window.location.href = '/visitor.html?id=' + id;
+      if (!id) { showStatus('Enter a Visitor ID', 'error'); return; }
+      if (!/^VIS-\d{6}$/.test(id)) { showStatus('Invalid format. Use VIS-000001', 'error'); return; }
+      showVisitorPopup(id);
     }
 
-    function showScanning(msg) {
-      document.getElementById('initialView').style.display = 'none';
-      document.getElementById('resultView').style.display = 'none';
-      document.getElementById('scanningView').style.display = 'block';
-      document.getElementById('scanStatusText').textContent = msg;
+    function showStatus(msg, type) {
+      const el = document.getElementById('scannerStatus');
+      el.textContent = msg;
+      el.className = 'scanner-result ' + type;
+      el.style.display = 'block';
     }
 
-    function showResult(type, icon, title, msg, btnText, btnAction) {
-      document.getElementById('scanningView').style.display = 'none';
-      document.getElementById('resultView').style.display = 'block';
-      document.getElementById('resultIcon').innerHTML = icon;
-      document.getElementById('resultTitle').textContent = title;
-      document.getElementById('resultMsg').innerHTML = msg;
-      const btn = document.getElementById('resultActionBtn');
-      btn.textContent = btnText;
-      btn.style.display = 'inline-block';
-      btn.onclick = btnAction;
-    }
-
-    function showError(msg) {
-      document.getElementById('scanningView').style.display = 'none';
-      document.getElementById('resultView').style.display = 'block';
-      document.getElementById('resultIcon').innerHTML = '&#10060;';
-      document.getElementById('resultIcon').style.color = 'var(--danger)';
-      document.getElementById('resultTitle').textContent = 'Scan Failed';
-      document.getElementById('resultMsg').innerHTML = msg;
-      document.getElementById('resultActionBtn').style.display = 'none';
-    }
-
-    function resetView() {
-      document.getElementById('initialView').style.display = 'block';
-      document.getElementById('scanningView').style.display = 'none';
-      document.getElementById('resultView').style.display = 'none';
+    function escHtml(str) {
+      const div = document.createElement('div');
+      div.textContent = str || '';
+      return div.innerHTML;
     }
 
     document.getElementById('manualVisitorId').addEventListener('keydown', function(e) {
       if (e.key === 'Enter') lookupVisitor();
+    });
+
+    document.addEventListener('click', function(e) {
+      if (e.target.classList.contains('modal-overlay')) e.target.classList.remove('active');
     });
   </script>
 </body>

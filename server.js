@@ -7,6 +7,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const { initDb } = require('./database/db');
 const visitorRoutes = require('./routes/visitors');
+const authRoutes = require('./routes/auth');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -26,6 +27,7 @@ app.use('/uploads', express.static(path.join(DATA_DIR, 'uploads')));
 app.use('/qrcodes', express.static(path.join(DATA_DIR, 'qrcodes')));
 
 app.use('/api/visitors', visitorRoutes);
+app.use('/api/auth', authRoutes);
 
 app.get('/visitor/:visitorId', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'visitor.html'));
