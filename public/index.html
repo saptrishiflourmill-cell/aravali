@@ -3,141 +3,136 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Visitor Registration - Visitor Management System</title>
+  <title>Visitor Registration - VisitManager</title>
   <link rel="stylesheet" href="/css/style.css">
+  <style>
+    body { background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%); min-height: 100vh; display: flex; align-items: flex-start; justify-content: center; padding: 20px; margin: 0; }
+    .reg-container { max-width: 700px; width: 100%; margin: 20px auto; }
+    .reg-header { text-align: center; margin-bottom: 24px; }
+    .reg-header .logo { width: 64px; height: 64px; background: var(--primary); border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 32px; color: #fff; margin: 0 auto 12px; }
+    .reg-header h1 { font-size: 24px; font-weight: 700; color: var(--text); }
+    .reg-header p { color: var(--text-light); font-size: 14px; }
+    .admin-link { position: fixed; top: 16px; right: 16px; font-size: 13px; color: var(--text-light); background: var(--card-bg); padding: 8px 16px; border-radius: var(--radius); box-shadow: var(--shadow); text-decoration: none; }
+    .admin-link:hover { color: var(--primary); text-decoration: none; }
+    @media (max-width: 768px) { body { padding: 12px; } .admin-link { top: auto; bottom: 16px; right: 16px; } }
+  </style>
 </head>
 <body>
-  <div class="layout">
-    <aside class="sidebar" id="sidebar">
-      <div class="sidebar-header">
-        <div class="logo">&#9662;</div>
-        <div>
-          <h2>VisitManager</h2>
-          <p>Visitor Management System</p>
-        </div>
+  <a href="/login.html" class="admin-link">Admin Login &#128274;</a>
+
+  <div class="reg-container">
+    <div class="reg-header">
+      <div class="logo">&#9662;</div>
+      <h1>VisitManager</h1>
+      <p>Visitor Registration System</p>
+    </div>
+
+    <div class="content-card" id="formCard">
+      <div class="card-header">
+        <h2>Visitor Registration Form</h2>
       </div>
-      <nav class="sidebar-nav">
-        <a href="/" class="active"><span class="icon">&#9998;</span> Register Visitor</a>
-        <a href="/dashboard.html"><span class="icon">&#9776;</span> Dashboard</a>
-        <a href="/scanner.html"><span class="icon">&#128247;</span> Scan QR</a>
-      </nav>
-    </aside>
-
-    <main class="main-content">
-      <div class="top-bar">
-        <div style="display:flex;align-items:center;gap:12px">
-          <button class="hamburger" onclick="toggleSidebar()">&#9776;</button>
-          <h1>Register Visitor</h1>
-        </div>
-      </div>
-
-      <div class="content-card" id="formCard">
-        <div class="card-header">
-          <h2>Visitor Registration Form</h2>
-        </div>
-        <div class="card-body">
-          <form id="visitorForm" enctype="multipart/form-data">
-            <div class="form-row">
-              <div class="form-group">
-                <label class="required">Full Name</label>
-                <input type="text" name="fullName" id="fullName" placeholder="Enter full name" required>
-              </div>
-              <div class="form-group">
-                <label class="required">Phone Number</label>
-                <input type="tel" name="phone" id="phone" placeholder="Enter phone number" required>
-              </div>
-            </div>
-
-            <div class="form-row">
-              <div class="form-group">
-                <label>Email</label>
-                <input type="email" name="email" id="email" placeholder="Enter email (optional)">
-              </div>
-              <div class="form-group">
-                <label class="required">Company / Organization</label>
-                <input type="text" name="company" id="company" placeholder="Enter company name" required>
-              </div>
-            </div>
-
+      <div class="card-body">
+        <form id="visitorForm" enctype="multipart/form-data">
+          <div class="form-row">
             <div class="form-group">
-              <label class="required">Address</label>
-              <textarea name="address" id="address" placeholder="Enter address" required></textarea>
+              <label class="required">Full Name</label>
+              <input type="text" name="fullName" id="fullName" placeholder="Enter full name" required>
             </div>
-
-            <div class="form-row">
-              <div class="form-group">
-                <label class="required">Person to Meet</label>
-                <input type="text" name="personToMeet" id="personToMeet" placeholder="Enter person to meet" required>
-              </div>
-              <div class="form-group">
-                <label class="required">Purpose of Visit</label>
-                <input type="text" name="purpose" id="purpose" placeholder="Enter purpose" required>
-              </div>
-            </div>
-
-            <div class="form-row">
-              <div class="form-group">
-                <label class="required">Entry Date</label>
-                <input type="date" name="entryDate" id="entryDate" required>
-              </div>
-              <div class="form-group">
-                <label class="required">Entry Time</label>
-                <input type="time" name="entryTime" id="entryTime" required>
-              </div>
-            </div>
-
-            <div class="form-row">
-              <div class="form-group">
-                <label>Expected Exit Time</label>
-                <input type="time" name="exitTime" id="exitTime">
-              </div>
-              <div class="form-group">
-                <label>Vehicle Number</label>
-                <input type="text" name="vehicleNumber" id="vehicleNumber" placeholder="Enter vehicle number (optional)">
-              </div>
-            </div>
-
             <div class="form-group">
-              <label>Photo</label>
-              <input type="file" name="photo" id="photo" accept="image/*" onchange="previewPhoto(event)">
-              <img id="photoPreview" class="photo-preview" alt="Preview">
+              <label class="required">Phone Number</label>
+              <input type="tel" name="phone" id="phone" placeholder="Enter phone number" required>
             </div>
+          </div>
 
-            <div class="form-actions">
-              <button type="reset" class="btn btn-outline">Reset</button>
-              <button type="submit" class="btn btn-primary" id="submitBtn">Register Visitor</button>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Email</label>
+              <input type="email" name="email" id="email" placeholder="Enter email (optional)">
             </div>
-          </form>
-        </div>
+            <div class="form-group">
+              <label class="required">Company / Organization</label>
+              <input type="text" name="company" id="company" placeholder="Enter company name" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="required">Address</label>
+            <textarea name="address" id="address" placeholder="Enter address" required></textarea>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="required">Person to Meet</label>
+              <input type="text" name="personToMeet" id="personToMeet" placeholder="Enter person to meet" required>
+            </div>
+            <div class="form-group">
+              <label class="required">Purpose of Visit</label>
+              <input type="text" name="purpose" id="purpose" placeholder="Enter purpose" required>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="required">Entry Date</label>
+              <input type="date" name="entryDate" id="entryDate" required>
+            </div>
+            <div class="form-group">
+              <label class="required">Entry Time</label>
+              <input type="time" name="entryTime" id="entryTime" required>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Expected Exit Time</label>
+              <input type="time" name="exitTime" id="exitTime">
+            </div>
+            <div class="form-group">
+              <label>Vehicle Number</label>
+              <input type="text" name="vehicleNumber" id="vehicleNumber" placeholder="Enter vehicle number (optional)">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Photo</label>
+            <input type="file" name="photo" id="photo" accept="image/*" onchange="previewPhoto(event)">
+            <img id="photoPreview" class="photo-preview" alt="Preview">
+          </div>
+
+          <div class="form-actions">
+            <button type="reset" class="btn btn-outline">Reset</button>
+            <button type="submit" class="btn btn-primary" id="submitBtn">Register Visitor</button>
+          </div>
+        </form>
       </div>
+    </div>
 
-      <div class="content-card" id="successCard" style="display:none">
-        <div class="card-body">
-          <div class="success-message">
-            <div class="success-icon">&#10003;</div>
-            <h2>Visitor Registered Successfully!</h2>
-            <p id="successVisitorId"></p>
-            <div class="qr-display">
-              <img id="qrCodeImg" alt="QR Code">
-              <p style="margin-top:8px;font-size:13px;color:var(--text-light);word-break:break-all" id="qrDataText"></p>
-            </div>
-            <div class="qr-actions" style="flex-wrap:wrap">
-              <button class="btn btn-primary" onclick="downloadQR()">Download QR</button>
-              <button class="btn btn-secondary" onclick="printQR()">Print QR</button>
-              <button class="btn btn-warning" onclick="downloadPass()">Download Pass</button>
-              <button class="btn btn-outline" onclick="registerAnother()">Register Another</button>
-            </div>
+    <div class="content-card" id="successCard" style="display:none">
+      <div class="card-body">
+        <div class="success-message">
+          <div class="success-icon">&#10003;</div>
+          <h2>Visitor Registered Successfully!</h2>
+          <p id="successVisitorId"></p>
+          <div class="qr-display">
+            <img id="qrCodeImg" alt="QR Code">
+            <p style="margin-top:8px;font-size:13px;color:var(--text-light);word-break:break-all" id="qrDataText"></p>
+          </div>
+          <div class="qr-actions" style="flex-wrap:wrap">
+            <button class="btn btn-primary" onclick="downloadQR()">Download QR</button>
+            <button class="btn btn-secondary" onclick="printQR()">Print QR</button>
+            <button class="btn btn-warning" onclick="downloadPass()">Download Pass</button>
+            <button class="btn btn-outline" onclick="registerAnother()">Register Another</button>
           </div>
         </div>
       </div>
-    </main>
+    </div>
+
+    <div style="text-align:center;margin-top:20px;font-size:12px;color:var(--text-light)">
+      Powered by VisitManager
+    </div>
   </div>
 
   <script>
-    function toggleSidebar() {
-      document.getElementById('sidebar').classList.toggle('open');
-    }
-
     document.addEventListener('DOMContentLoaded', function() {
       const today = new Date().toISOString().split('T')[0];
       const now = new Date().toTimeString().split(' ')[0].slice(0, 5);
@@ -158,11 +153,8 @@
 
           if (!res.ok) {
             let msg = 'Registration failed';
-            if (data.errors) {
-              msg = data.errors.map(e => e.msg).join(', ');
-            } else if (data.error) {
-              msg = data.error;
-            }
+            if (data.errors) msg = data.errors.map(e => e.msg).join(', ');
+            else if (data.error) msg = data.error;
             showToast(msg, 'error');
             submitBtn.disabled = false;
             submitBtn.textContent = 'Register Visitor';
