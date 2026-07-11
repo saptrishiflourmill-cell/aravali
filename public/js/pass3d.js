@@ -24,7 +24,8 @@ export async function createPass3D(container, visitorData) {
   const camDist = isSmall ? 7.5 : 6;
   const camFov = isSmall ? 30 : 35;
   const camera = new THREE.PerspectiveCamera(camFov, cw / ch, 0.1, 100);
-  camera.position.set(0, 2.2, camDist);
+  camera.position.set(0, 1.2, camDist);
+  camera.lookAt(0, 0.5, 0);
 
   const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true, powerPreference: 'high-performance' });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -165,14 +166,14 @@ export async function createPass3D(container, visitorData) {
       const qrImg = new Image();
       qrImg.crossOrigin = 'anonymous';
       qrImg.onload = () => {
-        ctx.drawImage(qrImg, W - 115, H - 115, 80, 80);
+        ctx.drawImage(qrImg, W - 175, H - 170, 130, 130);
         updateTex();
       };
       qrImg.onerror = () => {
         ctx.fillStyle = 'rgba(255,255,255,0.15)';
         ctx.font = '9px monospace';
         ctx.textAlign = 'center';
-        ctx.fillText(data.visitorId || 'VISITOR', W - 75, H - 75);
+        ctx.fillText(data.visitorId || 'VISITOR', W - 110, H - 105);
         ctx.textAlign = 'left';
         updateTex();
       };
@@ -353,7 +354,7 @@ export async function createPass3D(container, visitorData) {
       angle = Math.max(-maxAngle, Math.min(maxAngle, angle));
 
       const tx = Math.sin(angle) * len;
-      const ty = -Math.cos(angle) * len + len - 0.2;
+      const ty = -Math.cos(angle) * len + len + 1.2;
 
       card.position.x += (tx - card.position.x) * 0.1;
       card.position.y += (ty - card.position.y) * 0.1;
