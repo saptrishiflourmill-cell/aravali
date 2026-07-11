@@ -1004,7 +1004,7 @@
     let cameraStream = null;
     async function openCamera() {
       try {
-        const constraints = { video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } } };
+        const constraints = { video: { facingMode: { exact: 'environment' }, width: { ideal: 1280 }, height: { ideal: 720 } } };
         cameraStream = await navigator.mediaDevices.getUserMedia(constraints);
         const video = document.getElementById('cameraFeed');
         video.srcObject = cameraStream;
@@ -1013,7 +1013,8 @@
         document.getElementById('photoUploadRow').style.display = 'none';
       } catch (err) {
         try {
-          cameraStream = await navigator.mediaDevices.getUserMedia({ video: true });
+          const constraints = { video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } } };
+          cameraStream = await navigator.mediaDevices.getUserMedia(constraints);
           const video = document.getElementById('cameraFeed');
           video.srcObject = cameraStream;
           await video.play();
