@@ -760,7 +760,7 @@
             <button type="button" class="photo-remove" onclick="removePhoto()">&times;</button>
           </div>
           <div id="cameraContainer" style="display:none">
-            <video id="cameraFeed" playsinline style="width:100%;border-radius:12px;max-height:300px;object-fit:cover;background:#000"></video>
+            <video id="cameraFeed" autoplay playsinline muted style="width:100%;border-radius:12px;max-height:300px;object-fit:cover;background:#000"></video>
             <div style="display:flex;gap:8px;margin-top:8px">
               <button type="button" class="photo-btn capture" id="captureBtn" onclick="takeSnapshot()"><span>&#128247;</span> Capture</button>
               <button type="button" class="photo-btn cancel" onclick="stopCamera()"><span>&#10005;</span> Cancel</button>
@@ -999,13 +999,28 @@
     let cameraStream = null;
     async function addPhoto() {
       try {
-        cameraStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } } });
+        const constraints = { video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } } };
+        cameraStream = await navigator.mediaDevices.getUserMedia(constraints);
         const video = document.getElementById('cameraFeed');
         video.srcObject = cameraStream;
+        await video.play();
         document.getElementById('cameraContainer').style.display = 'block';
         document.getElementById('photoUploadRow').style.display = 'none';
       } catch (err) {
-        document.getElementById('photo').click();
+        if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+          document.getElementById('photo').click();
+        } else {
+          try {
+            cameraStream = await navigator.mediaDevices.getUserMedia({ video: true });
+            const video = document.getElementById('cameraFeed');
+            video.srcObject = cameraStream;
+            await video.play();
+            document.getElementById('cameraContainer').style.display = 'block';
+            document.getElementById('photoUploadRow').style.display = 'none';
+          } catch (e2) {
+            document.getElementById('photo').click();
+          }
+        }
       }
     }
 
@@ -1035,8 +1050,10 @@
         cameraStream.getTracks().forEach(t => t.stop());
         cameraStream = null;
       }
+      const video = document.getElementById('cameraFeed');
+      video.srcObject = null;
       document.getElementById('cameraContainer').style.display = 'none';
-      document.querySelector('.photo-upload-row').style.display = 'flex';
+      document.getElementById('photoUploadRow').style.display = 'flex';
     }
 
     function downloadQR() {
