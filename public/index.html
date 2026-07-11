@@ -12,7 +12,7 @@
 
     body {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      background: #03010A;
+      background: #f8f9ff;
       min-height: 100vh;
       display: flex;
       align-items: center;
@@ -21,7 +21,7 @@
       overflow-x: hidden;
     }
 
-    #fluid-bg {
+    #bg-canvas {
       position: fixed;
       top: 0;
       left: 0;
@@ -29,6 +29,16 @@
       height: 100%;
       z-index: 0;
       pointer-events: none;
+    }
+    #bg-gradient {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: -1;
+      background:
+        radial-gradient(ellipse at 20% 50%, rgba(99,102,241,0.08) 0%, transparent 60%),
+        radial-gradient(ellipse at 80% 20%, rgba(139,92,246,0.08) 0%, transparent 60%),
+        radial-gradient(ellipse at 50% 80%, rgba(99,102,241,0.05) 0%, transparent 60%);
     }
 
     .reg-wrapper {
@@ -49,15 +59,12 @@
       width: 72px;
       height: 72px;
       margin: 0 auto 16px;
-      background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.05) 100%);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
+      background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
       border-radius: 24px;
       display: flex;
       align-items: center;
       justify-content: center;
-      border: 1px solid rgba(255,255,255,0.12);
-      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+      box-shadow: 0 8px 32px rgba(99,102,241,0.25);
     }
 
     .reg-header .logo-wrap span {
@@ -68,45 +75,41 @@
     .reg-header h1 {
       font-size: clamp(24px, 5vw, 32px);
       font-weight: 800;
-      color: #fff;
+      color: #1a1a2e;
       letter-spacing: -0.5px;
-      text-shadow: 0 2px 20px rgba(0,0,0,0.3);
     }
 
     .reg-header p {
       font-size: clamp(13px, 3vw, 15px);
-      color: rgba(255,255,255,0.6);
+      color: #64748b;
       margin-top: 4px;
       font-weight: 400;
     }
 
     .glass-card {
-      background: rgba(255,255,255,0.06);
-      backdrop-filter: blur(24px);
-      -webkit-backdrop-filter: blur(24px);
-      border: 1px solid rgba(255,255,255,0.1);
+      background: #ffffff;
+      border: 1px solid rgba(99,102,241,0.1);
       border-radius: 24px;
       padding: clamp(20px, 4vw, 36px);
-      box-shadow: 0 24px 80px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.08);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 8px 40px rgba(99,102,241,0.08);
       transition: all 0.3s ease;
     }
 
     .glass-card:hover {
-      border-color: rgba(255,255,255,0.15);
-      box-shadow: 0 24px 80px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 12px 48px rgba(99,102,241,0.12);
     }
 
     .card-title {
       font-size: clamp(18px, 4vw, 22px);
       font-weight: 700;
-      color: #fff;
+      color: #1a1a2e;
       margin-bottom: 4px;
       letter-spacing: -0.3px;
     }
 
     .card-subtitle {
       font-size: 14px;
-      color: rgba(255,255,255,0.45);
+      color: #64748b;
       margin-bottom: 24px;
     }
 
@@ -127,11 +130,11 @@
       top: 50%;
       transform: translateY(-50%);
       font-size: 14px;
-      color: rgba(255,255,255,0.4);
+      color: #94a3b8;
       pointer-events: none;
       transition: all 0.2s ease;
-      background: transparent;
-      padding: 0 4px;
+      background: #ffffff;
+      padding: 0 6px;
       font-weight: 400;
     }
 
@@ -144,9 +147,8 @@
       top: -8px;
       transform: none;
       font-size: 11px;
-      color: rgba(255,255,255,0.6);
-      background: rgba(255,255,255,0.06);
-      backdrop-filter: blur(4px);
+      color: #6366f1;
+      background: #ffffff;
       border-radius: 4px;
     }
 
@@ -155,12 +157,12 @@
     .form-group textarea {
       width: 100%;
       padding: 14px 14px 12px;
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(255,255,255,0.1);
+      background: #f8f9ff;
+      border: 1.5px solid #e2e8f0;
       border-radius: 14px;
       font-size: 15px;
       font-family: inherit;
-      color: #fff;
+      color: #1a1a2e;
       outline: none;
       transition: all 0.25s ease;
       -webkit-appearance: none;
@@ -176,9 +178,9 @@
     .form-group input:focus,
     .form-group select:focus,
     .form-group textarea:focus {
-      border-color: rgba(255,255,255,0.3);
-      background: rgba(255,255,255,0.08);
-      box-shadow: 0 0 0 3px rgba(255,255,255,0.05);
+      border-color: #6366f1;
+      background: #ffffff;
+      box-shadow: 0 0 0 3px rgba(99,102,241,0.1);
     }
 
     .form-group input::placeholder,
@@ -204,20 +206,20 @@
       top: -8px;
       transform: none;
       font-size: 11px;
-      color: rgba(255,255,255,0.5);
+      color: #6366f1;
     }
 
     .form-group input[type="file"] {
       padding: 12px;
       font-size: 13px;
-      color: rgba(255,255,255,0.6);
+      color: #64748b;
     }
 
     .form-group input[type="file"]::file-selector-button {
       padding: 6px 14px;
       border: none;
       border-radius: 8px;
-      background: rgba(255,255,255,0.12);
+      background: #6366f1;
       color: #fff;
       font-size: 13px;
       cursor: pointer;
@@ -226,7 +228,7 @@
     }
 
     .form-group input[type="file"]::file-selector-button:hover {
-      background: rgba(255,255,255,0.2);
+      background: #4f46e5;
     }
 
     .photo-preview {
@@ -236,7 +238,7 @@
       margin-top: 8px;
       display: none;
       object-fit: cover;
-      border: 1px solid rgba(255,255,255,0.1);
+      border: 1px solid #e2e8f0;
     }
 
     .photo-preview.show { display: block; }
@@ -251,19 +253,16 @@
       font-family: inherit;
       cursor: pointer;
       transition: all 0.3s ease;
-      background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.08) 100%);
+      background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
       color: #fff;
-      border: 1px solid rgba(255,255,255,0.15);
       position: relative;
       overflow: hidden;
       margin-top: 4px;
     }
 
     .btn-submit:hover {
-      background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.12) 100%);
-      border-color: rgba(255,255,255,0.25);
       transform: translateY(-1px);
-      box-shadow: 0 8px 30px rgba(255,255,255,0.08);
+      box-shadow: 0 8px 30px rgba(99,102,241,0.25);
     }
 
     .btn-submit:active {
@@ -286,7 +285,7 @@
     .btn-submit .spinner {
       width: 18px;
       height: 18px;
-      border: 2px solid rgba(255,255,255,0.2);
+      border: 2px solid rgba(255,255,255,0.3);
       border-top-color: #fff;
       border-radius: 50%;
       animation: spin 0.6s linear infinite;
@@ -297,10 +296,10 @@
     .btn-reset {
       width: 100%;
       padding: 12px;
-      border: 1px solid rgba(255,255,255,0.08);
+      border: 1.5px solid #e2e8f0;
       border-radius: 14px;
       background: transparent;
-      color: rgba(255,255,255,0.4);
+      color: #94a3b8;
       font-size: 14px;
       font-family: inherit;
       cursor: pointer;
@@ -309,111 +308,16 @@
     }
 
     .btn-reset:hover {
-      border-color: rgba(255,255,255,0.15);
-      color: rgba(255,255,255,0.6);
+      border-color: #cbd5e1;
+      color: #64748b;
     }
 
-    .success-card {
+    .footer-text {
       text-align: center;
-      padding: 20px 0;
-    }
-
-    .success-icon-wrap {
-      width: 72px;
-      height: 72px;
-      margin: 0 auto 16px;
-      background: linear-gradient(135deg, rgba(16,185,129,0.3) 0%, rgba(16,185,129,0.1) 100%);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border: 1px solid rgba(16,185,129,0.2);
-    }
-
-    .success-icon-wrap span { font-size: 36px; }
-
-    .success-card h2 {
-      font-size: 22px;
-      font-weight: 700;
-      color: #fff;
-      margin-bottom: 4px;
-    }
-
-    .success-card .visitor-id {
-      font-size: 14px;
-      color: rgba(255,255,255,0.5);
-      font-family: monospace;
-      margin-bottom: 20px;
-    }
-
-    .qr-box {
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 16px;
-      padding: 20px;
-      margin-bottom: 16px;
-    }
-
-    .qr-box img {
-      max-width: 180px;
-      height: auto;
-    }
-
-    .qr-actions {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-
-    .qr-actions .btn-action {
-      padding: 10px 16px;
-      border: 1px solid rgba(255,255,255,0.12);
-      border-radius: 12px;
-      background: rgba(255,255,255,0.06);
-      color: #fff;
-      font-size: 13px;
-      font-weight: 500;
-      font-family: inherit;
-      cursor: pointer;
-      transition: all 0.2s;
-      flex: 1;
-      min-width: 100px;
-      text-align: center;
-      text-decoration: none;
-    }
-
-    .qr-actions .btn-action:hover {
-      background: rgba(255,255,255,0.12);
-      border-color: rgba(255,255,255,0.2);
-      transform: translateY(-1px);
-    }
-
-    .qr-actions .btn-action.primary {
-      background: rgba(59,130,246,0.25);
-      border-color: rgba(59,130,246,0.3);
-    }
-
-    .qr-actions .btn-action.primary:hover {
-      background: rgba(59,130,246,0.35);
-    }
-
-    .qr-actions .btn-action.success {
-      background: rgba(16,185,129,0.25);
-      border-color: rgba(16,185,129,0.3);
-    }
-
-    .qr-actions .btn-action.success:hover {
-      background: rgba(16,185,129,0.35);
-    }
-
-    .qr-actions .btn-action.warning {
-      background: rgba(245,158,11,0.25);
-      border-color: rgba(245,158,11,0.3);
-    }
-
-    .qr-actions .btn-action.warning:hover {
-      background: rgba(245,158,11,0.35);
+      margin-top: 20px;
+      font-size: 12px;
+      color: #94a3b8;
+      letter-spacing: 0.5px;
     }
 
     .toast {
@@ -654,14 +558,6 @@
       .p-actions .p-btn { font-size: 13px; padding: 12px; }
     }
 
-    .footer-text {
-      text-align: center;
-      margin-top: 20px;
-      font-size: 12px;
-      color: rgba(255,255,255,0.2);
-      letter-spacing: 0.5px;
-    }
-
     @media (max-width: 480px) {
       body { padding: 10px; }
       .reg-wrapper { margin: 10px auto; }
@@ -672,9 +568,6 @@
       .reg-header .logo-wrap { width: 60px; height: 60px; border-radius: 18px; }
       .reg-header .logo-wrap span { font-size: 28px; }
       .btn-submit { padding: 15px 20px; font-size: 15px; }
-      .qr-box { padding: 14px; }
-      .qr-box img { max-width: 140px; }
-      .qr-actions .btn-action { font-size: 12px; padding: 8px 12px; min-width: 80px; }
     }
 
     @media (max-width: 360px) {
@@ -684,7 +577,8 @@
   </style>
 </head>
 <body>
-  <div id="fluid-bg"></div>
+  <div id="bg-gradient"></div>
+  <canvas id="bg-canvas"></canvas>
 
   <div class="reg-wrapper">
     <div class="reg-header">
@@ -812,34 +706,85 @@
     <div class="footer-text">VISITMANAGER &#8226; SECURE VISITOR SYSTEM</div>
   </div>
 
-  <script type="module">
-    import { createFerrofluid } from '/js/ferrofluid.js';
+  <script>
+    (function() {
+      const canvas = document.getElementById('bg-canvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      let w = canvas.width = window.innerWidth;
+      let h = canvas.height = window.innerHeight;
+      const onResize = () => { w = canvas.width = window.innerWidth; h = canvas.height = window.innerHeight; };
+      window.addEventListener('resize', onResize);
 
-    const container = document.getElementById('fluid-bg');
-    let cleanup = null;
+      const orbs = [];
+      for (let i = 0; i < 4; i++) {
+        orbs.push({
+          x: Math.random() * w, y: Math.random() * h,
+          r: 120 + Math.random() * 180,
+          vx: (Math.random() - 0.5) * 0.3,
+          vy: (Math.random() - 0.5) * 0.3,
+          color: i % 2 === 0 ? '99,102,241' : '139,92,246',
+          alpha: 0.04 + Math.random() * 0.04,
+        });
+      }
 
-    try {
-      cleanup = createFerrofluid(container, {
-        speed: 0.5,
-        scale: 1.6,
-        turbulence: 1.2,
-        fluidity: 0.15,
-        rimWidth: 0.25,
-        sharpness: 2.5,
-        shimmer: 1.5,
-        glow: 2.5,
-        opacity: 0.9,
-        mouseStrength: 1.0,
-        mouseRadius: 0.35
+      const particles = [];
+      for (let i = 0; i < 30; i++) {
+        particles.push({
+          x: Math.random() * w, y: Math.random() * h,
+          vx: (Math.random() - 0.5) * 0.15,
+          vy: -Math.random() * 0.2 - 0.05,
+          r: 1.5 + Math.random() * 2,
+          alpha: 0.08 + Math.random() * 0.12,
+        });
+      }
+
+      let mouseX = w / 2, mouseY = h / 2;
+      document.addEventListener('mousemove', (e) => { mouseX = e.clientX; mouseY = e.clientY; });
+      document.addEventListener('touchmove', (e) => {
+        const t = e.touches[0];
+        if (t) { mouseX = t.clientX; mouseY = t.clientY; }
+      }, { passive: true });
+
+      let animId;
+      function frame() {
+        ctx.clearRect(0, 0, w, h);
+
+        for (const o of orbs) {
+          o.x += o.vx + (mouseX - w / 2) * 0.0001;
+          o.y += o.vy + (mouseY - h / 2) * 0.0001;
+          if (o.x < -o.r) o.x = w + o.r;
+          if (o.x > w + o.r) o.x = -o.r;
+          if (o.y < -o.r) o.y = h + o.r;
+          if (o.y > h + o.r) o.y = -o.r;
+          const grad = ctx.createRadialGradient(o.x, o.y, 0, o.x, o.y, o.r);
+          grad.addColorStop(0, 'rgba(' + o.color + ',' + o.alpha + ')');
+          grad.addColorStop(1, 'rgba(' + o.color + ',0)');
+          ctx.fillStyle = grad;
+          ctx.fillRect(o.x - o.r, o.y - o.r, o.r * 2, o.r * 2);
+        }
+
+        for (const p of particles) {
+          p.x += p.vx; p.y += p.vy;
+          if (p.y < -10) { p.y = h + 10; p.x = Math.random() * w; }
+          if (p.x < -10) p.x = w + 10;
+          if (p.x > w + 10) p.x = -10;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(99,102,241,' + p.alpha + ')';
+          ctx.fill();
+        }
+
+        animId = requestAnimationFrame(frame);
+      }
+      frame();
+
+      window.addEventListener('beforeunload', () => {
+        if (animId) cancelAnimationFrame(animId);
+        window.removeEventListener('resize', onResize);
+        stopPassParticles();
       });
-    } catch (e) {
-      console.log('Fluid background:', e.message);
-    }
-
-    window.addEventListener('beforeunload', () => {
-      if (cleanup) cleanup();
-      stopPassParticles();
-    });
+    })();
   </script>
 
   <script>
