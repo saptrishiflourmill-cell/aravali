@@ -1,3 +1,16 @@
+if (!CanvasRenderingContext2D.prototype.roundRect) {
+  CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r) {
+    if (r > w / 2) r = w / 2;
+    if (r > h / 2) r = h / 2;
+    this.moveTo(x + r, y);
+    this.arcTo(x + w, y, x + w, y + h, r);
+    this.arcTo(x + w, y + h, x, y + h, r);
+    this.arcTo(x, y + h, x, y, r);
+    this.arcTo(x, y, x + w, y, r);
+    return this;
+  };
+}
+
 export async function createPass3D(container, visitorData) {
   const THREE = await import('https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js');
 
@@ -281,8 +294,8 @@ export async function createPass3D(container, visitorData) {
   scene.add(particles);
 
   // --- Physics ---
-  let angle = 0;
-  let velocity = 0;
+  let angle = 0.35;
+  let velocity = 0.8;
   const gravity = 12;
   const len = 2.0;
   const maxAngle = 0.9;
@@ -356,8 +369,9 @@ export async function createPass3D(container, visitorData) {
       angle = Math.asin(Math.max(-1, Math.min(1, card.position.x / len)));
       velocity = 0;
     } else {
-      const damping = 0.99;
-      const force = -gravity * Math.sin(angle) / len;
+      const damping = 0.97;
+      const idlePush = Math.sin(t * 0.0008) * 0.003;
+      const force = -gravity * Math.sin(angle) / len + idlePush;
       velocity += force * dt;
       velocity *= damping;
       angle += velocity * dt;
@@ -379,10 +393,8 @@ export async function createPass3D(container, visitorData) {
     glow.rotation.copy(card.rotation);
     glow.material.opacity = 0.04 + Math.sin(t * 0.001) * 0.02;
 
-    if (firstFrame || dragged || Math.abs(velocity) > 0.001 || !lanyardMesh) {
-      updateLanyard(card.position);
-      firstFrame = false;
-    }
+    updateLanyard(card.position);
+    firstFrame = false;
 
     hangDot.position.set(0, 3.8, 0);
     particles.rotation.y = t * 0.00015;

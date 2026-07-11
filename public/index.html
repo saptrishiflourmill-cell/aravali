@@ -703,11 +703,12 @@
               qrDataUrl: data.qrCodeUrl + '?t=' + Date.now(),
             }).then(handle => {
               window._pass3dCleanup = handle.cleanup;
-            }).catch(() => {
+            }).catch(e => {
+              console.error('Pass3D error:', e);
               passContainer.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:rgba(255,255,255,0.3);font-size:13px">Pass unavailable</div>';
             });
-          }).catch(() => {
-            passContainer.innerHTML = '';
+          }).catch(e => {
+            console.error('Pass3D import error:', e);
           });
         } catch (err) {
           showToast('Error: ' + err.message, 'error');
