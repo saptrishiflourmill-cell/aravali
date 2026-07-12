@@ -847,6 +847,8 @@
       document.getElementById('formCard').style.display = 'block';
       document.getElementById('successCard').style.display = 'none';
       document.getElementById('ticketForm').reset();
+      document.getElementById('purchaseBtn').disabled = false;
+      document.getElementById('btnText').textContent = 'Get Your Free Ticket';
       const today = new Date();
       const nextWeek = new Date(today);
       nextWeek.setDate(today.getDate() + 14);
