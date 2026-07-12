@@ -242,214 +242,6 @@
 
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* Checkout overlay */
-    .checkout-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.7);
-      backdrop-filter: blur(8px);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 1000;
-      padding: 20px;
-      animation: fadeIn 0.3s ease;
-    }
-
-    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-    .checkout-card {
-      background: #1a1a2e;
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 24px;
-      padding: 32px;
-      max-width: 440px;
-      width: 100%;
-      animation: slideUp 0.3s ease;
-      max-height: 90vh;
-      overflow-y: auto;
-    }
-
-    @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-
-    .checkout-card h2 {
-      color: #fff;
-      font-size: 20px;
-      font-weight: 700;
-      margin-bottom: 4px;
-    }
-
-    .checkout-card .ch-sub {
-      color: #64748b;
-      font-size: 14px;
-      margin-bottom: 20px;
-    }
-
-    .checkout-summary {
-      background: rgba(255,255,255,0.04);
-      border-radius: 14px;
-      padding: 16px;
-      margin-bottom: 20px;
-    }
-
-    .checkout-summary .cs-row {
-      display: flex;
-      justify-content: space-between;
-      padding: 8px 0;
-      border-bottom: 1px solid rgba(255,255,255,0.05);
-      font-size: 14px;
-    }
-
-    .checkout-summary .cs-row:last-child { border-bottom: none; border-top: 1px solid rgba(255,255,255,0.1); margin-top: 4px; padding-top: 12px; }
-    .checkout-summary .cs-row .cs-lbl { color: #94a3b8; }
-    .checkout-summary .cs-row .cs-val { color: #e2e8f0; font-weight: 500; }
-    .checkout-summary .cs-row:last-child .cs-lbl { color: #fff; font-weight: 600; }
-    .checkout-summary .cs-row:last-child .cs-val { color: #fff; font-weight: 700; font-size: 18px; }
-
-    /* Razorpay payment section */
-    .razorpay-container {
-      text-align: center;
-    }
-
-    .razorpay-container .rp-lock {
-      font-size: 48px;
-      margin-bottom: 8px;
-    }
-
-    .razorpay-container h3 {
-      color: #fff;
-      font-size: 18px;
-      font-weight: 700;
-      margin-bottom: 4px;
-    }
-
-    .razorpay-container p {
-      color: #64748b;
-      font-size: 13px;
-      margin-bottom: 16px;
-    }
-
-    .razorpay-container .upi-input-group {
-      margin-bottom: 12px;
-      text-align: left;
-    }
-
-    .razorpay-container .upi-input-group label {
-      display: block;
-      font-size: 12px;
-      font-weight: 600;
-      color: #94a3b8;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-bottom: 6px;
-    }
-
-    .razorpay-container .upi-input-group input {
-      width: 100%;
-      padding: 12px 16px;
-      background: rgba(255,255,255,0.06);
-      border: 1.5px solid rgba(255,255,255,0.1);
-      border-radius: 12px;
-      font-size: 15px;
-      font-family: inherit;
-      color: #ffffff;
-      outline: none;
-      transition: all 0.25s ease;
-    }
-
-    .razorpay-container .upi-input-group input:focus {
-      border-color: #6366f1;
-      background: rgba(255,255,255,0.08);
-      box-shadow: 0 0 0 3px rgba(99,102,241,0.15);
-    }
-
-    .razorpay-container .upi-input-group input::placeholder { color: #475569; }
-
-    .razorpay-container .rp-pay-btn {
-      width: 100%;
-      padding: 16px;
-      border: none;
-      border-radius: 14px;
-      font-size: 17px;
-      font-weight: 700;
-      font-family: inherit;
-      cursor: pointer;
-      background: linear-gradient(135deg, #6366f1, #8b5cf6);
-      color: #fff;
-      transition: all 0.3s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-    }
-
-    .razorpay-container .rp-pay-btn:hover { box-shadow: 0 8px 24px rgba(99,102,241,0.3); }
-    .razorpay-container .rp-pay-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-    .razorpay-container .rp-pay-btn.processing { background: linear-gradient(135deg, #f59e0b, #d97706); }
-
-    .razorpay-container .rp-methods {
-      display: flex;
-      justify-content: center;
-      gap: 16px;
-      margin-top: 12px;
-      font-size: 12px;
-      color: #475569;
-    }
-
-    .razorpay-container .rp-methods span {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .btn-cancel-pay {
-      width: 100%;
-      padding: 12px;
-      border: none;
-      border-radius: 12px;
-      font-size: 14px;
-      font-family: inherit;
-      cursor: pointer;
-      background: transparent;
-      color: #64748b;
-      margin-top: 8px;
-    }
-
-    .btn-cancel-pay:hover { color: #94a3b8; }
-
-    .payment-success {
-      text-align: center;
-      padding: 30px 0;
-    }
-
-    .payment-success .ps-icon {
-      font-size: 64px;
-      margin-bottom: 12px;
-    }
-
-    .payment-success h3 {
-      color: #34d399;
-      font-size: 22px;
-      font-weight: 700;
-      margin-bottom: 4px;
-    }
-
-    .payment-success p {
-      color: #64748b;
-      font-size: 14px;
-    }
-
-    .payment-success .transaction-id {
-      font-size: 12px;
-      color: #475569;
-      font-family: monospace;
-      margin-top: 8px;
-      padding: 8px 16px;
-      background: rgba(255,255,255,0.04);
-      border-radius: 8px;
-      display: inline-block;
-    }
-
     .toast {
       position: fixed;
       bottom: 24px;
@@ -723,8 +515,6 @@
       .auth-section .auth-input { width: 100%; }
       .qr-glow-box img { max-width: 160px; }
       .qr-glow-box { padding: 18px; }
-      .checkout-card { padding: 20px; border-radius: 18px; }
-      .checkout-card h2 { font-size: 18px; }
       .price-display { padding: 12px 16px; }
       .price-display .pd-value { font-size: 24px; }
       .p-actions .p-btn { padding: 11px; font-size: 13px; min-width: calc(50% - 4px); }
@@ -800,12 +590,12 @@
 
           <div class="price-display">
             <span class="pd-label">Ticket Price</span>
-            <span class="pd-value">&#8377; 500 <span>only</span></span>
+            <span class="pd-value">FREE</span>
           </div>
 
           <button type="submit" class="btn-purchase" id="purchaseBtn">
             <span class="btn-content">
-              <span id="btnText">Continue to Pay &#8377;500</span>
+              <span id="btnText">&#127915; Get Your Free Ticket</span>
             </span>
           </button>
         </form>
@@ -835,7 +625,7 @@
           </div>
           <div class="p-row">
             <span class="p-label">Amount Paid</span>
-            <span class="p-value" id="passAmount">&#8377;500</span>
+            <span class="p-value" id="passAmount">Free</span>
           </div>
           <div class="p-row">
             <span class="p-label">Event Date</span>
@@ -870,77 +660,7 @@
     <div class="footer-text">&#127928; SUMMER MUSIC FEST &#8226; EVENT TICKET SYSTEM</div>
   </div>
 
-  <!-- Payment Checkout Overlay -->
-  <div id="checkoutOverlay" class="checkout-overlay" style="display:none">
-    <div class="checkout-card">
-      <div id="checkoutStep1">
-        <h2>Complete Payment</h2>
-        <p class="ch-sub">Secured by TicketPay &middot; &#8377;500</p>
-
-        <div class="checkout-summary">
-          <div class="cs-row">
-            <span class="cs-lbl">Ticket</span>
-            <span class="cs-val" id="chName">-</span>
-          </div>
-          <div class="cs-row">
-            <span class="cs-lbl">Event Date</span>
-            <span class="cs-val" id="chDate">-</span>
-          </div>
-          <div class="cs-row">
-            <span class="cs-lbl">Amount</span>
-            <span class="cs-val">&#8377;500</span>
-          </div>
-          <div class="cs-row">
-            <span class="cs-lbl">Total</span>
-            <span class="cs-val">&#8377;500</span>
-          </div>
-        </div>
-
-        <div class="razorpay-container">
-          <div class="rp-lock">&#128179;</div>
-          <h3>Pay with UPI</h3>
-          <p>Enter your UPI ID to pay via Google Pay, PhonePe, Paytm</p>
-
-          <div class="upi-input-group">
-            <label>Your UPI ID</label>
-            <input type="text" id="upiId" placeholder="e.g. name@paytm / name@okhdfcbank / name@okaxis" value="success@razorpay">
-          </div>
-
-          <button class="rp-pay-btn" id="rzpPayBtn" onclick="startRazorpayPayment()">
-            &#10003; Pay &#8377;500 via UPI
-          </button>
-
-          <div class="rp-methods">
-            <span>&#128179; UPI Collect</span>
-            <span>&#128179; Card</span>
-            <span>&#127760; NetBanking</span>
-          </div>
-        </div>
-
-        <button class="btn-pay" id="payBtn" onclick="validateAndPay()">
-          &#128179; Pay &#8377;500 via UPI
-        </button>
-        <button class="btn-cancel-pay" onclick="closeCheckout()">Cancel</button>
-      </div>
-
-      <div id="checkoutStep2" style="display:none">
-        <div class="payment-success">
-          <div class="ps-icon">&#9989;</div>
-          <h3>Payment Successful!</h3>
-          <p>Your payment of &#8377;500 has been processed.</p>
-          <div class="transaction-id" id="transactionId">TXN-XXXXXXXX</div>
-          <div style="margin-top:20px">
-            <div class="spinner" style="margin:0 auto"></div>
-            <p style="color:#64748b;font-size:13px;margin-top:12px">Generating your entry pass...</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
   <script>
-    let pendingFormData = null;
     let visitorToken = localStorage.getItem('visitorToken');
     let visitorData = null;
 
@@ -1067,155 +787,48 @@
       }
     });
 
-    document.getElementById('ticketForm').addEventListener('submit', function(e) {
+    document.getElementById('ticketForm').addEventListener('submit', async function(e) {
       e.preventDefault();
-      pendingFormData = {
-        fullName: document.getElementById('fullName').value,
-        email: document.getElementById('email').value,
-        phone: document.getElementById('phone').value,
-        eventDate: document.getElementById('eventDate').value
-      };
-      document.getElementById('chName').textContent = pendingFormData.fullName;
-      document.getElementById('chDate').textContent = pendingFormData.eventDate;
-      document.getElementById('checkoutOverlay').style.display = 'flex';
-    });
-
-    function closeCheckout() {
-      document.getElementById('checkoutOverlay').style.display = 'none';
-      document.getElementById('checkoutStep1').style.display = 'block';
-      document.getElementById('checkoutStep2').style.display = 'none';
-      const btn = document.getElementById('rzpPayBtn');
-      btn.disabled = false;
-      btn.innerHTML = '&#10003; Pay &#8377;500 via UPI';
-      btn.classList.remove('processing');
-    }
-
-    async function startRazorpayPayment() {
-      const btn = document.getElementById('rzpPayBtn');
+      const btn = document.getElementById('purchaseBtn');
       btn.disabled = true;
-      btn.innerHTML = '<span class="spinner"></span> Creating order...';
-      btn.classList.add('processing');
+      btn.querySelector('#btnText').textContent = 'Creating...';
 
       try {
-        const body = new URLSearchParams();
-        body.append('fullName', pendingFormData.fullName);
-        body.append('email', pendingFormData.email);
-        body.append('phone', pendingFormData.phone);
-        body.append('eventDate', pendingFormData.eventDate);
-
-        const res = await fetch('/api/payments/create-order', {
+        const res = await fetch('/api/tickets/purchase', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          body: body.toString()
+          headers: { 'Content-Type': 'application/json', ...getVisitorHeaders() },
+          body: JSON.stringify({
+            fullName: document.getElementById('fullName').value,
+            email: document.getElementById('email').value,
+            phone: document.getElementById('phone').value,
+            eventDate: document.getElementById('eventDate').value
+          })
         });
 
         const data = await res.json();
         if (!res.ok) {
-          let msg = data.error || 'Failed to create order';
-          if (data.setupRequired) {
-            msg = 'Razorpay not configured. Add RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET in your .env file.';
-          }
-          showToast(msg, 'error');
+          showToast(data.error || 'Purchase failed', 'error');
           btn.disabled = false;
-          btn.innerHTML = '&#10003; Pay &#8377;500 via UPI';
-          btn.classList.remove('processing');
+          btn.querySelector('#btnText').textContent = 'Get Your Free Ticket';
           return;
         }
 
-        const upiId = document.getElementById('upiId').value.trim() || 'success@razorpay';
-
-        const options = {
-          key: data.keyId,
-          amount: data.amount,
-          currency: data.currency,
-          name: 'Summer Music Fest',
-          description: 'Event Ticket - ' + data.fullName,
-          order_id: data.orderId,
-          prefill: {
-            name: data.fullName,
-            email: data.email,
-            contact: data.phone,
-            method: 'upi'
-          },
-          theme: { color: '#6366f1' },
-          upi: {
-            flow: 'collect',
-            vpa: upiId
-          },
-          handler: async function(response) {
-            btn.innerHTML = '<span class="spinner"></span> Verifying...';
-            await verifyPayment(response, data);
-          },
-          modal: {
-            ondismiss: function() {
-              btn.disabled = false;
-              btn.innerHTML = '&#10003; Pay &#8377;500 via UPI';
-              btn.classList.remove('processing');
-            }
-          }
-        };
-
-        const rzp = new Razorpay(options);
-        rzp.open();
-      } catch (err) {
-        showToast('Error: ' + err.message, 'error');
-        btn.disabled = false;
-        btn.innerHTML = '&#10003; Pay &#8377;500 via UPI';
-        btn.classList.remove('processing');
-      }
-    }
-
-    async function verifyPayment(rzpResponse, orderData) {
-      try {
-        const body = new URLSearchParams();
-        body.append('razorpay_order_id', rzpResponse.razorpay_order_id);
-        body.append('razorpay_payment_id', rzpResponse.razorpay_payment_id);
-        body.append('razorpay_signature', rzpResponse.razorpay_signature);
-        body.append('fullName', orderData.fullName);
-        body.append('email', orderData.email);
-        body.append('phone', orderData.phone);
-        body.append('eventDate', orderData.eventDate);
-        if (visitorToken) body.append('visitorToken', visitorToken);
-
-        const res = await fetch('/api/payments/verify-payment', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          body: body.toString()
-        });
-
-        const data = await res.json();
-
-        if (!res.ok || !data.success) {
-          showToast(data.error || 'Payment verification failed', 'error');
-          closeCheckout();
-          return;
-        }
-
-        document.getElementById('transactionId').textContent = data.paymentId;
-
-        document.getElementById('checkoutStep1').style.display = 'none';
-        document.getElementById('checkoutStep2').style.display = 'block';
-
-        await new Promise(r => setTimeout(r, 800));
-
-        closeCheckout();
         document.getElementById('formCard').style.display = 'none';
         document.getElementById('successCard').style.display = 'block';
         document.getElementById('successTicketId').textContent = data.ticket.ticketId;
         document.getElementById('qrCodeImg').src = data.qrCodeUrl + '?t=' + Date.now();
         window.lastTicketData = data;
-
         document.getElementById('passName').textContent = data.ticket.fullName;
         document.getElementById('passEmail').textContent = data.ticket.email;
         document.getElementById('passDate').textContent = data.ticket.eventDate;
-
         if (visitorToken) loadMyTickets();
-        showToast('Payment successful! Ticket purchased.', 'success');
+        showToast('Ticket purchased successfully!', 'success');
       } catch (err) {
         showToast('Error: ' + err.message, 'error');
-        closeCheckout();
+        btn.disabled = false;
+        btn.querySelector('#btnText').textContent = 'Get Your Free Ticket';
       }
-    }
+    });
 
     function downloadQR() {
       if (window.lastTicketData) {
@@ -1250,10 +863,6 @@
       const nextWeek = new Date(today);
       nextWeek.setDate(today.getDate() + 14);
       document.getElementById('eventDate').value = nextWeek.toISOString().split('T')[0];
-      const payBtn = document.getElementById('payBtn');
-      payBtn.disabled = false;
-      payBtn.innerHTML = '&#128179; Pay &#8377;500 via UPI';
-      payBtn.classList.remove('processing');
     }
 
     function showToast(msg, type) {
