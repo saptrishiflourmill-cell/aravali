@@ -5,8 +5,10 @@ const http = require('http');
 const https = require('https');
 const cors = require('cors');
 const helmet = require('helmet');
+require('dotenv').config();
 const { initDb } = require('./database/db');
-const visitorRoutes = require('./routes/visitors');
+const ticketRoutes = require('./routes/tickets');
+const paymentRoutes = require('./routes/payments');
 const authRoutes = require('./routes/auth');
 
 const app = express();
@@ -26,15 +28,22 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/uploads', express.static(path.join(DATA_DIR, 'uploads')));
 app.use('/qrcodes', express.static(path.join(DATA_DIR, 'qrcodes')));
 
-app.use('/api/visitors', visitorRoutes);
+app.use('/api/tickets', ticketRoutes);
+app.use('/api/payments', paymentRoutes);
 app.use('/api/auth', authRoutes);
 
-app.get('/visitor/:visitorId', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'visitor.html'));
+app.get('/ticket/:ticketId', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'pass.html'));
 });
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
+app.get('/api/config', (req, res) => {
+  res.json({
+    googleClientId: process.env.GOOGLE_CLIENT_ID || ''
+  });
 });
 
 app.use((req, res) => {

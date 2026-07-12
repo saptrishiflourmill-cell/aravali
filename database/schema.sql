@@ -1,21 +1,27 @@
+CREATE TABLE IF NOT EXISTS tickets (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  ticketId TEXT UNIQUE NOT NULL,
+  fullName TEXT NOT NULL,
+  email TEXT NOT NULL,
+  phone TEXT NOT NULL,
+  ticketType TEXT DEFAULT 'General',
+  eventDate TEXT NOT NULL,
+  qrToken TEXT UNIQUE NOT NULL,
+  status TEXT DEFAULT 'Active' CHECK(status IN ('Active','Used','Cancelled')),
+  usedAt DATETIME,
+  purchaseDate DATETIME DEFAULT CURRENT_TIMESTAMP,
+  createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+  visitorId INTEGER REFERENCES visitors(id)
+);
+
 CREATE TABLE IF NOT EXISTS visitors (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  visitorId TEXT UNIQUE NOT NULL,
-  fullName TEXT NOT NULL,
-  phone TEXT NOT NULL,
-  email TEXT DEFAULT '',
-  address TEXT NOT NULL,
-  company TEXT NOT NULL,
-  personToMeet TEXT NOT NULL,
-  purpose TEXT NOT NULL,
-  entryDate TEXT NOT NULL,
-  entryTime TEXT NOT NULL,
-  exitTime TEXT DEFAULT '',
-  vehicleNumber TEXT DEFAULT '',
-  photo TEXT DEFAULT '',
-  status TEXT DEFAULT 'Active' CHECK(status IN ('Active','Checked Out')),
-  createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
-  updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP
+  googleId TEXT UNIQUE NOT NULL,
+  email TEXT NOT NULL,
+  name TEXT NOT NULL,
+  token TEXT,
+  createdAt DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS users (

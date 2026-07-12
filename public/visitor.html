@@ -3,200 +3,155 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Visitor Details - Visitor Management System</title>
+  <title>Ticket Info - Event Ticket System</title>
   <link rel="stylesheet" href="/css/style.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #0f0f1a;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      padding: 20px;
+    }
+    .ticket-page { width: 100%; max-width: 480px; }
+    .loading { text-align: center; padding: 60px 20px; color: #64748b; }
+    .loading .spinner {
+      width: 32px; height: 32px; border: 3px solid rgba(139,92,246,0.2);
+      border-top-color: #8b5cf6; border-radius: 50%; animation: spin 0.6s linear infinite;
+      margin: 0 auto 16px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .error-state { text-align: center; padding: 60px 20px; }
+    .error-state h3 { color: #fff; font-size: 20px; margin-bottom: 8px; }
+    .error-state p { color: #64748b; font-size: 14px; margin-bottom: 20px; }
+    .btn-primary {
+      padding: 12px 24px; background: linear-gradient(135deg, #8b5cf6, #ec4899);
+      color: #fff; border: none; border-radius: 12px; font-size: 14px;
+      font-weight: 600; font-family: inherit; cursor: pointer; text-decoration: none; display: inline-block;
+    }
+
+    .ticket-card {
+      background: #ffffff; border-radius: 24px; overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    }
+    .ticket-card .accent { height: 6px; background: linear-gradient(90deg, #8b5cf6, #ec4899); }
+    .ticket-card .body { padding: 24px; }
+    .ticket-card h1 { font-size: 22px; font-weight: 700; color: #1a1a2e; margin-bottom: 4px; }
+    .ticket-card .subtitle { color: #64748b; font-size: 14px; margin-bottom: 16px; }
+    .ticket-card .info-grid { display: grid; gap: 12px; }
+    .ticket-card .info-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f1f5f9; font-size: 14px; }
+    .ticket-card .info-row:last-child { border: none; }
+    .ticket-card .info-row .lbl { color: #64748b; }
+    .ticket-card .info-row .val { color: #1a1a2e; font-weight: 600; }
+    .status-active { color: #10b981; }
+    .status-used { color: #f59e0b; }
+    .ticket-card .footer {
+      padding: 16px 24px; background: #1a1a2e;
+      color: rgba(255,255,255,0.5); font-size: 11px; text-align: center;
+    }
+  </style>
 </head>
 <body>
-  <div class="layout">
-    <aside class="sidebar" id="sidebar">
-      <div class="sidebar-header">
-        <div class="logo">&#9662;</div>
-        <div>
-          <h2>VisitManager</h2>
-          <p>Visitor Management System</p>
-        </div>
-      </div>
-      <nav class="sidebar-nav">
-        <a href="/"><span class="icon">&#9998;</span> Register Visitor</a>
-        <a href="/scanner.html"><span class="icon">&#128247;</span> Scan QR</a>
-      </nav>
-    </aside>
+  <div class="ticket-page">
+    <div id="loadingState" class="loading">
+      <div class="spinner"></div>
+      <p>Loading ticket info...</p>
+    </div>
 
-    <main class="main-content">
-      <div class="top-bar">
-        <div style="display:flex;align-items:center;gap:12px">
-          <button class="hamburger" onclick="toggleSidebar()">&#9776;</button>
-          <h1>Visitor Details</h1>
-        </div>
-        <div class="flex gap-2">
-          <button class="btn btn-outline" onclick="window.print()">Print</button>
-          <a href="/scanner.html" class="btn btn-outline">Scan QR</a>
-        </div>
-      </div>
+    <div id="errorState" class="error-state" style="display:none">
+      <div style="font-size:48px;margin-bottom:12px">&#128533;</div>
+      <h3>Ticket Not Found</h3>
+      <p id="errorMsg">This ticket does not exist.</p>
+      <a href="/" class="btn-primary">Get Tickets</a>
+    </div>
 
-      <div id="loadingState" class="loading"><div class="spinner"></div><p>Loading visitor details...</p></div>
-      <div id="errorState" class="empty-state" style="display:none">
-        <div class="empty-icon">&#128533;</div>
-        <h3>Visitor Not Found</h3>
-        <p id="errorMsg">The visitor ID you are looking for does not exist.</p>
-        <div style="margin-top:16px">
-          <a href="/" class="btn btn-primary">Register Visitor</a>
-          <a href="/scanner.html" class="btn btn-outline">Scan Again</a>
-        </div>
-      </div>
-
-      <div id="visitorContent" style="display:none">
-        <div class="content-card">
-          <div class="card-header">
-            <h2 id="detailVisitorId"></h2>
-            <span id="detailStatusBadge"></span>
+    <div id="ticketContent" style="display:none">
+      <div class="ticket-card">
+        <div class="accent"></div>
+        <div class="body">
+          <h1>&#127881; Event Ticket</h1>
+          <p class="subtitle" id="ticketIdDisplay">-</p>
+          <div class="info-grid">
+            <div class="info-row"><span class="lbl">Attendee</span><span class="val" id="detailName"></span></div>
+            <div class="info-row"><span class="lbl">Email</span><span class="val" id="detailEmail"></span></div>
+            <div class="info-row"><span class="lbl">Ticket Type</span><span class="val" id="detailType"></span></div>
+            <div class="info-row"><span class="lbl">Event Date</span><span class="val" id="detailDate"></span></div>
+            <div class="info-row"><span class="lbl">Status</span><span class="val" id="detailStatus"></span></div>
           </div>
-          <div class="card-body">
-            <div class="visitor-detail">
-              <div class="photo-section">
-                <div id="detailPhotoContainer"></div>
-                <div style="margin-top:16px">
-                  <a id="passLink" href="#" class="btn btn-primary" target="_blank">View Visitor Pass</a>
-                </div>
-              </div>
-              <div>
-                <div class="detail-grid">
-                  <div class="detail-item">
-                    <label>Full Name</label>
-                    <p id="detailFullName"></p>
-                  </div>
-                  <div class="detail-item">
-                    <label>Phone Number</label>
-                    <p id="detailPhone"></p>
-                  </div>
-                  <div class="detail-item">
-                    <label>Email</label>
-                    <p id="detailEmail"></p>
-                  </div>
-                  <div class="detail-item">
-                    <label>Address</label>
-                    <p id="detailAddress"></p>
-                  </div>
-                  <div class="detail-item">
-                    <label>Company / Organization</label>
-                    <p id="detailCompany"></p>
-                  </div>
-                  <div class="detail-item">
-                    <label>Person to Meet</label>
-                    <p id="detailPersonToMeet"></p>
-                  </div>
-                  <div class="detail-item">
-                    <label>Purpose of Visit</label>
-                    <p id="detailPurpose"></p>
-                  </div>
-                  <div class="detail-item">
-                    <label>Entry Date</label>
-                    <p id="detailEntryDate"></p>
-                  </div>
-                  <div class="detail-item">
-                    <label>Entry Time</label>
-                    <p id="detailEntryTime"></p>
-                  </div>
-                  <div class="detail-item">
-                    <label>Exit Time</label>
-                    <p id="detailExitTime"></p>
-                  </div>
-                  <div class="detail-item">
-                    <label>Vehicle Number</label>
-                    <p id="detailVehicleNumber"></p>
-                  </div>
-                  <div class="detail-item">
-                    <label>Status</label>
-                    <p id="detailStatus"></p>
-                  </div>
-                </div>
-              </div>
-            </div>
+          <div style="margin-top:20px">
+            <a href="/" class="btn-primary" style="width:100%;text-align:center">Get Your Ticket</a>
           </div>
         </div>
+        <div class="footer">
+          Summer Music Fest &bull; Non-transferable
+        </div>
       </div>
-    </main>
+    </div>
   </div>
 
   <script>
-    function toggleSidebar() {
-      document.getElementById('sidebar').classList.toggle('open');
-    }
-
     document.addEventListener('DOMContentLoaded', async function() {
       const params = new URLSearchParams(window.location.search);
-      let visitorId = params.get('id');
+      let ticketId = params.get('id');
 
-      if (!visitorId) {
+      if (!ticketId) {
         const pathParts = window.location.pathname.split('/visitor/');
         if (pathParts.length > 1) {
-          visitorId = pathParts[1].split('?')[0];
+          ticketId = pathParts[1].split('?')[0];
         }
       }
 
-      if (!visitorId) {
-        showError('No visitor ID provided.');
+      if (!ticketId) {
+        showError('No ticket ID provided.');
         return;
       }
 
-      await loadVisitor(visitorId);
+      await loadTicket(ticketId);
     });
 
-    async function loadVisitor(id) {
+    async function loadTicket(id) {
       document.getElementById('loadingState').style.display = 'block';
-      document.getElementById('visitorContent').style.display = 'none';
+      document.getElementById('ticketContent').style.display = 'none';
       document.getElementById('errorState').style.display = 'none';
 
       try {
-        const res = await fetch('/api/visitors/' + encodeURIComponent(id));
+        const res = await fetch('/api/tickets/' + encodeURIComponent(id));
         if (!res.ok) {
-          showError('Visitor not found. The visitor ID "' + id + '" does not exist in the system.');
+          showError('Ticket not found: ' + id);
           return;
         }
-
-        const v = await res.json();
-        renderVisitor(v);
+        const t = await res.json();
+        renderTicket(t);
       } catch (err) {
-        showError('Error loading visitor: ' + err.message);
+        showError('Error: ' + err.message);
       }
     }
 
-    function renderVisitor(v) {
+    function renderTicket(t) {
       document.getElementById('loadingState').style.display = 'none';
-      document.getElementById('visitorContent').style.display = 'block';
+      document.getElementById('ticketContent').style.display = 'block';
 
-      document.getElementById('detailVisitorId').textContent = 'Visitor: ' + v.visitorId;
+      document.getElementById('ticketIdDisplay').textContent = 'ID: ' + t.ticketId;
+      document.getElementById('detailName').textContent = t.fullName;
+      document.getElementById('detailEmail').textContent = t.email;
+      document.getElementById('detailType').textContent = t.ticketType;
+      document.getElementById('detailDate').textContent = t.eventDate;
 
-      const statusBadge = v.status === 'Active'
-        ? '<span class="badge badge-active" style="font-size:14px;padding:6px 16px">Active</span>'
-        : '<span class="badge badge-checkout" style="font-size:14px;padding:6px 16px">Checked Out</span>';
-      document.getElementById('detailStatusBadge').innerHTML = statusBadge;
-
-      if (v.photo) {
-        document.getElementById('detailPhotoContainer').innerHTML = '<img src="/uploads/' + v.photo + '?t=' + Date.now() + '" alt="Visitor Photo">';
+      if (t.status === 'Active') {
+        document.getElementById('detailStatus').innerHTML = '<span class="status-active">Active (Not yet used)</span>';
+      } else if (t.status === 'Used') {
+        document.getElementById('detailStatus').innerHTML = '<span class="status-used">Used at ' + (t.usedAt || 'unknown') + '</span>';
       } else {
-        document.getElementById('detailPhotoContainer').innerHTML = '<div class="no-photo">' + v.fullName.charAt(0).toUpperCase() + '</div>';
+        document.getElementById('detailStatus').textContent = t.status;
       }
-
-      document.getElementById('detailFullName').textContent = v.fullName;
-      document.getElementById('detailPhone').textContent = v.phone;
-      document.getElementById('detailEmail').textContent = v.email || 'Not provided';
-      document.getElementById('detailAddress').textContent = v.address;
-      document.getElementById('detailCompany').textContent = v.company;
-      document.getElementById('detailPersonToMeet').textContent = v.personToMeet;
-      document.getElementById('detailPurpose').textContent = v.purpose;
-      document.getElementById('detailEntryDate').textContent = v.entryDate;
-      document.getElementById('detailEntryTime').textContent = v.entryTime;
-      document.getElementById('detailExitTime').textContent = v.exitTime || 'Not checked out';
-      document.getElementById('detailVehicleNumber').textContent = v.vehicleNumber || 'Not provided';
-      document.getElementById('detailStatus').innerHTML = statusBadge;
-
-      document.getElementById('passLink').href = '/pass.html?id=' + v.visitorId;
     }
 
     function showError(msg) {
       document.getElementById('loadingState').style.display = 'none';
-      document.getElementById('visitorContent').style.display = 'none';
+      document.getElementById('ticketContent').style.display = 'none';
       document.getElementById('errorState').style.display = 'block';
       document.getElementById('errorMsg').textContent = msg;
     }

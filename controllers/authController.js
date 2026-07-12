@@ -1,5 +1,9 @@
 const crypto = require('crypto');
 const { getDb, saveDb } = require('../database/db');
+const { OAuth2Client } = require('google-auth-library');
+const Visitor = require('../models/Visitor');
+
+const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 function hashPassword(password) {
   return crypto.createHash('sha256').update(password).digest('hex');
@@ -64,4 +68,41 @@ exports.check = (req, res) => {
   } else {
     res.json({ authenticated: false });
   }
+};
+
+exports.googleSignIn = async (req, res) => {
+  try {
+    const { credential } = req.body;
+    if (!credential) {
+      return res.status(400).json({ error: 'Google credential required' });
+    }
+
+    const ticket = await googleClient.verifyIdToken({
+      idToken: credential,
+      audience: process.env.GOOGLE_CLIENT_ID
+    });
+    const payload = ticket.getPayload();
+    const { sub: googleId, email, name } = payload;
+
+    let visitor = Visitor.findByGoogleId(googleId);
+    if (!visitor) {
+      visitor = Visitor.create({ googleId, email, name });
+    }
+
+    const token = Visitor.generateToken();
+    visitor = Visitor.updateToken(visitor.id, token);
+
+    res.json({
+      success: true,
+      token,
+      visitor: { id: visitor.id, email: visitor.email, name: visitor.name }
+    });
+  } catch (err) {
+    console.error('Google sign-in error:', err);
+    res.status(401).json({ error: 'Invalid Google credential' });
+  }
+};
+
+exports.getVisitor = (req, res) => {
+  res.json({ visitor: { id: req.visitor.id, email: req.visitor.email, name: req.visitor.name } });
 };

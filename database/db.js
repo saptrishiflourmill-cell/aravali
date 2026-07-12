@@ -28,6 +28,14 @@ async function initDb() {
   const schema = fs.readFileSync(path.join(__dirname, 'schema.sql'), 'utf8');
   db.run(schema);
 
+  const pragma = db.prepare("PRAGMA table_info(tickets)");
+  const cols = [];
+  while (pragma.step()) { cols.push(pragma.getAsObject()); }
+  pragma.free();
+  if (!cols.find(c => c.name === 'visitorId')) {
+    try { db.run("ALTER TABLE tickets ADD COLUMN visitorId INTEGER REFERENCES visitors(id)"); } catch (e) {}
+  }
+
   const stmt = db.prepare('SELECT COUNT(*) as count FROM users');
   const exists = stmt.step() ? stmt.getAsObject() : { count: 0 };
   stmt.free();

@@ -3,151 +3,245 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Visitor Pass - Visitor Management System</title>
+  <title>Event Pass - Summer Music Fest</title>
   <link rel="stylesheet" href="/css/style.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #0f0f1a;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      padding: 20px;
+    }
+    .pass-page { width: 100%; max-width: 480px; }
+    .pass-header-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+    .pass-header-bar h1 { color: #fff; font-size: 22px; font-weight: 700; }
+    .pass-header-bar .actions { display: flex; gap: 8px; }
+    .pass-header-bar .actions button, .pass-header-bar .actions a {
+      padding: 8px 16px; border-radius: 12px; font-size: 13px; font-weight: 600;
+      font-family: inherit; cursor: pointer; border: none; text-decoration: none;
+    }
+    .btn-primary {
+      background: #8b5cf6; color: #fff; display: inline-flex; align-items: center; gap: 4px;
+    }
+    .btn-outline {
+      background: rgba(255,255,255,0.06); color: #94a3b8; border: 1px solid rgba(255,255,255,0.1);
+      display: inline-flex; align-items: center; gap: 4px;
+    }
+    .loading { text-align: center; padding: 60px 20px; color: #94a3b8; }
+    .loading .spinner {
+      width: 32px; height: 32px; border: 3px solid rgba(139,92,246,0.2);
+      border-top-color: #8b5cf6; border-radius: 50%; animation: spin 0.6s linear infinite;
+      margin: 0 auto 16px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .error-state { text-align: center; padding: 60px 20px; }
+    .error-state h3 { color: #fff; font-size: 20px; margin-bottom: 8px; }
+    .error-state p { color: #64748b; font-size: 14px; margin-bottom: 20px; }
+
+    .pass-card {
+      background: #ffffff;
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    }
+    .pass-card .pass-accent {
+      height: 6px;
+      background: linear-gradient(90deg, #8b5cf6, #ec4899);
+    }
+    .pass-card .pass-header {
+      padding: 24px 24px 16px;
+      text-align: center;
+    }
+    .pass-card .pass-header .event-badge {
+      font-size: 11px; font-weight: 600; color: #8b5cf6; text-transform: uppercase;
+      letter-spacing: 1.5px; margin-bottom: 4px;
+    }
+    .pass-card .pass-header h2 {
+      font-size: 18px; font-weight: 700; color: #1a1a2e;
+    }
+    .pass-card .pass-header .ticket-id {
+      font-size: 12px; color: #94a3b8; font-family: monospace; margin-top: 4px;
+    }
+    .pass-card .pass-body { padding: 0 24px 24px; }
+    .pass-card .pass-qr {
+      text-align: center;
+      background: #f8f9ff;
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+    .pass-card .pass-qr img { max-width: 200px; width: 100%; height: auto; }
+    .pass-card .pass-info { margin-bottom: 16px; }
+    .pass-card .pass-info .info-row {
+      display: flex; justify-content: space-between; padding: 10px 0;
+      border-bottom: 1px solid #f1f5f9; font-size: 14px;
+    }
+    .pass-card .pass-info .info-row:last-child { border-bottom: none; }
+    .pass-card .pass-info .info-row .label { color: #64748b; }
+    .pass-card .pass-info .info-row .value { color: #1a1a2e; font-weight: 600; }
+    .pass-card .pass-footer {
+      padding: 16px 24px;
+      background: #1a1a2e;
+      color: rgba(255,255,255,0.6);
+      font-size: 11px;
+      text-align: center;
+      letter-spacing: 0.5px;
+    }
+    .pass-card .pass-actions {
+      display: flex; gap: 8px; padding: 0 24px 24px;
+    }
+    .pass-card .pass-actions .btn {
+      flex: 1; padding: 12px; border-radius: 12px; font-size: 14px; font-weight: 600;
+      font-family: inherit; cursor: pointer; border: none; text-align: center;
+    }
+    .status-active { color: #10b981; }
+    .status-used { color: #f59e0b; }
+  </style>
 </head>
 <body>
-  <div class="layout">
-    <aside class="sidebar" id="sidebar">
-      <div class="sidebar-header">
-        <div class="logo">&#9662;</div>
-        <div>
-          <h2>VisitManager</h2>
-          <p>Visitor Management System</p>
-        </div>
+  <div class="pass-page">
+    <div class="pass-header-bar no-print">
+      <h1>&#127881; Event Pass</h1>
+      <div class="actions">
+        <button class="btn-outline" onclick="downloadQR()">Download QR</button>
+        <button class="btn-primary" onclick="window.print()">Print</button>
       </div>
-      <nav class="sidebar-nav">
-        <a href="/"><span class="icon">&#9998;</span> Register Visitor</a>
-        <a href="/scanner.html"><span class="icon">&#128247;</span> Scan QR</a>
-      </nav>
-    </aside>
+    </div>
 
-    <main class="main-content">
-      <div class="top-bar no-print">
-        <div style="display:flex;align-items:center;gap:12px">
-          <button class="hamburger" onclick="toggleSidebar()">&#9776;</button>
-          <h1>Visitor Pass</h1>
+    <div id="loadingState" class="loading">
+      <div class="spinner"></div>
+      <p>Loading your pass...</p>
+    </div>
+
+    <div id="errorState" class="error-state" style="display:none">
+      <div style="font-size:48px;margin-bottom:12px">&#128533;</div>
+      <h3>Pass Not Found</h3>
+      <p id="errorMsg">The ticket ID could not be found.</p>
+      <a href="/" class="btn-primary" style="padding:12px 24px;border-radius:12px;font-size:14px;font-weight:600;text-decoration:none;display:inline-block">Buy a Ticket</a>
+    </div>
+
+    <div id="passContent" style="display:none">
+      <div class="pass-card">
+        <div class="pass-accent"></div>
+        <div class="pass-header">
+          <div class="event-badge">Summer Music Fest</div>
+          <h2>Entry Pass</h2>
+          <div class="ticket-id" id="ticketIdDisplay">-</div>
         </div>
-        <div class="flex gap-2">
-          <button class="btn btn-primary" onclick="window.print()">Print Badge</button>
-          <button class="btn btn-outline" onclick="downloadPassQR()">Download QR</button>
-          <a href="/" class="btn btn-outline">Register</a>
-        </div>
-      </div>
-
-      <div id="loadingState" class="loading"><div class="spinner"></div><p>Loading visitor pass...</p></div>
-      <div id="errorState" class="empty-state" style="display:none">
-        <div class="empty-icon">&#128533;</div>
-        <h3>Visitor Not Found</h3>
-        <p id="errorMsg">The visitor ID does not exist.</p>
-        <div style="margin-top:16px"><a href="/" class="btn btn-primary">Register Visitor</a></div>
-      </div>
-
-      <div id="passContent" style="display:none">
-        <div class="pass-container">
-          <div class="pass-card" id="passCard">
-            <div class="pass-header">
-              <div class="company-logo">&#127970;</div>
-              <h2>VisitManager</h2>
-              <p>Visitor Management System</p>
+        <div class="pass-body">
+          <div class="pass-qr">
+            <img id="passQRImg" alt="QR Code">
+          </div>
+          <div class="pass-info">
+            <div class="info-row">
+              <span class="label">Attendee</span>
+              <span class="value" id="passName">-</span>
             </div>
-            <div class="pass-body">
-              <div id="passPhotoContainer"></div>
-              <h3 id="passName"></h3>
-              <div class="pass-id" id="passVisitorId"></div>
-
-              <div class="pass-info">
-                <div class="info-row"><span>Person to Meet</span><span id="passPersonToMeet"></span></div>
-                <div class="info-row"><span>Company</span><span id="passCompany"></span></div>
-                <div class="info-row"><span>Entry Time</span><span id="passEntryTime"></span></div>
-                <div class="info-row"><span>Purpose</span><span id="passPurpose"></span></div>
-                <div class="info-row"><span>Status</span><span id="passStatus"></span></div>
-              </div>
-
-              <div class="pass-qr">
-                <div id="passQRContainer"></div>
-              </div>
+            <div class="info-row">
+              <span class="label">Email</span>
+              <span class="value" id="passEmail">-</span>
             </div>
-            <div class="pass-footer">
-              Valid for date of visit only | Present this badge at all times
+            <div class="info-row">
+              <span class="label">Ticket Type</span>
+              <span class="value" id="passType">-</span>
+            </div>
+            <div class="info-row">
+              <span class="label">Event Date</span>
+              <span class="value" id="passDate">-</span>
+            </div>
+            <div class="info-row">
+              <span class="label">Status</span>
+              <span class="value" id="passStatus">-</span>
             </div>
           </div>
         </div>
+        <div class="pass-actions">
+          <button class="btn btn-primary" onclick="window.print()">&#128424; Print Pass</button>
+          <a href="/" class="btn" style="background:#f1f5f9;color:#475569;text-decoration:none">&#127881; Get Tickets</a>
+        </div>
+        <div class="pass-footer">
+          This pass is non-transferable. QR code must be presented at entry.
+          Once scanned, pass cannot be reused.
+        </div>
       </div>
-    </main>
+    </div>
   </div>
 
   <script>
-    function toggleSidebar() {
-      document.getElementById('sidebar').classList.toggle('open');
-    }
-
-    let currentVisitor = null;
+    let currentTicket = null;
 
     document.addEventListener('DOMContentLoaded', async function() {
       const params = new URLSearchParams(window.location.search);
-      const visitorId = params.get('id');
+      let ticketId = params.get('id');
 
-      if (!visitorId) {
-        showError('No visitor ID provided.');
+      if (!ticketId) {
+        const pathParts = window.location.pathname.split('/ticket/');
+        if (pathParts.length > 1) {
+          ticketId = pathParts[1].split('?')[0].split('/')[0];
+        }
+      }
+
+      if (!ticketId) {
+        showError('No ticket ID provided.');
         return;
       }
 
-      await loadVisitor(visitorId);
+      await loadTicket(ticketId);
     });
 
-    async function loadVisitor(id) {
+    async function loadTicket(id) {
       document.getElementById('loadingState').style.display = 'block';
       document.getElementById('passContent').style.display = 'none';
       document.getElementById('errorState').style.display = 'none';
 
       try {
-        const res = await fetch('/api/visitors/' + encodeURIComponent(id));
+        const res = await fetch('/api/tickets/' + encodeURIComponent(id));
         if (!res.ok) {
-          showError('Visitor not found: ' + id);
+          showError('Ticket "' + id + '" not found. Please check your link.');
           return;
         }
-        const v = await res.json();
-        currentVisitor = v;
-        renderPass(v);
+        const data = await res.json();
+        currentTicket = data;
+        renderPass(data);
       } catch (err) {
-        showError('Error: ' + err.message);
+        showError('Error loading ticket: ' + err.message);
       }
     }
 
-    function renderPass(v) {
+    function renderPass(t) {
       document.getElementById('loadingState').style.display = 'none';
       document.getElementById('passContent').style.display = 'block';
 
-      if (v.photo) {
-        document.getElementById('passPhotoContainer').innerHTML = '<img src="/uploads/' + v.photo + '?t=' + Date.now() + '" class="pass-photo" alt="">';
+      document.getElementById('ticketIdDisplay').textContent = t.ticketId;
+      document.getElementById('passName').textContent = t.fullName;
+      document.getElementById('passEmail').textContent = t.email;
+      document.getElementById('passType').textContent = t.ticketType;
+      document.getElementById('passDate').textContent = t.eventDate;
+
+      if (t.status === 'Active') {
+        document.getElementById('passStatus').innerHTML = '<span class="status-active">&#10003; Active (Not yet used)</span>';
+      } else if (t.status === 'Used') {
+        document.getElementById('passStatus').innerHTML = '<span class="status-used">&#9888; Used at ' + (t.usedAt || 'unknown') + '</span>';
       } else {
-        document.getElementById('passPhotoContainer').innerHTML = '<div class="pass-no-photo">' + v.fullName.charAt(0).toUpperCase() + '</div>';
+        document.getElementById('passStatus').textContent = t.status;
       }
 
-      document.getElementById('passName').textContent = v.fullName;
-      document.getElementById('passVisitorId').textContent = v.visitorId;
-      document.getElementById('passPersonToMeet').textContent = v.personToMeet;
-      document.getElementById('passCompany').textContent = v.company;
-      document.getElementById('passEntryTime').textContent = v.entryDate + ' ' + v.entryTime;
-      document.getElementById('passPurpose').textContent = v.purpose;
-      document.getElementById('passStatus').innerHTML = v.status === 'Active'
-        ? '<span class="badge badge-active">Active</span>'
-        : '<span class="badge badge-checkout">Checked Out</span>';
-
-      const qrData = window.location.origin + '/visitor/' + v.visitorId;
-      const qrUrl = '/qrcodes/' + v.visitorId + '.png?t=' + Date.now();
-      document.getElementById('passQRContainer').innerHTML = '<img src="' + qrUrl + '" alt="QR Code" onerror="generateInlineQR(\'' + qrData + '\')">';
+      const qrUrl = '/qrcodes/' + t.ticketId + '.png?t=' + Date.now();
+      document.getElementById('passQRImg').src = qrUrl;
     }
 
-    function generateInlineQR(data) {
-      const container = document.getElementById('passQRContainer');
-      container.innerHTML = '<div style="padding:10px;font-size:12px;color:var(--text-light)">QR: ' + data + '</div>';
-    }
-
-    function downloadPassQR() {
-      if (currentVisitor) {
-        window.open('/api/visitors/download-qr/' + currentVisitor.visitorId, '_blank');
+    function downloadQR() {
+      if (currentTicket) {
+        window.open('/api/tickets/download-qr/' + currentTicket.ticketId, '_blank');
       }
     }
 
