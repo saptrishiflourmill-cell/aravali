@@ -974,10 +974,9 @@
       document.getElementById('myTicketsSection').style.display = 'none';
       if (window.google?.accounts?.id) {
         google.accounts.id.disableAutoSelect();
-        google.accounts.id.cancel();
         google.accounts.id.renderButton(
           document.getElementById('gButtonWrap'),
-          { theme: 'outline', size: 'small', text: 'signin_with', shape: 'pill' }
+          { theme: 'outline', size: 'medium', text: 'signin_with', shape: 'pill' }
         );
       }
     }
@@ -1055,15 +1054,11 @@
         if (cfg.googleClientId && cfg.googleClientId.length > 10 && window.google?.accounts?.id) {
           google.accounts.id.initialize({
             client_id: cfg.googleClientId,
-            callback: handleGoogleCredential,
-            cancel_on_tap_outside: false,
-            auto_select: false,
-            ux_mode: 'popup'
+            callback: handleGoogleCredential
           });
-          google.accounts.id.disableAutoSelect();
           google.accounts.id.renderButton(
             document.getElementById('gButtonWrap'),
-            { theme: 'outline', size: 'small', text: 'signin_with', shape: 'pill' }
+            { theme: 'outline', size: 'medium', text: 'signin_with', shape: 'pill' }
           );
         } else if (!cfg.googleClientId) {
           document.getElementById('gButtonWrap').innerHTML = '<span style="color:#64748b;font-size:12px">Google login not configured</span>';
