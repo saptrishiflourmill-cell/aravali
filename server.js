@@ -41,9 +41,7 @@ app.get('/api/health', (req, res) => {
 });
 
 app.get('/api/config', (req, res) => {
-  res.json({
-    googleClientId: process.env.GOOGLE_CLIENT_ID || ''
-  });
+  res.json({ status: 'ok' });
 });
 
 app.use((req, res) => {

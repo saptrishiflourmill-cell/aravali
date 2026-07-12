@@ -17,8 +17,8 @@ function execute(sql, params = []) {
 }
 
 class Visitor {
-  static findByGoogleId(googleId) {
-    return queryOne('SELECT * FROM visitors WHERE googleId = ?', [googleId]);
+  static findByEmail(email) {
+    return queryOne('SELECT * FROM visitors WHERE email = ?', [email]);
   }
 
   static findByToken(token) {
@@ -27,10 +27,10 @@ class Visitor {
 
   static create(data) {
     execute(
-      'INSERT INTO visitors (googleId, email, name, token) VALUES (?, ?, ?, ?)',
-      [data.googleId, data.email, data.name, data.token || null]
+      'INSERT INTO visitors (email, name) VALUES (?, ?)',
+      [data.email, data.name || data.email.split('@')[0]]
     );
-    return this.findByGoogleId(data.googleId);
+    return this.findByEmail(data.email);
   }
 
   static updateToken(id, token) {
