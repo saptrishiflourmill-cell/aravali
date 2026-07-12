@@ -631,6 +631,15 @@
           <button class="p-btn dl" onclick="downloadQR()">Download QR</button>
           <button class="p-btn again" onclick="purchaseAnother()">Book Another</button>
         </div>
+
+        <div id="saveSection" class="save-section" style="display:none;margin-top:16px;padding-top:16px;border-top:1px solid rgba(139,92,246,0.12)">
+          <div class="save-text" style="font-size:13px;color:#94a3b8;margin-bottom:10px;text-align:center">&#128274; Save this ticket to access it anytime</div>
+          <div class="save-row" style="display:flex;gap:8px">
+            <input type="email" id="saveEmail" placeholder="Enter your email" class="save-input" style="flex:1;padding:10px 12px;background:rgba(139,92,246,0.06);border:1px solid rgba(139,92,246,0.12);border-radius:10px;font-size:13px;font-family:inherit;color:#e2e8f0;outline:none">
+            <button class="save-btn" onclick="saveToMyTickets()" style="padding:10px 18px;background:linear-gradient(135deg,#7c3aed,#6d28d9);color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;white-space:nowrap">Save</button>
+          </div>
+          <div id="saveMessage" style="font-size:12px;margin-top:6px;text-align:center;display:none"></div>
+        </div>
       </div>
     </div>
 
@@ -809,7 +818,7 @@
         window.lastTicketData = data;
         document.getElementById('passName').textContent = data.ticket.fullName;
         document.getElementById('passDate').textContent = data.ticket.eventDate;
-        if (visitorToken) loadMyTickets();
+        if (visitorToken) { loadMyTickets(); } else { document.getElementById('saveSection').style.display = 'block'; }
         showToast('Ticket purchased successfully!', 'success');
       } catch (err) {
         showToast('Error: ' + err.message, 'error');
@@ -843,9 +852,42 @@
       win.document.close();
     }
 
+    async function saveToMyTickets() {
+      const email = document.getElementById('saveEmail').value.trim();
+      if (!email || !email.includes('@')) { showToast('Enter a valid email', 'error'); return; }
+      const msg = document.getElementById('saveMessage');
+      const btn = document.querySelector('.save-btn');
+      btn.disabled = true; btn.textContent = 'Saving...';
+      try {
+        const loginRes = await fetch('/api/auth/email-login', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email })
+        });
+        const loginData = await loginRes.json();
+        if (!loginData.success) { showToast(loginData.error || 'Login failed', 'error'); btn.disabled = false; btn.textContent = 'Save'; return; }
+        visitorToken = loginData.token;
+        visitorData = loginData.visitor;
+        localStorage.setItem('visitorToken', loginData.token);
+        localStorage.setItem('visitorName', loginData.visitor.name || email);
+        const ticketId = window.lastTicketData?.ticket?.ticketId;
+        if (!ticketId) { showToast('No ticket to save', 'error'); btn.disabled = false; btn.textContent = 'Save'; return; }
+        const linkRes = await fetch('/api/tickets/link', {
+          method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + visitorToken },
+          body: JSON.stringify({ ticketId })
+        });
+        const linkData = await linkRes.json();
+        if (!linkRes.ok) { showToast(linkData.error || 'Save failed', 'error'); btn.disabled = false; btn.textContent = 'Save'; return; }
+        document.getElementById('saveSection').style.display = 'none';
+        updateUserUI();
+        loadMyTickets();
+        showToast('Ticket saved to your account!', 'success');
+      } catch (err) { showToast('Error: ' + err.message, 'error'); btn.disabled = false; btn.textContent = 'Save'; }
+    }
+
     function purchaseAnother() {
       document.getElementById('formCard').style.display = 'block';
       document.getElementById('successCard').style.display = 'none';
+      document.getElementById('saveSection').style.display = 'none';
       document.getElementById('ticketForm').reset();
       document.getElementById('purchaseBtn').disabled = false;
       document.getElementById('btnText').textContent = 'Get Your Free Ticket';

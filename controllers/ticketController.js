@@ -197,6 +197,19 @@ exports.update = (req, res) => {
   }
 };
 
+exports.linkTicket = (req, res) => {
+  try {
+    const { ticketId } = req.body;
+    if (!ticketId) return res.status(400).json({ error: 'Ticket ID required' });
+    const visitorId = req.visitor.id;
+    const ticket = Ticket.linkToVisitor(ticketId, visitorId);
+    if (!ticket) return res.status(404).json({ error: 'Ticket not found' });
+    res.json({ success: true, ticket: { id: ticket.id, ticketId: ticket.ticketId } });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
 exports.getMyTickets = (req, res) => {
   try {
     const visitorId = req.visitor.id;

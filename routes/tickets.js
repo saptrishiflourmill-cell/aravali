@@ -15,6 +15,7 @@ router.get('/stats', authenticateToken, controller.getStats);
 router.get('/', authenticateToken, controller.getAll);
 router.post('/purchase', optionalVisitor, validateTicket, controller.purchase);
 router.get('/mine', authenticateVisitor, controller.getMyTickets);
+router.post('/link', authenticateVisitor, controller.linkTicket);
 router.get('/verify/:id', controller.scanTicket);
 router.get('/download-qr/:id', controller.getQRCode);
 router.get('/:id', controller.getById);

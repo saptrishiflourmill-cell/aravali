@@ -115,6 +115,13 @@ class Ticket {
     return this.getById(id);
   }
 
+  static linkToVisitor(ticketId, visitorId) {
+    const ticket = this.getByTicketId(ticketId);
+    if (!ticket) return null;
+    execute('UPDATE tickets SET visitorId = ?, updatedAt = datetime(\'now\') WHERE id = ?', [visitorId, ticket.id]);
+    return this.getById(ticket.id);
+  }
+
   static delete(id) {
     const existing = this.getById(id);
     if (!existing) return false;
