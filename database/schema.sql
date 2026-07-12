@@ -2,7 +2,7 @@ CREATE TABLE IF NOT EXISTS tickets (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   ticketId TEXT UNIQUE NOT NULL,
   fullName TEXT NOT NULL,
-  email TEXT NOT NULL,
+  email TEXT DEFAULT '',
   phone TEXT NOT NULL,
   ticketType TEXT DEFAULT 'General',
   eventDate TEXT NOT NULL,

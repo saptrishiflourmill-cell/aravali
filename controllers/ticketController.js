@@ -77,7 +77,7 @@ exports.purchase = async (req, res) => {
 
     const data = {
       fullName: req.body.fullName,
-      email: req.body.email,
+      email: '',
       phone: req.body.phone,
       ticketType: req.body.ticketType || 'General',
       eventDate: req.body.eventDate,

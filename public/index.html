@@ -572,15 +572,9 @@
             <input type="text" id="fullName" name="fullName" placeholder="Your full name" required>
           </div>
 
-          <div class="form-row">
-            <div class="form-group">
-              <label>Email Address</label>
-              <input type="email" id="email" name="email" placeholder="your@email.com" required>
-            </div>
-            <div class="form-group">
-              <label>Phone Number</label>
-              <input type="tel" id="phone" name="phone" placeholder="Phone number" required>
-            </div>
+          <div class="form-group">
+            <label>Phone Number</label>
+            <input type="tel" id="phone" name="phone" placeholder="Phone number" required>
           </div>
 
           <div class="form-group">
@@ -618,10 +612,6 @@
           <div class="p-row">
             <span class="p-label">Attendee</span>
             <span class="p-value" id="passName">-</span>
-          </div>
-          <div class="p-row">
-            <span class="p-label">Email</span>
-            <span class="p-value" id="passEmail">-</span>
           </div>
           <div class="p-row">
             <span class="p-label">Amount Paid</span>
@@ -799,7 +789,6 @@
           headers: { 'Content-Type': 'application/json', ...getVisitorHeaders() },
           body: JSON.stringify({
             fullName: document.getElementById('fullName').value,
-            email: document.getElementById('email').value,
             phone: document.getElementById('phone').value,
             eventDate: document.getElementById('eventDate').value
           })
@@ -819,7 +808,6 @@
         document.getElementById('qrCodeImg').src = data.qrCodeUrl + '?t=' + Date.now();
         window.lastTicketData = data;
         document.getElementById('passName').textContent = data.ticket.fullName;
-        document.getElementById('passEmail').textContent = data.ticket.email;
         document.getElementById('passDate').textContent = data.ticket.eventDate;
         if (visitorToken) loadMyTickets();
         showToast('Ticket purchased successfully!', 'success');
