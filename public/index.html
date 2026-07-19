@@ -808,9 +808,9 @@
           <div class="form-group">
             <label>Ticket Category</label>
             <select id="ticketCategory" name="ticketCategory" required>
-              <option value="Single">Single (1 Person)</option>
-              <option value="Couple">Couple (2 Persons)</option>
-              <option value="VIP Couple">VIP Couple (Male + Female)</option>
+              <option value="Single">Single (Male/Female) — ₹10</option>
+              <option value="Couple">Couple (Male + Female) — ₹20</option>
+              <option value="VIP Couple">VIP Couple (Male + Female) — ₹30</option>
             </select>
           </div>
 
@@ -1145,7 +1145,7 @@
       document.getElementById('passName').textContent = verifyData.ticket.fullName;
       document.getElementById('passEmail').textContent = verifyData.ticket.email;
       document.getElementById('passDate').textContent = verifyData.ticket.eventDate;
-      document.getElementById('passAmount').textContent = verifyData.ticket.price === 0 ? 'FREE' : '\u20B910';
+      document.getElementById('passAmount').textContent = verifyData.ticket.price === 0 ? 'FREE' : '₹' + (verifyData.ticket.price / 100);
       document.getElementById('passCategory').textContent = verifyData.ticket.ticketType || 'Single';
       document.getElementById('passPersons').textContent = (verifyData.ticket.quantity || 1) + ' Person' + ((verifyData.ticket.quantity || 1) > 1 ? 's' : '');
       if (verifyData.visitor && verifyData.visitor.token) {
@@ -1158,7 +1158,7 @@
       await loadMyTickets();
     }
 
-    async function fetchPricing() {
+    async function fetchPricing(category) {
       try {
         const res = await fetch('/api/config');
         const data = await res.json();
@@ -1169,13 +1169,20 @@
             priceEl.textContent = 'FREE';
             btnText.innerHTML = '&#127881; Get Free Ticket';
           } else {
-            priceEl.textContent = '\u20B910';
-            btnText.innerHTML = '&#127915; Pay \u20B910';
+            const cat = category || document.getElementById('ticketCategory').value;
+            const catInfo = data.pricing.categories[cat];
+            if (catInfo) {
+              priceEl.textContent = catInfo.display;
+              btnText.innerHTML = '&#127915; Pay ' + catInfo.display;
+            }
           }
         }
       } catch (e) {}
     }
     fetchPricing();
+    document.getElementById('ticketCategory').addEventListener('change', function() {
+      fetchPricing(this.value);
+    });
 
     document.getElementById('ticketForm').addEventListener('submit', async function(e) {
       e.preventDefault();
@@ -1205,7 +1212,7 @@
         if (!orderRes.ok) {
           showToast(orderData.error || 'Failed to create payment order', 'error');
           btn.disabled = false;
-          btn.querySelector('#btnText').textContent = document.getElementById('priceAmount').textContent === 'FREE' ? 'Get Free Ticket' : 'Pay \u20B910';
+          btn.querySelector('#btnText').textContent = document.getElementById('priceAmount').textContent === 'FREE' ? 'Get Free Ticket' : 'Pay ' + document.getElementById('priceAmount').textContent;
           return;
         }
 

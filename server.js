@@ -52,8 +52,11 @@ app.get('/api/config', (req, res) => {
       freePromoActive,
       remainingFree: Math.max(0, 3 - totalTickets),
       totalTickets,
-      paidAmount: 1000,
-      paidAmountDisplay: '₹10',
+      categories: {
+        'Single': { amount: 1000, display: '₹10' },
+        'Couple': { amount: 2000, display: '₹20' },
+        'VIP Couple': { amount: 3000, display: '₹30' },
+      },
     }
   });
 });

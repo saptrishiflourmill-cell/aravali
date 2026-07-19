@@ -453,7 +453,7 @@
       document.getElementById('passName').textContent = t.fullName;
       document.getElementById('passEmail').textContent = t.email;
       document.getElementById('passDate').textContent = t.eventDate;
-      document.getElementById('passAmount').textContent = t.price === 0 ? 'FREE' : '\u20B910';
+      document.getElementById('passAmount').textContent = t.price === 0 ? 'FREE' : '₹' + (t.price / 100);
       document.getElementById('passCategory').textContent = t.ticketType || 'Single';
       document.getElementById('passPersons').textContent = (t.quantity || 1) + ' Person' + ((t.quantity || 1) > 1 ? 's' : '');
 

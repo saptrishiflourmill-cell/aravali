@@ -13,6 +13,16 @@ if (!fs.existsSync(qrDir)) {
   fs.mkdirSync(qrDir, { recursive: true });
 }
 
+function getPriceForType(ticketType) {
+  const prices = { 'Single': 1000, 'Couple': 2000, 'VIP Couple': 3000 };
+  return prices[ticketType] || 1000;
+}
+
+function getDisplayPrice(ticketType) {
+  const prices = { 'Single': '₹10', 'Couple': '₹20', 'VIP Couple': '₹30' };
+  return prices[ticketType] || '₹10';
+}
+
 function getLocalIp() {
   const nets = os.networkInterfaces();
   for (const name of Object.keys(nets)) {
@@ -59,6 +69,7 @@ exports.createOrder = async (req, res) => {
     }
 
     const totalTickets = Ticket.count();
+    const ticketType = req.body.ticketType || 'Single';
     if (totalTickets < 3) {
       return res.json({
         free: true,
@@ -67,13 +78,14 @@ exports.createOrder = async (req, res) => {
         email,
         phone,
         eventDate,
-        ticketType: req.body.ticketType || 'Single',
+        ticketType,
         quantity: parseInt(req.body.quantity) || 1,
       });
     }
 
+    const amount = getPriceForType(ticketType);
     const options = {
-      amount: 1000,
+      amount,
       currency: 'INR',
       receipt: 'tkt-' + Date.now(),
       payment_capture: 1,
@@ -221,7 +233,7 @@ exports.verifyPayment = async (req, res) => {
       visitorInfo = { id: visitor.id, name: visitor.name, token: visitor.token };
     }
 
-    const data = { fullName, email, phone, eventDate, visitorId, reference: req.body.reference || '', price: 1000, ticketType: req.body.ticketType || 'Single', quantity: parseInt(req.body.quantity) || 1 };
+    const data = { fullName, email, phone, eventDate, visitorId, reference: req.body.reference || '', price: getPriceForType(req.body.ticketType), ticketType: req.body.ticketType || 'Single', quantity: parseInt(req.body.quantity) || 1 };
     const ticket = Ticket.create(data);
 
     const qrData = `${getBaseUrl()}/api/tickets/verify/${ticket.ticketId}?token=${ticket.qrToken}`;
@@ -297,7 +309,7 @@ exports.completeOrder = async (req, res) => {
       visitor = Visitor.updateToken(visitor.id, newToken);
     }
 
-    const data = { fullName: fullName || visitor.name, email, phone: phone || '', eventDate: eventDate || '', visitorId: visitor.id, reference: req.body.reference || '', price: 1000, ticketType: req.body.ticketType || 'Single', quantity: parseInt(req.body.quantity) || 1 };
+    const data = { fullName: fullName || visitor.name, email, phone: phone || '', eventDate: eventDate || '', visitorId: visitor.id, reference: req.body.reference || '', price: getPriceForType(req.body.ticketType), ticketType: req.body.ticketType || 'Single', quantity: parseInt(req.body.quantity) || 1 };
     const ticket = Ticket.create(data);
 
     const qrData = `${getBaseUrl()}/api/tickets/verify/${ticket.ticketId}?token=${ticket.qrToken}`;
