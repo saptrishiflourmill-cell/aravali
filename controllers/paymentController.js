@@ -130,7 +130,7 @@ exports.verifyPayment = async (req, res) => {
       visitorInfo = { id: visitor.id, name: visitor.name, token: visitor.token };
     }
 
-    const data = { fullName, email, phone, eventDate, visitorId };
+    const data = { fullName, email, phone, eventDate, visitorId, reference: req.body.reference || '' };
     const ticket = Ticket.create(data);
 
     const qrData = `${getBaseUrl()}/api/tickets/verify/${ticket.ticketId}?token=${ticket.qrToken}`;
@@ -199,7 +199,7 @@ exports.completeOrder = async (req, res) => {
       visitor = Visitor.updateToken(visitor.id, newToken);
     }
 
-    const data = { fullName: fullName || visitor.name, email, phone: phone || '', eventDate: eventDate || '', visitorId: visitor.id };
+    const data = { fullName: fullName || visitor.name, email, phone: phone || '', eventDate: eventDate || '', visitorId: visitor.id, reference: req.body.reference || '' };
     const ticket = Ticket.create(data);
 
     const qrData = `${getBaseUrl()}/api/tickets/verify/${ticket.ticketId}?token=${ticket.qrToken}`;

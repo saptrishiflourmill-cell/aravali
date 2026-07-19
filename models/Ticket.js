@@ -84,8 +84,8 @@ class Ticket {
     const ticketId = data.ticketId || getNextTicketId();
     const qrToken = generateQrToken();
     execute(
-      `INSERT INTO tickets (ticketId, fullName, email, phone, ticketType, eventDate, qrToken, status, purchaseDate, createdAt, updatedAt, visitorId)
-       VALUES (?, ?, ?, ?, ?, ?, ?, 'Active', datetime('now'), datetime('now'), datetime('now'), ?)`,
+      `INSERT INTO tickets (ticketId, fullName, email, phone, ticketType, eventDate, qrToken, status, purchaseDate, createdAt, updatedAt, visitorId, reference)
+       VALUES (?, ?, ?, ?, ?, ?, ?, 'Active', datetime('now'), datetime('now'), datetime('now'), ?, ?)`,
       [
         ticketId,
         data.fullName,
@@ -94,7 +94,8 @@ class Ticket {
         data.ticketType || 'General',
         data.eventDate,
         qrToken,
-        data.visitorId || null
+        data.visitorId || null,
+        data.reference || ''
       ]
     );
     return this.getByTicketId(ticketId);
@@ -105,7 +106,7 @@ class Ticket {
     if (!existing) return null;
 
     execute(
-      `UPDATE tickets SET fullName = ?, email = ?, phone = ?, ticketType = ?, eventDate = ?, updatedAt = datetime('now')
+      `UPDATE tickets SET fullName = ?, email = ?, phone = ?, ticketType = ?, eventDate = ?, reference = ?, updatedAt = datetime('now')
        WHERE id = ?`,
       [
         data.fullName || existing.fullName,
@@ -113,6 +114,7 @@ class Ticket {
         data.phone || existing.phone,
         data.ticketType || existing.ticketType,
         data.eventDate || existing.eventDate,
+        data.reference !== undefined ? data.reference : (existing.reference || ''),
         id
       ]
     );

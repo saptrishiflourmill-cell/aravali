@@ -540,13 +540,32 @@
     <div class="event-hero">
       <div class="event-badge">&#127881; Limited Tickets</div>
       <div class="logo-wrap"><span>&#127928;</span></div>
-      <h1>Summer Music Fest</h1>
-      <p>Get your pass for the biggest event of the year</p>
+      <h1>Sawariya Resort Event</h1>
+      <p>Get your pass for an unforgettable evening</p>
       <div class="event-details-bar">
-        <span>&#128197; <strong id="displayDate">Loading...</strong></span>
-        <span>&#128205; <strong>Main Arena</strong></span>
-        <span>&#128338; <strong>10:00 AM</strong></span>
+        <span>&#128197; <strong>22 August 2026</strong></span>
+        <span>&#128205; <strong>Sawariya Resort, Alwar</strong></span>
+        <span>&#128338; <strong>7:00 PM</strong></span>
       </div>
+      <div id="countdown" style="display:flex;justify-content:center;gap:12px;margin-top:16px;flex-wrap:wrap">
+        <div class="cd-item" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:10px 14px;min-width:60px;text-align:center">
+          <div id="cd-days" style="font-size:24px;font-weight:800;color:#fff;line-height:1.2">00</div>
+          <div style="font-size:10px;color:#64748b;text-transform:uppercase;letter-spacing:1px">Days</div>
+        </div>
+        <div class="cd-item" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:10px 14px;min-width:60px;text-align:center">
+          <div id="cd-hours" style="font-size:24px;font-weight:800;color:#fff;line-height:1.2">00</div>
+          <div style="font-size:10px;color:#64748b;text-transform:uppercase;letter-spacing:1px">Hours</div>
+        </div>
+        <div class="cd-item" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:10px 14px;min-width:60px;text-align:center">
+          <div id="cd-mins" style="font-size:24px;font-weight:800;color:#fff;line-height:1.2">00</div>
+          <div style="font-size:10px;color:#64748b;text-transform:uppercase;letter-spacing:1px">Mins</div>
+        </div>
+        <div class="cd-item" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:10px 14px;min-width:60px;text-align:center">
+          <div id="cd-secs" style="font-size:24px;font-weight:800;color:#fff;line-height:1.2">00</div>
+          <div style="font-size:10px;color:#64748b;text-transform:uppercase;letter-spacing:1px">Secs</div>
+        </div>
+      </div>
+      <div id="cd-message" style="margin-top:8px;font-size:12px;color:#fbbf24;display:none">&#9888; Event starts in less than 24 hours!</div>
     </div>
 
     <div class="auth-section" id="authSection">
@@ -588,8 +607,8 @@
           </div>
 
           <div class="form-group">
-            <label>Event Date</label>
-            <input type="date" id="eventDate" name="eventDate" required>
+            <label>Reference / Notes</label>
+            <input type="text" id="reference" name="reference" placeholder="e.g. VIP pass, table booking, etc.">
           </div>
 
           <div class="price-display">
@@ -795,12 +814,39 @@
       return d.innerHTML;
     }
 
+    const EVENT_DATE = new Date('2026-08-22T19:00:00+05:30');
+
+    function updateCountdown() {
+      const now = new Date();
+      const diff = EVENT_DATE - now;
+      if (diff <= 0) {
+        document.getElementById('cd-days').textContent = '00';
+        document.getElementById('cd-hours').textContent = '00';
+        document.getElementById('cd-mins').textContent = '00';
+        document.getElementById('cd-secs').textContent = '00';
+        document.getElementById('cd-message').textContent = 'Event is live!';
+        document.getElementById('cd-message').style.display = 'block';
+        return;
+      }
+      const days = Math.floor(diff / 86400000);
+      const hours = Math.floor((diff % 86400000) / 3600000);
+      const mins = Math.floor((diff % 3600000) / 60000);
+      const secs = Math.floor((diff % 60000) / 1000);
+      document.getElementById('cd-days').textContent = String(days).padStart(2, '0');
+      document.getElementById('cd-hours').textContent = String(hours).padStart(2, '0');
+      document.getElementById('cd-mins').textContent = String(mins).padStart(2, '0');
+      document.getElementById('cd-secs').textContent = String(secs).padStart(2, '0');
+      if (diff < 86400000) {
+        document.getElementById('cd-message').style.display = 'block';
+        document.querySelectorAll('.cd-item').forEach(el => {
+          el.style.borderColor = 'rgba(251,191,36,0.3)';
+        });
+      }
+    }
+
     document.addEventListener('DOMContentLoaded', async function() {
-      const today = new Date();
-      const nextWeek = new Date(today);
-      nextWeek.setDate(today.getDate() + 14);
-      document.getElementById('eventDate').value = nextWeek.toISOString().split('T')[0];
-      document.getElementById('displayDate').textContent = nextWeek.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+      updateCountdown();
+      setInterval(updateCountdown, 1000);
 
       const savedEmail = localStorage.getItem('savedEmail');
       if (savedEmail) document.getElementById('email').value = savedEmail;
@@ -872,7 +918,8 @@
         fullName: document.getElementById('fullName').value,
         email: document.getElementById('email').value,
         phone: document.getElementById('phone').value,
-        eventDate: document.getElementById('eventDate').value
+        eventDate: '2026-08-22',
+        reference: document.getElementById('reference').value
       };
 
       try {
@@ -903,7 +950,7 @@
           key: orderData.keyId,
           amount: orderData.amount,
           currency: orderData.currency,
-          name: 'Summer Music Fest',
+          name: 'Sawariya Resort Event',
           description: 'Event Ticket Purchase',
           order_id: orderData.orderId,
           handler: async function(response) {

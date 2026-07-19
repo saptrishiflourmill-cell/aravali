@@ -184,7 +184,8 @@ exports.update = (req, res) => {
       email: req.body.email,
       phone: req.body.phone,
       ticketType: req.body.ticketType,
-      eventDate: req.body.eventDate
+      eventDate: req.body.eventDate,
+      reference: req.body.reference
     };
 
     const ticket = Ticket.update(parseInt(id), data);

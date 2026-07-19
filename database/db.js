@@ -35,6 +35,9 @@ async function initDb() {
   if (!cols.find(c => c.name === 'visitorId')) {
     try { db.run("ALTER TABLE tickets ADD COLUMN visitorId INTEGER REFERENCES visitors(id)"); } catch (e) {}
   }
+  if (!cols.find(c => c.name === 'reference')) {
+    try { db.run("ALTER TABLE tickets ADD COLUMN reference TEXT DEFAULT ''"); } catch (e) {}
+  }
 
   const stmt = db.prepare('SELECT COUNT(*) as count FROM users');
   const exists = stmt.step() ? stmt.getAsObject() : { count: 0 };
