@@ -165,6 +165,17 @@
 
     .form-group input::placeholder { color: #475569; }
 
+    .form-group select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%2394a3b8' d='M1.41 0L6 4.58 10.59 0 12 1.41l-6 6-6-6z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 16px center;
+      padding-right: 40px;
+    }
+    .form-group select option {
+      background: #1a1a2e;
+      color: #e2e8f0;
+    }
+
     .form-row {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -540,7 +551,7 @@
     <div class="event-hero">
       <div class="event-badge">&#127881; Limited Tickets</div>
       <div class="logo-wrap"><span>&#127928;</span></div>
-      <h1>Sawariya Resort Event</h1>
+      <h1>Aravali Fashion Show 2026</h1>
       <p>Get your pass for an unforgettable evening</p>
       <div class="event-details-bar">
         <span>&#128197; <strong>22 August 2026</strong></span>
@@ -607,8 +618,13 @@
           </div>
 
           <div class="form-group">
-            <label>Reference / Notes</label>
-            <input type="text" id="reference" name="reference" placeholder="e.g. VIP pass, table booking, etc.">
+            <label>How did you hear about us?</label>
+            <select id="reference" name="reference" required>
+              <option value="">Select an option</option>
+              <option value="Instagram">Instagram</option>
+              <option value="Website">Website</option>
+              <option value="By Harman">By Harman</option>
+            </select>
           </div>
 
           <div class="price-display">
@@ -950,7 +966,7 @@
           key: orderData.keyId,
           amount: orderData.amount,
           currency: orderData.currency,
-          name: 'Sawariya Resort Event',
+          name: 'Aravali Fashion Show 2026',
           description: 'Event Ticket Purchase',
           order_id: orderData.orderId,
           handler: async function(response) {
