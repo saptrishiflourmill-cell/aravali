@@ -60,7 +60,7 @@ exports.createOrder = async (req, res) => {
     }
 
     const options = {
-      amount: 50000,
+      amount: 100,
       currency: 'INR',
       receipt: 'tkt-' + Date.now(),
       payment_capture: 1,
