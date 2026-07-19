@@ -110,17 +110,23 @@ exports.createFreeTicket = async (req, res) => {
     const visitorToken = req.body.visitorToken || (req.headers.authorization && req.headers.authorization.startsWith('Bearer ') ? req.headers.authorization.slice(7) : null);
     let visitorId = null;
     let visitorInfo = null;
+
+    let visitor = null;
     if (visitorToken) {
-      const visitor = Visitor.findByToken(visitorToken);
-      if (visitor) visitorId = visitor.id;
-    } else if (email) {
-      let visitor = Visitor.findByEmail(email);
+      visitor = Visitor.findByToken(visitorToken);
+    }
+    if (!visitor && email) {
+      visitor = Visitor.findByEmail(email);
       if (!visitor) {
         visitor = Visitor.create({ email, name: fullName });
       }
+    }
+    if (visitor) {
       visitorId = visitor.id;
-      const newToken = Visitor.generateToken();
-      visitor = Visitor.updateToken(visitorId, newToken);
+      if (!visitor.token) {
+        const newToken = Visitor.generateToken();
+        visitor = Visitor.updateToken(visitorId, newToken);
+      }
       visitorInfo = { id: visitor.id, name: visitor.name, token: visitor.token };
     }
 
@@ -188,20 +194,26 @@ exports.verifyPayment = async (req, res) => {
       return res.status(400).json({ error: 'Payment verification failed - signature mismatch' });
     }
 
-    const visitorToken = req.body.visitorToken;
+    const visitorToken = req.body.visitorToken || (req.headers.authorization && req.headers.authorization.startsWith('Bearer ') ? req.headers.authorization.slice(7) : null);
     let visitorId = null;
     let visitorInfo = null;
+
+    let visitor = null;
     if (visitorToken) {
-      const visitor = Visitor.findByToken(visitorToken);
-      if (visitor) visitorId = visitor.id;
-    } else if (email) {
-      let visitor = Visitor.findByEmail(email);
+      visitor = Visitor.findByToken(visitorToken);
+    }
+    if (!visitor && email) {
+      visitor = Visitor.findByEmail(email);
       if (!visitor) {
         visitor = Visitor.create({ email, name: fullName });
       }
+    }
+    if (visitor) {
       visitorId = visitor.id;
-      const newToken = Visitor.generateToken();
-      visitor = Visitor.updateToken(visitorId, newToken);
+      if (!visitor.token) {
+        const newToken = Visitor.generateToken();
+        visitor = Visitor.updateToken(visitorId, newToken);
+      }
       visitorInfo = { id: visitor.id, name: visitor.name, token: visitor.token };
     }
 
@@ -265,9 +277,16 @@ exports.completeOrder = async (req, res) => {
     const payment = payments.items[0];
     const razorpay_payment_id = payment.id;
 
-    let visitor = Visitor.findByEmail(email);
+    let visitor = null;
+    const visitorToken = req.body.visitorToken || (req.headers.authorization && req.headers.authorization.startsWith('Bearer ') ? req.headers.authorization.slice(7) : null);
+    if (visitorToken) {
+      visitor = Visitor.findByToken(visitorToken);
+    }
     if (!visitor) {
-      visitor = Visitor.create({ email, name: fullName || email.split('@')[0] });
+      visitor = Visitor.findByEmail(email);
+      if (!visitor) {
+        visitor = Visitor.create({ email, name: fullName || email.split('@')[0] });
+      }
     }
     if (!visitor.token) {
       const newToken = Visitor.generateToken();

@@ -1004,6 +1004,15 @@
         const empty = document.getElementById('myTicketsEmpty');
         const section = document.getElementById('myTicketsSection');
 
+        if (!res.ok) {
+          console.error('Load tickets error:', data.error || res.status);
+          section.style.display = 'block';
+          empty.style.display = 'block';
+          empty.innerHTML = '<p>Could not load tickets. Please try refreshing.</p>';
+          list.innerHTML = '';
+          return;
+        }
+
         if (data.tickets && data.tickets.length > 0) {
           section.style.display = 'block';
           empty.style.display = 'none';
@@ -1025,7 +1034,10 @@
             </div>`;
           }).join('');
         } else {
-          if (visitorToken) { section.style.display = 'block'; empty.style.display = 'block'; list.innerHTML = ''; }
+          section.style.display = 'block';
+          empty.style.display = 'block';
+          empty.innerHTML = '<p>No tickets yet. Buy one above!</p>';
+          list.innerHTML = '';
         }
       } catch (err) {
         console.error('Load tickets error:', err);
@@ -1076,9 +1088,11 @@
       if (savedEmail) document.getElementById('email').value = savedEmail;
 
       const savedName = localStorage.getItem('visitorName');
-      if (visitorToken && savedName) {
-        visitorData = { name: savedName };
-        updateUserUI();
+      if (visitorToken) {
+        if (savedName) {
+          visitorData = { name: savedName };
+          updateUserUI();
+        }
         loadMyTickets();
       }
 
@@ -1095,7 +1109,7 @@
         showToast('Payment detected! Completing your purchase...', 'success');
         fetch('/api/payments/complete-order', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'application/json', ...getVisitorHeaders() },
           body: JSON.stringify(data.formData || { orderId: data.orderId, email: data.email })
         })
         .then(r => r.json().then(d => ({ status: r.status, data: d })))
@@ -1113,7 +1127,7 @@
       } catch (e) { sessionStorage.removeItem('pendingOrder'); }
     }
 
-    function showTicketAfterPayment(verifyData) {
+    async function showTicketAfterPayment(verifyData) {
       document.getElementById('formCard').style.display = 'none';
       document.getElementById('successCard').style.display = 'block';
       document.getElementById('successTicketId').textContent = verifyData.ticket.ticketId;
@@ -1123,14 +1137,14 @@
       document.getElementById('passEmail').textContent = verifyData.ticket.email;
       document.getElementById('passDate').textContent = verifyData.ticket.eventDate;
       document.getElementById('passAmount').textContent = verifyData.ticket.price === 0 ? 'FREE' : '\u20B910';
-      if (verifyData.visitor) {
+      if (verifyData.visitor && verifyData.visitor.token) {
         visitorToken = verifyData.visitor.token;
         visitorData = verifyData.visitor;
         localStorage.setItem('visitorToken', verifyData.visitor.token);
         localStorage.setItem('visitorName', verifyData.visitor.name || '');
         updateUserUI();
       }
-      loadMyTickets();
+      await loadMyTickets();
     }
 
     async function fetchPricing() {
@@ -1186,8 +1200,8 @@
           try {
             const freeRes = await fetch('/api/payments/create-free-ticket', {
               method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ ...formData, visitorToken })
+              headers: { 'Content-Type': 'application/json', ...getVisitorHeaders() },
+              body: JSON.stringify(formData)
             });
             const freeData = await freeRes.json();
             if (!freeRes.ok) {
@@ -1196,7 +1210,7 @@
               btn.querySelector('#btnText').textContent = 'Get Free Ticket';
               return;
             }
-            showTicketAfterPayment(freeData);
+            await showTicketAfterPayment(freeData);
             showToast('Free ticket booked!', 'success');
             fetchPricing();
           } catch (freeErr) {
@@ -1228,13 +1242,12 @@
             try {
               const verifyRes = await fetch('/api/payments/verify-payment', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 'Content-Type': 'application/json', ...getVisitorHeaders() },
                 body: JSON.stringify({
                   razorpay_order_id: response.razorpay_order_id,
                   razorpay_payment_id: response.razorpay_payment_id,
                   razorpay_signature: response.razorpay_signature,
                   ...formData,
-                  visitorToken: visitorToken
                 })
               });
 
@@ -1247,7 +1260,7 @@
                 return;
               }
 
-              showTicketAfterPayment(verifyData);
+              await showTicketAfterPayment(verifyData);
               showToast('Payment successful! Ticket booked!', 'success');
               fetchPricing();
             } catch (verifyErr) {
@@ -1358,7 +1371,7 @@
         document.querySelector('#pendingOrderBanner .btn-purchase span span').textContent = 'Completing...';
         fetch('/api/payments/complete-order', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'application/json', ...getVisitorHeaders() },
           body: JSON.stringify(data.formData || { orderId: data.orderId, email: data.email })
         })
         .then(r => r.json().then(d => ({ status: r.status, data: d })))
