@@ -1271,6 +1271,7 @@
           },
           modal: {
             ondismiss: function() {
+              sessionStorage.removeItem('pendingOrder');
               showToast('Payment cancelled', 'error');
               btn.disabled = false;
               btn.querySelector('#btnText').textContent = 'Pay \u20B910';
