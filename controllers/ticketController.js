@@ -213,8 +213,17 @@ exports.linkTicket = (req, res) => {
 exports.getMyTickets = (req, res) => {
   try {
     const visitorId = req.visitor.id;
-    const tickets = Ticket.findByVisitor(visitorId);
-    res.json({ tickets });
+    const email = req.visitor.email;
+    const byVisitor = Ticket.findByVisitor(visitorId);
+    const byEmail = Ticket.findByEmail(email);
+    const merged = [...byVisitor];
+    for (const t of byEmail) {
+      if (!merged.find(m => m.id === t.id)) {
+        merged.push(t);
+      }
+    }
+    merged.sort((a, b) => new Date(b.purchaseDate) - new Date(a.purchaseDate));
+    res.json({ tickets: merged });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

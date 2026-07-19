@@ -76,6 +76,10 @@ class Ticket {
     return queryAll('SELECT * FROM tickets WHERE visitorId = ? ORDER BY purchaseDate DESC', [visitorId]);
   }
 
+  static findByEmail(email) {
+    return queryAll('SELECT * FROM tickets WHERE email = ? ORDER BY purchaseDate DESC', [email]);
+  }
+
   static create(data) {
     const ticketId = data.ticketId || getNextTicketId();
     const qrToken = generateQrToken();

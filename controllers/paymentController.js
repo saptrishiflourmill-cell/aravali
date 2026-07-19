@@ -99,6 +99,10 @@ exports.verifyPayment = async (req, res) => {
       eventDate,
     } = req.body;
 
+    if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
+      return res.status(400).json({ error: 'Missing payment details' });
+    }
+
     const body = razorpay_order_id + '|' + razorpay_payment_id;
     const expectedSignature = crypto
       .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
@@ -106,7 +110,7 @@ exports.verifyPayment = async (req, res) => {
       .digest('hex');
 
     if (expectedSignature !== razorpay_signature) {
-      return res.status(400).json({ error: 'Payment verification failed' });
+      return res.status(400).json({ error: 'Payment verification failed - signature mismatch' });
     }
 
     const visitorToken = req.body.visitorToken;
@@ -156,7 +160,8 @@ exports.verifyPayment = async (req, res) => {
       visitor: visitorInfo,
     });
   } catch (err) {
-    console.error('Payment verification error:', err);
-    res.status(500).json({ error: 'Failed to process payment' });
+    console.error('Payment verification error:', err.message, err.stack);
+    console.error('RAZORPAY_KEY_SECRET present:', !!process.env.RAZORPAY_KEY_SECRET);
+    res.status(500).json({ error: 'Failed to process payment. Please contact support with your payment ID.' });
   }
 };
