@@ -287,7 +287,7 @@
         await html5QrCode.start(
           { facingMode: "environment" },
           { fps: 10, qrbox: { width: 250, height: 250 } },
-          function(decodedText) { processScan(decodedText); },
+          function(decodedText) { stopCameraScan(); processScan(decodedText); },
           function() {}
         );
         cameraActive = true;
@@ -328,21 +328,12 @@
       }
     }
 
-    let lastScannedId = null;
-    let lastScannedTime = 0;
-
     function processScan(decodedText) {
       let ticketId = null, token = null;
       const urlMatch = decodedText.match(/\/api\/tickets\/verify\/(TKT-\d+)\?token=([a-f0-9]+)/);
       if (urlMatch) { ticketId = urlMatch[1]; token = urlMatch[2]; }
       else if (/^TKT-\d{6}$/.test(decodedText.trim())) { ticketId = decodedText.trim(); }
-      if (ticketId) {
-        const now = Date.now();
-        if (ticketId === lastScannedId && now - lastScannedTime < 3000) return;
-        lastScannedId = ticketId;
-        lastScannedTime = now;
-        verifyTicket(ticketId, token);
-      }
+      if (ticketId) { verifyTicket(ticketId, token); }
       else { showStatus('Invalid QR code. Not a valid event ticket.', 'error'); }
     }
 
@@ -387,11 +378,6 @@
           </div>
         </div>`;
       showStatus('Ticket verified successfully!', 'success');
-      clearTimeout(window._resultTimer);
-      window._resultTimer = setTimeout(() => {
-        document.getElementById('scanResult').innerHTML = '';
-        document.getElementById('scannerStatus').style.display = 'none';
-      }, 5000);
     }
 
     function showFailResult(data) {
@@ -403,11 +389,6 @@
           ${data.usedAt ? '<p style="font-size:12px;margin-top:4px">Previously used at: ' + escHtml(data.usedAt) + '</p>' : ''}
         </div>`;
       showStatus('Ticket rejected: ' + (data.reason || 'Invalid'), 'error');
-      clearTimeout(window._resultTimer);
-      window._resultTimer = setTimeout(() => {
-        document.getElementById('scanResult').innerHTML = '';
-        document.getElementById('scannerStatus').style.display = 'none';
-      }, 5000);
     }
 
     function lookupTicket() {
