@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS tickets (
   ticketType TEXT DEFAULT 'General',
   eventDate TEXT NOT NULL,
   qrToken TEXT UNIQUE NOT NULL,
+  price INTEGER DEFAULT 0,
   status TEXT DEFAULT 'Active' CHECK(status IN ('Active','Used','Cancelled')),
   usedAt DATETIME,
   purchaseDate DATETIME DEFAULT CURRENT_TIMESTAMP,

@@ -58,8 +58,20 @@ exports.createOrder = async (req, res) => {
       return res.status(400).json({ error: 'All fields are required: fullName, email, phone, eventDate' });
     }
 
+    const totalTickets = Ticket.count();
+    if (totalTickets < 3) {
+      return res.json({
+        free: true,
+        remainingFree: 3 - totalTickets,
+        fullName,
+        email,
+        phone,
+        eventDate,
+      });
+    }
+
     const options = {
-      amount: 100,
+      amount: 1000,
       currency: 'INR',
       receipt: 'tkt-' + Date.now(),
       payment_capture: 1,
@@ -80,6 +92,69 @@ exports.createOrder = async (req, res) => {
   } catch (err) {
     console.error('Razorpay order error:', err);
     res.status(500).json({ error: 'Failed to create payment order' });
+  }
+};
+
+exports.createFreeTicket = async (req, res) => {
+  try {
+    const { fullName, email, phone, eventDate } = req.body;
+    if (!fullName || !email || !phone || !eventDate) {
+      return res.status(400).json({ error: 'All fields are required: fullName, email, phone, eventDate' });
+    }
+
+    const totalTickets = Ticket.count();
+    if (totalTickets >= 3) {
+      return res.status(400).json({ error: 'Free ticket promotion has ended. Tickets are now ₹10.' });
+    }
+
+    const visitorToken = req.body.visitorToken || (req.headers.authorization && req.headers.authorization.startsWith('Bearer ') ? req.headers.authorization.slice(7) : null);
+    let visitorId = null;
+    let visitorInfo = null;
+    if (visitorToken) {
+      const visitor = Visitor.findByToken(visitorToken);
+      if (visitor) visitorId = visitor.id;
+    } else if (email) {
+      let visitor = Visitor.findByEmail(email);
+      if (!visitor) {
+        visitor = Visitor.create({ email, name: fullName });
+      }
+      visitorId = visitor.id;
+      const newToken = Visitor.generateToken();
+      visitor = Visitor.updateToken(visitorId, newToken);
+      visitorInfo = { id: visitor.id, name: visitor.name, token: visitor.token };
+    }
+
+    const data = { fullName, email, phone, eventDate, visitorId, reference: req.body.reference || '', price: 0 };
+    const ticket = Ticket.create(data);
+
+    const qrData = `${getBaseUrl()}/api/tickets/verify/${ticket.ticketId}?token=${ticket.qrToken}`;
+    const qrPath = path.join(qrDir, `${ticket.ticketId}.png`);
+
+    try {
+      await QRCode.toFile(qrPath, qrData, {
+        width: 300,
+        margin: 2,
+        color: { dark: '#1e293b', light: '#ffffff' }
+      });
+    } catch (qrErr) {
+      console.error('QR generation error:', qrErr);
+    }
+
+    res.json({
+      success: true,
+      free: true,
+      ticket: {
+        ...ticket,
+        qrToken: undefined,
+      },
+      qrCodeUrl: `/qrcodes/${ticket.ticketId}.png`,
+      qrData,
+      ticketUrl: `${getBaseUrl()}/ticket/${ticket.ticketId}`,
+      visitor: visitorInfo,
+    });
+  } catch (err) {
+    console.error('Free ticket creation error:', err.message);
+    res.status(500).json({ error: 'Failed to create free ticket: ' + err.message });
   }
 };
 
@@ -130,7 +205,7 @@ exports.verifyPayment = async (req, res) => {
       visitorInfo = { id: visitor.id, name: visitor.name, token: visitor.token };
     }
 
-    const data = { fullName, email, phone, eventDate, visitorId, reference: req.body.reference || '' };
+    const data = { fullName, email, phone, eventDate, visitorId, reference: req.body.reference || '', price: 1000 };
     const ticket = Ticket.create(data);
 
     const qrData = `${getBaseUrl()}/api/tickets/verify/${ticket.ticketId}?token=${ticket.qrToken}`;
@@ -199,7 +274,7 @@ exports.completeOrder = async (req, res) => {
       visitor = Visitor.updateToken(visitor.id, newToken);
     }
 
-    const data = { fullName: fullName || visitor.name, email, phone: phone || '', eventDate: eventDate || '', visitorId: visitor.id, reference: req.body.reference || '' };
+    const data = { fullName: fullName || visitor.name, email, phone: phone || '', eventDate: eventDate || '', visitorId: visitor.id, reference: req.body.reference || '', price: 1000 };
     const ticket = Ticket.create(data);
 
     const qrData = `${getBaseUrl()}/api/tickets/verify/${ticket.ticketId}?token=${ticket.qrToken}`;

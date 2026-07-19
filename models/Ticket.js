@@ -84,8 +84,8 @@ class Ticket {
     const ticketId = data.ticketId || getNextTicketId();
     const qrToken = generateQrToken();
     execute(
-      `INSERT INTO tickets (ticketId, fullName, email, phone, ticketType, eventDate, qrToken, status, purchaseDate, createdAt, updatedAt, visitorId, reference)
-       VALUES (?, ?, ?, ?, ?, ?, ?, 'Active', datetime('now'), datetime('now'), datetime('now'), ?, ?)`,
+      `INSERT INTO tickets (ticketId, fullName, email, phone, ticketType, eventDate, price, qrToken, status, purchaseDate, createdAt, updatedAt, visitorId, reference)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'Active', datetime('now'), datetime('now'), datetime('now'), ?, ?)`,
       [
         ticketId,
         data.fullName,
@@ -93,6 +93,7 @@ class Ticket {
         data.phone,
         data.ticketType || 'General',
         data.eventDate,
+        data.price || 0,
         qrToken,
         data.visitorId || null,
         data.reference || ''
@@ -155,6 +156,11 @@ class Ticket {
       [ticket.id]
     );
     return { valid: true, ticket: this.getById(ticket.id) };
+  }
+
+  static count() {
+    const row = queryOne('SELECT COUNT(*) as count FROM tickets');
+    return row ? row.count : 0;
   }
 
   static getStats() {

@@ -449,7 +449,7 @@
       document.getElementById('passName').textContent = t.fullName;
       document.getElementById('passEmail').textContent = t.email;
       document.getElementById('passDate').textContent = t.eventDate;
-      document.getElementById('passAmount').textContent = '\u20B91';
+      document.getElementById('passAmount').textContent = t.price === 0 ? 'FREE' : '\u20B910';
 
       const badge = document.getElementById('passBadge');
       const dot = badge.querySelector('.badge-dot');

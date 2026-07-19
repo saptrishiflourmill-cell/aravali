@@ -10,6 +10,7 @@ const { initDb } = require('./database/db');
 const ticketRoutes = require('./routes/tickets');
 const paymentRoutes = require('./routes/payments');
 const authRoutes = require('./routes/auth');
+const Ticket = require('./models/Ticket');
 
 const app = express();
 app.set('trust proxy', true);
@@ -42,9 +43,18 @@ app.get('/api/health', (req, res) => {
 });
 
 app.get('/api/config', (req, res) => {
+  const totalTickets = Ticket.count();
+  const freePromoActive = totalTickets < 3;
   res.json({
     status: 'ok',
-    razorpayKeyId: process.env.RAZORPAY_KEY_ID || ''
+    razorpayKeyId: process.env.RAZORPAY_KEY_ID || '',
+    pricing: {
+      freePromoActive,
+      remainingFree: Math.max(0, 3 - totalTickets),
+      totalTickets,
+      paidAmount: 1000,
+      paidAmountDisplay: '₹10',
+    }
   });
 });
 

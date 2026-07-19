@@ -38,6 +38,9 @@ async function initDb() {
   if (!cols.find(c => c.name === 'reference')) {
     try { db.run("ALTER TABLE tickets ADD COLUMN reference TEXT DEFAULT ''"); } catch (e) {}
   }
+  if (!cols.find(c => c.name === 'price')) {
+    try { db.run("ALTER TABLE tickets ADD COLUMN price INTEGER DEFAULT 0"); } catch (e) {}
+  }
 
   const stmt = db.prepare('SELECT COUNT(*) as count FROM users');
   const exists = stmt.step() ? stmt.getAsObject() : { count: 0 };

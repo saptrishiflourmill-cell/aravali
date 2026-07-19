@@ -805,9 +805,9 @@
             </select>
           </div>
 
-          <div class="price-display">
+          <div class="price-display" id="priceDisplay">
             <span class="pd-label">Ticket Price</span>
-            <span class="pd-value">&#8377;1<span> INR</span></span>
+            <span class="pd-value"><span id="priceAmount">&#8377;1</span><span> INR</span></span>
           </div>
 
           <button type="submit" class="btn-purchase" id="purchaseBtn">
@@ -1122,6 +1122,7 @@
       document.getElementById('passName').textContent = verifyData.ticket.fullName;
       document.getElementById('passEmail').textContent = verifyData.ticket.email;
       document.getElementById('passDate').textContent = verifyData.ticket.eventDate;
+      document.getElementById('passAmount').textContent = verifyData.ticket.price === 0 ? 'FREE' : '\u20B910';
       if (verifyData.visitor) {
         visitorToken = verifyData.visitor.token;
         visitorData = verifyData.visitor;
@@ -1131,6 +1132,25 @@
       }
       loadMyTickets();
     }
+
+    async function fetchPricing() {
+      try {
+        const res = await fetch('/api/config');
+        const data = await res.json();
+        if (data.pricing) {
+          const priceEl = document.getElementById('priceAmount');
+          const btnText = document.getElementById('btnText');
+          if (data.pricing.freePromoActive) {
+            priceEl.textContent = 'FREE';
+            btnText.innerHTML = '&#127881; Get Free Ticket';
+          } else {
+            priceEl.textContent = '\u20B910';
+            btnText.innerHTML = '&#127915; Pay \u20B910';
+          }
+        }
+      } catch (e) {}
+    }
+    fetchPricing();
 
     document.getElementById('ticketForm').addEventListener('submit', async function(e) {
       e.preventDefault();
@@ -1157,7 +1177,33 @@
         if (!orderRes.ok) {
           showToast(orderData.error || 'Failed to create payment order', 'error');
           btn.disabled = false;
-          btn.querySelector('#btnText').textContent = 'Pay \u20B91';
+          btn.querySelector('#btnText').textContent = document.getElementById('priceAmount').textContent === 'FREE' ? 'Get Free Ticket' : 'Pay \u20B910';
+          return;
+        }
+
+        if (orderData.free) {
+          btn.querySelector('#btnText').textContent = 'Creating free ticket...';
+          try {
+            const freeRes = await fetch('/api/payments/create-free-ticket', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ ...formData, visitorToken })
+            });
+            const freeData = await freeRes.json();
+            if (!freeRes.ok) {
+              showToast(freeData.error || 'Failed to create free ticket', 'error');
+              btn.disabled = false;
+              btn.querySelector('#btnText').textContent = 'Get Free Ticket';
+              return;
+            }
+            showTicketAfterPayment(freeData);
+            showToast('Free ticket booked!', 'success');
+            fetchPricing();
+          } catch (freeErr) {
+            showToast('Error: ' + freeErr.message, 'error');
+            btn.disabled = false;
+            btn.querySelector('#btnText').textContent = 'Get Free Ticket';
+          }
           return;
         }
 
@@ -1197,23 +1243,24 @@
               if (!verifyRes.ok) {
                 showToast(verifyData.error || 'Payment verification failed', 'error');
                 btn.disabled = false;
-                btn.querySelector('#btnText').textContent = 'Pay \u20B91';
+                btn.querySelector('#btnText').textContent = 'Pay \u20B910';
                 return;
               }
 
               showTicketAfterPayment(verifyData);
               showToast('Payment successful! Ticket booked!', 'success');
+              fetchPricing();
             } catch (verifyErr) {
               showToast('Error verifying payment: ' + verifyErr.message, 'error');
               btn.disabled = false;
-              btn.querySelector('#btnText').textContent = 'Pay \u20B91';
+              btn.querySelector('#btnText').textContent = 'Pay \u20B910';
             }
           },
           modal: {
             ondismiss: function() {
               showToast('Payment cancelled', 'error');
               btn.disabled = false;
-              btn.querySelector('#btnText').textContent = 'Pay \u20B91';
+              btn.querySelector('#btnText').textContent = 'Pay \u20B910';
             }
           },
           prefill: {
@@ -1231,7 +1278,7 @@
       } catch (err) {
         showToast('Error: ' + err.message, 'error');
         btn.disabled = false;
-        btn.querySelector('#btnText').textContent = 'Pay \u20B91';
+        btn.querySelector('#btnText').textContent = document.getElementById('priceAmount').textContent === 'FREE' ? 'Get Free Ticket' : 'Pay \u20B910';
       }
     });
 
@@ -1299,11 +1346,7 @@
       document.getElementById('pendingOrderBanner').style.display = 'none';
       document.getElementById('ticketForm').reset();
       document.getElementById('purchaseBtn').disabled = false;
-      document.getElementById('btnText').textContent = 'Pay \u20B91';
-      const today = new Date();
-      const nextWeek = new Date(today);
-      nextWeek.setDate(today.getDate() + 14);
-      document.getElementById('eventDate').value = nextWeek.toISOString().split('T')[0];
+      fetchPricing();
     }
 
     function retryPendingOrder() {
