@@ -22,22 +22,8 @@ app.use(helmet({
   crossOriginEmbedderPolicy: false
 }));
 app.use(cors());
-app.use(express.json({
-  verify: (req, res, buf) => {
-    if (req.url && req.url.includes('/api/payments/')) {
-      console.log('[RAW BODY]', buf.toString('utf8'));
-    }
-  }
-}));
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-// Debug middleware to log request body
-app.use((req, res, next) => {
-  if (req.path.startsWith('/api/')) {
-    console.log(`[${new Date().toISOString()}] ${req.method} ${req.path}`, req.body);
-  }
-  next();
-});
 
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/uploads', express.static(path.join(DATA_DIR, 'uploads')));

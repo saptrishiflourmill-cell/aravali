@@ -111,9 +111,19 @@ exports.verifyPayment = async (req, res) => {
 
     const visitorToken = req.body.visitorToken;
     let visitorId = null;
+    let visitorInfo = null;
     if (visitorToken) {
       const visitor = Visitor.findByToken(visitorToken);
       if (visitor) visitorId = visitor.id;
+    } else if (email) {
+      let visitor = Visitor.findByEmail(email);
+      if (!visitor) {
+        visitor = Visitor.create({ email, name: fullName });
+      }
+      visitorId = visitor.id;
+      const newToken = Visitor.generateToken();
+      visitor = Visitor.updateToken(visitorId, newToken);
+      visitorInfo = { id: visitor.id, name: visitor.name, token: visitor.token };
     }
 
     const data = { fullName, email, phone, eventDate, visitorId };
@@ -143,6 +153,7 @@ exports.verifyPayment = async (req, res) => {
       qrCodeUrl: `/qrcodes/${ticket.ticketId}.png`,
       qrData,
       ticketUrl: `${getBaseUrl()}/ticket/${ticket.ticketId}`,
+      visitor: visitorInfo,
     });
   } catch (err) {
     console.error('Payment verification error:', err);

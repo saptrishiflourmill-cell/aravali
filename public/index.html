@@ -873,22 +873,14 @@
               document.getElementById('passDate').textContent = verifyData.ticket.eventDate;
               localStorage.setItem('savedEmail', formData.email);
 
-              if (visitorToken) {
-                loadMyTickets();
-              } else {
-                const autoRes = await fetch('/api/auth/email-login', {
-                  method: 'POST', headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({ email: formData.email })
-                });
-                const autoData = await autoRes.json();
-                if (autoData.success) {
-                  visitorToken = autoData.token; visitorData = autoData.visitor;
-                  localStorage.setItem('visitorToken', autoData.token);
-                  localStorage.setItem('visitorName', autoData.visitor.name || formData.email);
-                  updateUserUI(); loadMyTickets();
-                }
+              if (verifyData.visitor) {
+                visitorToken = verifyData.visitor.token;
+                visitorData = verifyData.visitor;
+                localStorage.setItem('visitorToken', verifyData.visitor.token);
+                localStorage.setItem('visitorName', verifyData.visitor.name || formData.email);
+                updateUserUI();
               }
-              showToast('Payment successful! Ticket booked!', 'success');
+              loadMyTickets();
             } catch (verifyErr) {
               showToast('Error verifying payment: ' + verifyErr.message, 'error');
               btn.disabled = false;
