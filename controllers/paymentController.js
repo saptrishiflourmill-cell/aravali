@@ -165,3 +165,63 @@ exports.verifyPayment = async (req, res) => {
     res.status(500).json({ error: 'Failed to process payment. Please contact support with your payment ID.' });
   }
 };
+
+exports.completeOrder = async (req, res) => {
+  try {
+    if (!razorpay) {
+      return res.status(503).json({ error: 'Payment gateway not configured' });
+    }
+
+    const { orderId, fullName, email, phone, eventDate } = req.body;
+    if (!orderId || !email) {
+      return res.status(400).json({ error: 'Order ID and email are required' });
+    }
+
+    const order = await razorpay.orders.fetch(orderId);
+    if (order.status !== 'paid') {
+      return res.status(400).json({ error: 'Payment not completed', status: order.status });
+    }
+
+    const payments = await razorpay.orders.fetchPayments(orderId);
+    if (!payments || payments.items.length === 0) {
+      return res.status(400).json({ error: 'No payment found for this order' });
+    }
+
+    const payment = payments.items[0];
+    const razorpay_payment_id = payment.id;
+
+    let visitor = Visitor.findByEmail(email);
+    if (!visitor) {
+      visitor = Visitor.create({ email, name: fullName || email.split('@')[0] });
+    }
+    if (!visitor.token) {
+      const newToken = Visitor.generateToken();
+      visitor = Visitor.updateToken(visitor.id, newToken);
+    }
+
+    const data = { fullName: fullName || visitor.name, email, phone: phone || '', eventDate: eventDate || '', visitorId: visitor.id };
+    const ticket = Ticket.create(data);
+
+    const qrData = `${getBaseUrl()}/api/tickets/verify/${ticket.ticketId}?token=${ticket.qrToken}`;
+    const qrPath = path.join(qrDir, `${ticket.ticketId}.png`);
+    try {
+      await QRCode.toFile(qrPath, qrData, { width: 300, margin: 2, color: { dark: '#1e293b', light: '#ffffff' } });
+    } catch (qrErr) {
+      console.error('QR generation error:', qrErr);
+    }
+
+    res.json({
+      success: true,
+      paymentId: razorpay_payment_id,
+      orderId,
+      ticket: { ...ticket, qrToken: undefined },
+      qrCodeUrl: `/qrcodes/${ticket.ticketId}.png`,
+      qrData,
+      ticketUrl: `${getBaseUrl()}/ticket/${ticket.ticketId}`,
+      visitor: { id: visitor.id, name: visitor.name, token: visitor.token },
+    });
+  } catch (err) {
+    console.error('Complete order error:', err.message);
+    res.status(500).json({ error: 'Failed to complete order: ' + err.message });
+  }
+};

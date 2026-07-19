@@ -657,6 +657,16 @@
       </div>
     </div>
 
+    <div id="pendingOrderBanner" style="display:none;margin-top:20px">
+      <div class="glass-card" style="padding:16px;text-align:center">
+        <div style="font-size:16px;font-weight:700;color:#fff;margin-bottom:8px">&#128274; Payment Detected</div>
+        <div style="font-size:13px;color:#94a3b8;margin-bottom:12px">It looks like you made a payment but the ticket wasn't created yet. Click below to complete your purchase.</div>
+        <button class="btn-purchase" onclick="retryPendingOrder()" style="padding:12px 24px;font-size:14px">
+          <span class="btn-content"><span>Complete My Purchase</span></span>
+        </button>
+      </div>
+    </div>
+
     <div id="myTicketsSection" style="display:none">
       <div class="glass-card" style="margin-top:20px">
         <div class="my-tickets-header">
@@ -801,7 +811,56 @@
         updateUserUI();
         loadMyTickets();
       }
+
+      checkPendingOrder();
     });
+
+    function checkPendingOrder() {
+      const pending = sessionStorage.getItem('pendingOrder');
+      if (!pending) return;
+      try {
+        const data = JSON.parse(pending);
+        const elapsed = Date.now() - data.time;
+        if (elapsed > 300000) { sessionStorage.removeItem('pendingOrder'); return; }
+        showToast('Payment detected! Completing your purchase...', 'success');
+        fetch('/api/payments/complete-order', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data.formData || { orderId: data.orderId, email: data.email })
+        })
+        .then(r => r.json().then(d => ({ status: r.status, data: d })))
+        .then(({ status, data }) => {
+          if (status !== 200 || !data.ticket) {
+            document.getElementById('pendingOrderBanner').style.display = 'flex';
+            return;
+          }
+          sessionStorage.removeItem('pendingOrder');
+          showTicketAfterPayment(data);
+        })
+        .catch(() => {
+          document.getElementById('pendingOrderBanner').style.display = 'flex';
+        });
+      } catch (e) { sessionStorage.removeItem('pendingOrder'); }
+    }
+
+    function showTicketAfterPayment(verifyData) {
+      document.getElementById('formCard').style.display = 'none';
+      document.getElementById('successCard').style.display = 'block';
+      document.getElementById('successTicketId').textContent = verifyData.ticket.ticketId;
+      document.getElementById('qrCodeImg').src = (verifyData.qrCodeUrl || '') + '?t=' + Date.now();
+      window.lastTicketData = verifyData;
+      document.getElementById('passName').textContent = verifyData.ticket.fullName;
+      document.getElementById('passEmail').textContent = verifyData.ticket.email;
+      document.getElementById('passDate').textContent = verifyData.ticket.eventDate;
+      if (verifyData.visitor) {
+        visitorToken = verifyData.visitor.token;
+        visitorData = verifyData.visitor;
+        localStorage.setItem('visitorToken', verifyData.visitor.token);
+        localStorage.setItem('visitorName', verifyData.visitor.name || '');
+        updateUserUI();
+      }
+      loadMyTickets();
+    }
 
     document.getElementById('ticketForm').addEventListener('submit', async function(e) {
       e.preventDefault();
@@ -833,6 +892,13 @@
 
         btn.querySelector('#btnText').textContent = 'Opening Razorpay...';
 
+        sessionStorage.setItem('pendingOrder', JSON.stringify({
+          orderId: orderData.orderId,
+          email: formData.email,
+          time: Date.now(),
+          formData: { orderId: orderData.orderId, fullName: formData.fullName, email: formData.email, phone: formData.phone, eventDate: formData.eventDate }
+        }));
+
         const razorpayOptions = {
           key: orderData.keyId,
           amount: orderData.amount,
@@ -856,6 +922,7 @@
               });
 
               const verifyData = await verifyRes.json();
+              sessionStorage.removeItem('pendingOrder');
               if (!verifyRes.ok) {
                 showToast(verifyData.error || 'Payment verification failed', 'error');
                 btn.disabled = false;
@@ -863,24 +930,8 @@
                 return;
               }
 
-              document.getElementById('formCard').style.display = 'none';
-              document.getElementById('successCard').style.display = 'block';
-              document.getElementById('successTicketId').textContent = verifyData.ticket.ticketId;
-              document.getElementById('qrCodeImg').src = verifyData.qrCodeUrl + '?t=' + Date.now();
-              window.lastTicketData = verifyData;
-              document.getElementById('passName').textContent = verifyData.ticket.fullName;
-              document.getElementById('passEmail').textContent = verifyData.ticket.email;
-              document.getElementById('passDate').textContent = verifyData.ticket.eventDate;
-              localStorage.setItem('savedEmail', formData.email);
-
-              if (verifyData.visitor) {
-                visitorToken = verifyData.visitor.token;
-                visitorData = verifyData.visitor;
-                localStorage.setItem('visitorToken', verifyData.visitor.token);
-                localStorage.setItem('visitorName', verifyData.visitor.name || formData.email);
-                updateUserUI();
-              }
-              loadMyTickets();
+              showTicketAfterPayment(verifyData);
+              showToast('Payment successful! Ticket booked!', 'success');
             } catch (verifyErr) {
               showToast('Error verifying payment: ' + verifyErr.message, 'error');
               btn.disabled = false;
@@ -974,6 +1025,7 @@
       document.getElementById('formCard').style.display = 'block';
       document.getElementById('successCard').style.display = 'none';
       document.getElementById('saveSection').style.display = 'none';
+      document.getElementById('pendingOrderBanner').style.display = 'none';
       document.getElementById('ticketForm').reset();
       document.getElementById('purchaseBtn').disabled = false;
       document.getElementById('btnText').textContent = 'Pay \u20B91';
@@ -981,6 +1033,42 @@
       const nextWeek = new Date(today);
       nextWeek.setDate(today.getDate() + 14);
       document.getElementById('eventDate').value = nextWeek.toISOString().split('T')[0];
+    }
+
+    function retryPendingOrder() {
+      const pending = sessionStorage.getItem('pendingOrder');
+      if (!pending) { document.getElementById('pendingOrderBanner').style.display = 'none'; return; }
+      try {
+        const data = JSON.parse(pending);
+        document.querySelector('#pendingOrderBanner .btn-purchase').disabled = true;
+        document.querySelector('#pendingOrderBanner .btn-purchase span span').textContent = 'Completing...';
+        fetch('/api/payments/complete-order', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data.formData || { orderId: data.orderId, email: data.email })
+        })
+        .then(r => r.json().then(d => ({ status: r.status, data: d })))
+        .then(({ status, data }) => {
+          if (status !== 200 || !data.ticket) {
+            showToast(data.error || 'Could not complete order', 'error');
+            document.querySelector('#pendingOrderBanner .btn-purchase').disabled = false;
+            document.querySelector('#pendingOrderBanner .btn-purchase span span').textContent = 'Complete My Purchase';
+            return;
+          }
+          sessionStorage.removeItem('pendingOrder');
+          document.getElementById('pendingOrderBanner').style.display = 'none';
+          showTicketAfterPayment(data);
+          showToast('Purchase completed successfully!', 'success');
+        })
+        .catch(err => {
+          showToast('Error: ' + err.message, 'error');
+          document.querySelector('#pendingOrderBanner .btn-purchase').disabled = false;
+          document.querySelector('#pendingOrderBanner .btn-purchase span span').textContent = 'Complete My Purchase';
+        });
+      } catch (e) {
+        sessionStorage.removeItem('pendingOrder');
+        document.getElementById('pendingOrderBanner').style.display = 'none';
+      }
     }
 
     function showToast(msg, type) {
