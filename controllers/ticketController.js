@@ -141,6 +141,7 @@ exports.scanTicket = (req, res) => {
         fullName: ticket.fullName,
         email: ticket.email,
         ticketType: ticket.ticketType,
+        quantity: ticket.quantity,
         eventDate: ticket.eventDate,
         status: ticket.status,
         usedAt: ticket.usedAt

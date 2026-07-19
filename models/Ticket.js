@@ -84,8 +84,8 @@ class Ticket {
     const ticketId = data.ticketId || getNextTicketId();
     const qrToken = generateQrToken();
     execute(
-      `INSERT INTO tickets (ticketId, fullName, email, phone, ticketType, eventDate, price, qrToken, status, purchaseDate, createdAt, updatedAt, visitorId, reference)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'Active', datetime('now'), datetime('now'), datetime('now'), ?, ?)`,
+      `INSERT INTO tickets (ticketId, fullName, email, phone, ticketType, eventDate, price, quantity, qrToken, status, purchaseDate, createdAt, updatedAt, visitorId, reference)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'Active', datetime('now'), datetime('now'), datetime('now'), ?, ?)`,
       [
         ticketId,
         data.fullName,
@@ -94,6 +94,7 @@ class Ticket {
         data.ticketType || 'General',
         data.eventDate,
         data.price || 0,
+        data.quantity || 1,
         qrToken,
         data.visitorId || null,
         data.reference || ''

@@ -327,7 +327,9 @@
           <p>Welcome, ${escHtml(t.fullName)}!</p>
           <div style="margin-top:12px;text-align:left">
             <div class="detail-row"><span class="lbl">Ticket ID</span><span class="val">${escHtml(t.ticketId)}</span></div>
-            <div class="detail-row"><span class="lbl">Type</span><span class="val">${escHtml(t.ticketType)}</span></div>
+            <div class="detail-row"><span class="lbl">Category</span><span class="val">${escHtml(t.ticketType)}</span></div>
+            <div class="detail-row"><span class="lbl">Persons Allowed</span><span class="val">${escHtml(t.quantity || 1)}</span></div>
+            <div class="detail-row"><span class="lbl">Attendee</span><span class="val">${escHtml(t.fullName)}</span></div>
             <div class="detail-row"><span class="lbl">Event Date</span><span class="val">${escHtml(t.eventDate)}</span></div>
             <div class="detail-row"><span class="lbl">Status</span><span class="val" style="color:#34d399">Used</span></div>
           </div>

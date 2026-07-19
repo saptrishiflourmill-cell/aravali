@@ -805,6 +805,15 @@
             </select>
           </div>
 
+          <div class="form-group">
+            <label>Ticket Category</label>
+            <select id="ticketCategory" name="ticketCategory" required>
+              <option value="Single">Single (1 Person)</option>
+              <option value="Couple">Couple (2 Persons)</option>
+              <option value="VIP Couple">VIP Couple (Male + Female)</option>
+            </select>
+          </div>
+
           <div class="price-display" id="priceDisplay">
             <span class="pd-label">Ticket Price</span>
             <span class="pd-value"><span id="priceAmount">&#8377;1</span><span> INR</span></span>
@@ -858,12 +867,12 @@
                     <div class="tig-value" id="passDate">-</div>
                   </div>
                   <div class="tig-item">
-                    <div class="tig-label">Time</div>
-                    <div class="tig-value">7:00 PM</div>
+                    <div class="tig-label">Category</div>
+                    <div class="tig-value" id="passCategory">-</div>
                   </div>
                   <div class="tig-item">
-                    <div class="tig-label">Venue</div>
-                    <div class="tig-value">Sawariya Resort, Alwar</div>
+                    <div class="tig-label">Persons</div>
+                    <div class="tig-value" id="passPersons">-</div>
                   </div>
                   <div class="tig-item">
                     <div class="tig-label">Amount</div>
@@ -1025,7 +1034,7 @@
               <div class="tm-info">
                 <div class="tm-id">${escHtml(t.ticketId)}</div>
                 <div class="tm-name">${escHtml(t.fullName)}</div>
-                <div class="tm-date">${escHtml(t.eventDate)} &middot; ${statusBadge}</div>
+                <div class="tm-date">${escHtml(t.ticketType || 'Single')} &middot; ${escHtml(t.eventDate)} &middot; ${statusBadge}</div>
               </div>
               <div class="tm-actions">
                 <button class="tm-btn view" onclick="window.open('/ticket/${t.ticketId}','_blank')">View</button>
@@ -1137,6 +1146,8 @@
       document.getElementById('passEmail').textContent = verifyData.ticket.email;
       document.getElementById('passDate').textContent = verifyData.ticket.eventDate;
       document.getElementById('passAmount').textContent = verifyData.ticket.price === 0 ? 'FREE' : '\u20B910';
+      document.getElementById('passCategory').textContent = verifyData.ticket.ticketType || 'Single';
+      document.getElementById('passPersons').textContent = (verifyData.ticket.quantity || 1) + ' Person' + ((verifyData.ticket.quantity || 1) > 1 ? 's' : '');
       if (verifyData.visitor && verifyData.visitor.token) {
         visitorToken = verifyData.visitor.token;
         visitorData = verifyData.visitor;
@@ -1172,12 +1183,15 @@
       btn.disabled = true;
       btn.querySelector('#btnText').textContent = 'Creating order...';
 
+      const catEl = document.getElementById('ticketCategory');
       const formData = {
         fullName: document.getElementById('fullName').value,
         email: document.getElementById('email').value,
         phone: document.getElementById('phone').value,
         eventDate: '2026-08-22',
-        reference: document.getElementById('reference').value
+        reference: document.getElementById('reference').value,
+        ticketType: catEl.value,
+        quantity: catEl.value === 'Single' ? 1 : 2,
       };
 
       try {

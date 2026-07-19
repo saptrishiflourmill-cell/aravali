@@ -374,8 +374,12 @@
                   <div class="tig-value">7:00 PM</div>
                 </div>
                 <div class="tig-item">
-                  <div class="tig-label">Venue</div>
-                  <div class="tig-value">Sawariya Resort, Alwar</div>
+                  <div class="tig-label">Category</div>
+                  <div class="tig-value" id="passCategory">-</div>
+                </div>
+                <div class="tig-item">
+                  <div class="tig-label">Persons</div>
+                  <div class="tig-value" id="passPersons">-</div>
                 </div>
                 <div class="tig-item">
                   <div class="tig-label">Amount</div>
@@ -450,6 +454,8 @@
       document.getElementById('passEmail').textContent = t.email;
       document.getElementById('passDate').textContent = t.eventDate;
       document.getElementById('passAmount').textContent = t.price === 0 ? 'FREE' : '\u20B910';
+      document.getElementById('passCategory').textContent = t.ticketType || 'Single';
+      document.getElementById('passPersons').textContent = (t.quantity || 1) + ' Person' + ((t.quantity || 1) > 1 ? 's' : '');
 
       const badge = document.getElementById('passBadge');
       const dot = badge.querySelector('.badge-dot');
