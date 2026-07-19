@@ -47,64 +47,195 @@
     .error-state h3 { color: #fff; font-size: 20px; margin-bottom: 8px; }
     .error-state p { color: #64748b; font-size: 14px; margin-bottom: 20px; }
 
-    .pass-card {
-      background: #ffffff;
+    /* ===== PREMIUM TICKET DESIGN ===== */
+    .ticket {
+      position: relative;
+      background: linear-gradient(145deg, #1e1b2e, #2a1f3e);
       border-radius: 24px;
       overflow: hidden;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+      padding: 0;
+      box-shadow:
+        0 0 0 1px rgba(139,92,246,0.15),
+        0 20px 60px rgba(0,0,0,0.5),
+        inset 0 1px 0 rgba(255,255,255,0.06);
     }
-    .pass-card .pass-accent {
-      height: 6px;
-      background: linear-gradient(90deg, #8b5cf6, #ec4899);
+    .ticket-bg {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse at 20% 10%, rgba(139,92,246,0.12) 0%, transparent 60%),
+        radial-gradient(ellipse at 80% 90%, rgba(236,72,153,0.08) 0%, transparent 60%),
+        radial-gradient(ellipse at 50% 50%, rgba(255,215,0,0.02) 0%, transparent 70%);
+      pointer-events: none;
     }
-    .pass-card .pass-header {
-      padding: 24px 24px 16px;
+    .ticket-glow {
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      right: -50%;
+      bottom: -50%;
+      background: conic-gradient(from 0deg at 50% 50%, transparent, rgba(139,92,246,0.03), transparent, rgba(236,72,153,0.03), transparent);
+      animation: ticketSpin 12s linear infinite;
+      pointer-events: none;
+    }
+    @keyframes ticketSpin { to { transform: rotate(360deg); } }
+    .ticket-header {
+      position: relative;
+      z-index: 2;
+      padding: 24px 28px 16px;
       text-align: center;
+      border-bottom: 1px solid rgba(255,215,0,0.08);
     }
-    .pass-card .pass-header .event-badge {
-      font-size: 11px; font-weight: 600; color: #8b5cf6; text-transform: uppercase;
-      letter-spacing: 1.5px; margin-bottom: 4px;
+    .ticket-event-badge {
+      font-size: 12px;
+      font-weight: 700;
+      color: #fbbf24;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      text-shadow: 0 0 20px rgba(251,191,36,0.2);
     }
-    .pass-card .pass-header h2 {
-      font-size: 18px; font-weight: 700; color: #1a1a2e;
-    }
-    .pass-card .pass-header .ticket-id {
-      font-size: 12px; color: #94a3b8; font-family: monospace; margin-top: 4px;
-    }
-    .pass-card .pass-body { padding: 0 24px 24px; }
-    .pass-card .pass-qr {
-      text-align: center;
-      background: #f8f9ff;
-      border-radius: 16px;
-      padding: 20px;
-      margin-bottom: 16px;
-    }
-    .pass-card .pass-qr img { max-width: 200px; width: 100%; height: auto; }
-    .pass-card .pass-info { margin-bottom: 16px; }
-    .pass-card .pass-info .info-row {
-      display: flex; justify-content: space-between; padding: 10px 0;
-      border-bottom: 1px solid #f1f5f9; font-size: 14px;
-    }
-    .pass-card .pass-info .info-row:last-child { border-bottom: none; }
-    .pass-card .pass-info .info-row .label { color: #64748b; }
-    .pass-card .pass-info .info-row .value { color: #1a1a2e; font-weight: 600; }
-    .pass-card .pass-footer {
-      padding: 16px 24px;
-      background: #1a1a2e;
-      color: rgba(255,255,255,0.6);
+    .ticket-id-small {
       font-size: 11px;
-      text-align: center;
-      letter-spacing: 0.5px;
+      color: rgba(148,163,184,0.5);
+      font-family: monospace;
+      margin-top: 5px;
+      letter-spacing: 1px;
     }
-    .pass-card .pass-actions {
-      display: flex; gap: 8px; padding: 0 24px 24px;
+    .ticket-body {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      gap: 0;
+      padding: 0;
     }
-    .pass-card .pass-actions .btn {
-      flex: 1; padding: 12px; border-radius: 12px; font-size: 14px; font-weight: 600;
-      font-family: inherit; cursor: pointer; border: none; text-align: center;
+    .ticket-qr-section {
+      flex: 0 0 auto;
+      padding: 24px 20px 20px 28px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .ticket-qr-frame {
+      position: relative;
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 12px;
+      box-shadow:
+        0 0 0 2px rgba(139,92,246,0.2),
+        0 0 30px rgba(139,92,246,0.1),
+        inset 0 0 0 1px rgba(139,92,246,0.1);
+      overflow: hidden;
+    }
+    .ticket-qr-frame img {
+      display: block;
+      max-width: 130px;
+      width: 100%;
+      height: auto;
+      border-radius: 8px;
+    }
+    @keyframes tScanLine {
+      0% { top: 20px; opacity: 0; }
+      20% { opacity: 0.7; }
+      80% { opacity: 0.7; }
+      100% { top: calc(100% - 20px); opacity: 0; }
+    }
+    .ticket-qr-label {
+      font-size: 8px;
+      letter-spacing: 2.5px;
+      color: rgba(139,92,246,0.4);
+      margin-top: 8px;
+      font-weight: 700;
+    }
+    .ticket-divider {
+      flex: 0 0 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      padding: 10px 0;
+    }
+    .td-circle {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #0f0f1a;
+      border: 2px solid rgba(139,92,246,0.15);
+      flex-shrink: 0;
+      z-index: 2;
+    }
+    .td-line {
+      flex: 1;
+      width: 2px;
+      background: repeating-linear-gradient(to bottom, rgba(139,92,246,0.15) 0px, rgba(139,92,246,0.15) 6px, transparent 6px, transparent 10px);
+      margin: -1px 0;
+    }
+    .ticket-info {
+      flex: 1;
+      padding: 20px 28px 20px 4px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .ticket-attendee { margin-bottom: 2px; }
+    .ti-label {
+      font-size: 9px;
+      font-weight: 700;
+      color: rgba(148,163,184,0.5);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 2px;
+    }
+    .ti-value {
+      font-size: 14px;
+      font-weight: 600;
+      color: #f1f5f9;
+      line-height: 1.3;
+    }
+    .ticket-row {
+      display: flex;
+      gap: 16px;
+    }
+    .ticket-col { flex: 1; }
+    .ticket-col .ti-value { font-size: 12px; }
+    .ticket-status {
+      margin-top: 4px;
+      font-size: 10px;
+      font-weight: 700;
+      color: #10b981;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+    }
+    .ticket-footer {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 28px;
+      border-top: 1px solid rgba(255,255,255,0.04);
+      background: rgba(0,0,0,0.2);
+    }
+    .tf-left { display: flex; align-items: center; gap: 8px; }
+    .tf-right {
+      font-size: 9px;
+      font-weight: 600;
+      color: rgba(148,163,184,0.3);
+      letter-spacing: 1.5px;
     }
     .status-active { color: #10b981; }
     .status-used { color: #f59e0b; }
+
+    @media (max-width: 500px) {
+      .ticket-body { flex-direction: column; align-items: center; }
+      .ticket-qr-section { padding: 20px 20px 10px; }
+      .ticket-qr-frame img { max-width: 140px; }
+      .ticket-divider { flex-direction: row; padding: 0 20px; width: 100%; }
+      .td-line { width: 100%; height: 2px; margin: 0 -1px; background: repeating-linear-gradient(90deg, rgba(139,92,246,0.15) 0px, rgba(139,92,246,0.15) 6px, transparent 6px, transparent 10px); }
+      .td-circle { width: 12px; height: 12px; }
+      .ticket-info { padding: 10px 20px 20px; width: 100%; }
+      .ticket-header { padding: 18px 20px 12px; }
+      .ticket-footer { padding: 8px 20px; }
+    }
   </style>
 </head>
 <body>
@@ -130,47 +261,65 @@
     </div>
 
     <div id="passContent" style="display:none">
-      <div class="pass-card">
-        <div class="pass-accent"></div>
-        <div class="pass-header">
-          <div class="event-badge">Summer Music Fest</div>
-          <h2>Entry Pass</h2>
-          <div class="ticket-id" id="ticketIdDisplay">-</div>
+      <div class="ticket">
+        <div class="ticket-bg"></div>
+        <div class="ticket-glow"></div>
+        <div class="ticket-header">
+          <div class="ticket-event-badge">Aravali Fashion Show 2026</div>
+          <div class="ticket-id-small" id="passTicketId">-</div>
         </div>
-        <div class="pass-body">
-          <div class="pass-qr">
-            <img id="passQRImg" alt="QR Code">
+        <div class="ticket-body">
+          <div class="ticket-qr-section">
+            <div class="ticket-qr-frame">
+              <div class="ticket-qr-scan-line" style="position:absolute;left:12px;right:12px;height:2px;background:linear-gradient(90deg,transparent,#8b5cf6,#ec4899,transparent);animation:tScanLine 2.5s ease-in-out infinite;opacity:0.6;pointer-events:none"></div>
+              <img id="passQRImg" alt="QR Code">
+            </div>
+            <div class="ticket-qr-label">SCAN FOR ENTRY</div>
           </div>
-          <div class="pass-info">
-            <div class="info-row">
-              <span class="label">Attendee</span>
-              <span class="value" id="passName">-</span>
+          <div class="ticket-divider">
+            <div class="td-circle"></div>
+            <div class="td-line"></div>
+            <div class="td-circle"></div>
+          </div>
+          <div class="ticket-info">
+            <div class="ticket-attendee">
+              <div class="ti-label">ATTENDEE</div>
+              <div class="ti-value" id="passName">-</div>
             </div>
-            <div class="info-row">
-              <span class="label">Email</span>
-              <span class="value" id="passEmail">-</span>
+            <div class="ticket-row">
+              <div class="ticket-col">
+                <div class="ti-label">DATE</div>
+                <div class="ti-value" id="passDate">-</div>
+              </div>
+              <div class="ticket-col">
+                <div class="ti-label">VENUE</div>
+                <div class="ti-value">Sawariya Resort, Alwar</div>
+              </div>
             </div>
-            <div class="info-row">
-              <span class="label">Ticket Type</span>
-              <span class="value" id="passType">-</span>
+            <div class="ticket-row">
+              <div class="ticket-col">
+                <div class="ti-label">TIME</div>
+                <div class="ti-value">7:00 PM</div>
+              </div>
+              <div class="ticket-col">
+                <div class="ti-label">AMOUNT</div>
+                <div class="ti-value" id="passAmount">&#8377;1</div>
+              </div>
             </div>
-            <div class="info-row">
-              <span class="label">Event Date</span>
-              <span class="value" id="passDate">-</span>
+            <div class="ticket-row">
+              <div class="ticket-col">
+                <div class="ti-label">EMAIL</div>
+                <div class="ti-value" id="passEmail" style="font-size:10px;word-break:break-all">-</div>
+              </div>
             </div>
-            <div class="info-row">
-              <span class="label">Status</span>
-              <span class="value" id="passStatus">-</span>
-            </div>
+            <div class="ticket-status" id="passStatus">&#10003; ACTIVE</div>
           </div>
         </div>
-        <div class="pass-actions">
-          <button class="btn btn-primary" onclick="window.print()">&#128424; Print Pass</button>
-          <a href="/" class="btn" style="background:#f1f5f9;color:#475569;text-decoration:none">&#127881; Get Tickets</a>
-        </div>
-        <div class="pass-footer">
-          This pass is non-transferable. QR code must be presented at entry.
-          Once scanned, pass cannot be reused.
+        <div class="ticket-footer">
+          <div class="tf-left">
+            <img src="/logo.png" alt="" style="height:18px;width:auto;opacity:0.6">
+          </div>
+          <div class="tf-right">&#127928; ARAVALI FASHION SHOW 2026</div>
         </div>
       </div>
     </div>
@@ -221,16 +370,16 @@
       document.getElementById('loadingState').style.display = 'none';
       document.getElementById('passContent').style.display = 'block';
 
-      document.getElementById('ticketIdDisplay').textContent = t.ticketId;
+      document.getElementById('passTicketId').textContent = t.ticketId;
       document.getElementById('passName').textContent = t.fullName;
       document.getElementById('passEmail').textContent = t.email;
-      document.getElementById('passType').textContent = t.ticketType;
       document.getElementById('passDate').textContent = t.eventDate;
+      document.getElementById('passAmount').textContent = '\u20B91';
 
       if (t.status === 'Active') {
-        document.getElementById('passStatus').innerHTML = '<span class="status-active">&#10003; Active (Not yet used)</span>';
+        document.getElementById('passStatus').innerHTML = '\u2713 ACTIVE';
       } else if (t.status === 'Used') {
-        document.getElementById('passStatus').innerHTML = '<span class="status-used">&#9888; Used at ' + (t.usedAt || 'unknown') + '</span>';
+        document.getElementById('passStatus').innerHTML = '\u26A0 Used at ' + (t.usedAt || 'unknown');
       } else {
         document.getElementById('passStatus').textContent = t.status;
       }
