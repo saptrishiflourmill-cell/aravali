@@ -525,6 +525,7 @@
       .ticket-mini .tm-actions { width: 100%; justify-content: flex-end; }
     }
   </style>
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 </head>
 <body>
   <div id="bg-gradient"></div>
@@ -598,7 +599,7 @@
 
           <button type="submit" class="btn-purchase" id="purchaseBtn">
             <span class="btn-content">
-              <span id="btnText">&#127915; Get Your Ticket for &#8377;1</span>
+              <span id="btnText">&#127915; Pay &#x20B9;1</span>
             </span>
           </button>
         </form>
@@ -806,55 +807,117 @@
       e.preventDefault();
       const btn = document.getElementById('purchaseBtn');
       btn.disabled = true;
-      btn.querySelector('#btnText').textContent = 'Creating...';
+      btn.querySelector('#btnText').textContent = 'Creating order...';
+
+      const formData = {
+        fullName: document.getElementById('fullName').value,
+        email: document.getElementById('email').value,
+        phone: document.getElementById('phone').value,
+        eventDate: document.getElementById('eventDate').value
+      };
 
       try {
-        const res = await fetch('/api/tickets/purchase', {
+        const orderRes = await fetch('/api/payments/create-order', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', ...getVisitorHeaders() },
-          body: JSON.stringify({
-            fullName: document.getElementById('fullName').value,
-            email: document.getElementById('email').value,
-            phone: document.getElementById('phone').value,
-            eventDate: document.getElementById('eventDate').value
-          })
+          body: JSON.stringify(formData)
         });
 
-        const data = await res.json();
-        if (!res.ok) {
-          showToast(data.error || 'Purchase failed', 'error');
+        const orderData = await orderRes.json();
+        if (!orderRes.ok) {
+          showToast(orderData.error || 'Failed to create payment order', 'error');
           btn.disabled = false;
-          btn.querySelector('#btnText').textContent = 'Get Your Free Ticket';
+          btn.querySelector('#btnText').textContent = 'Pay \u20B91';
           return;
         }
 
-        document.getElementById('formCard').style.display = 'none';
-        document.getElementById('successCard').style.display = 'block';
-        document.getElementById('successTicketId').textContent = data.ticket.ticketId;
-        document.getElementById('qrCodeImg').src = data.qrCodeUrl + '?t=' + Date.now();
-        window.lastTicketData = data;
-        document.getElementById('passName').textContent = data.ticket.fullName;
-        document.getElementById('passEmail').textContent = data.ticket.email;
-        document.getElementById('passDate').textContent = data.ticket.eventDate;
-        localStorage.setItem('savedEmail', document.getElementById('email').value);
-        if (visitorToken) { loadMyTickets(); } else {
-          const autoRes = await fetch('/api/auth/email-login', {
-            method: 'POST', headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email: document.getElementById('email').value })
-          });
-          const autoData = await autoRes.json();
-          if (autoData.success) {
-            visitorToken = autoData.token; visitorData = autoData.visitor;
-            localStorage.setItem('visitorToken', autoData.token);
-            localStorage.setItem('visitorName', autoData.visitor.name || document.getElementById('email').value);
-            updateUserUI(); loadMyTickets();
+        btn.querySelector('#btnText').textContent = 'Opening Razorpay...';
+
+        const razorpayOptions = {
+          key: orderData.keyId,
+          amount: orderData.amount,
+          currency: orderData.currency,
+          name: 'Summer Music Fest',
+          description: 'Event Ticket Purchase',
+          order_id: orderData.orderId,
+          handler: async function(response) {
+            btn.querySelector('#btnText').textContent = 'Verifying payment...';
+            try {
+              const verifyRes = await fetch('/api/payments/verify-payment', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  razorpay_order_id: response.razorpay_order_id,
+                  razorpay_payment_id: response.razorpay_payment_id,
+                  razorpay_signature: response.razorpay_signature,
+                  ...formData,
+                  visitorToken: visitorToken
+                })
+              });
+
+              const verifyData = await verifyRes.json();
+              if (!verifyRes.ok) {
+                showToast(verifyData.error || 'Payment verification failed', 'error');
+                btn.disabled = false;
+                btn.querySelector('#btnText').textContent = 'Pay \u20B91';
+                return;
+              }
+
+              document.getElementById('formCard').style.display = 'none';
+              document.getElementById('successCard').style.display = 'block';
+              document.getElementById('successTicketId').textContent = verifyData.ticket.ticketId;
+              document.getElementById('qrCodeImg').src = verifyData.qrCodeUrl + '?t=' + Date.now();
+              window.lastTicketData = verifyData;
+              document.getElementById('passName').textContent = verifyData.ticket.fullName;
+              document.getElementById('passEmail').textContent = verifyData.ticket.email;
+              document.getElementById('passDate').textContent = verifyData.ticket.eventDate;
+              localStorage.setItem('savedEmail', formData.email);
+
+              if (visitorToken) {
+                loadMyTickets();
+              } else {
+                const autoRes = await fetch('/api/auth/email-login', {
+                  method: 'POST', headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ email: formData.email })
+                });
+                const autoData = await autoRes.json();
+                if (autoData.success) {
+                  visitorToken = autoData.token; visitorData = autoData.visitor;
+                  localStorage.setItem('visitorToken', autoData.token);
+                  localStorage.setItem('visitorName', autoData.visitor.name || formData.email);
+                  updateUserUI(); loadMyTickets();
+                }
+              }
+              showToast('Payment successful! Ticket booked!', 'success');
+            } catch (verifyErr) {
+              showToast('Error verifying payment: ' + verifyErr.message, 'error');
+              btn.disabled = false;
+              btn.querySelector('#btnText').textContent = 'Pay \u20B91';
+            }
+          },
+          modal: {
+            ondismiss: function() {
+              showToast('Payment cancelled', 'error');
+              btn.disabled = false;
+              btn.querySelector('#btnText').textContent = 'Pay \u20B91';
+            }
+          },
+          prefill: {
+            name: formData.fullName,
+            email: formData.email,
+            contact: formData.phone
+          },
+          theme: {
+            color: '#8b5cf6'
           }
-        }
-        showToast('Ticket purchased successfully!', 'success');
+        };
+
+        const rzp = new Razorpay(razorpayOptions);
+        rzp.open();
       } catch (err) {
         showToast('Error: ' + err.message, 'error');
         btn.disabled = false;
-        btn.querySelector('#btnText').textContent = 'Get Your Free Ticket';
+        btn.querySelector('#btnText').textContent = 'Pay \u20B91';
       }
     });
 
@@ -921,7 +984,7 @@
       document.getElementById('saveSection').style.display = 'none';
       document.getElementById('ticketForm').reset();
       document.getElementById('purchaseBtn').disabled = false;
-      document.getElementById('btnText').textContent = 'Get Your Free Ticket';
+      document.getElementById('btnText').textContent = 'Pay \u20B91';
       const today = new Date();
       const nextWeek = new Date(today);
       nextWeek.setDate(today.getDate() + 14);

@@ -6,7 +6,6 @@ const QRCode = require('qrcode');
 const path = require('path');
 const fs = require('fs');
 const os = require('os');
-const { validationResult } = require('express-validator');
 
 const DATA_DIR = process.env.DATA_DIR || path.join(__dirname, '..');
 const qrDir = path.join(DATA_DIR, 'qrcodes');
@@ -47,10 +46,6 @@ try {
 
 exports.createOrder = async (req, res) => {
   try {
-    console.log('[createOrder] Request received:', req.body);
-    console.log('[createOrder] Razorpay configured:', !!razorpay);
-    console.log('[createOrder] RAZORPAY_KEY_ID:', process.env.RAZORPAY_KEY_ID);
-    
     if (!razorpay) {
       return res.status(503).json({
         error: 'Payment gateway not configured. Admin must set RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET.',
@@ -58,9 +53,9 @@ exports.createOrder = async (req, res) => {
       });
     }
 
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+    const { fullName, email, phone, eventDate } = req.body;
+    if (!fullName || !email || !phone || !eventDate) {
+      return res.status(400).json({ error: 'All fields are required: fullName, email, phone, eventDate' });
     }
 
     const options = {

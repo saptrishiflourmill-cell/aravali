@@ -22,7 +22,13 @@ app.use(helmet({
   crossOriginEmbedderPolicy: false
 }));
 app.use(cors());
-app.use(express.json());
+app.use(express.json({
+  verify: (req, res, buf) => {
+    if (req.url && req.url.includes('/api/payments/')) {
+      console.log('[RAW BODY]', buf.toString('utf8'));
+    }
+  }
+}));
 app.use(express.urlencoded({ extended: true }));
 
 // Debug middleware to log request body
@@ -50,7 +56,10 @@ app.get('/api/health', (req, res) => {
 });
 
 app.get('/api/config', (req, res) => {
-  res.json({ status: 'ok' });
+  res.json({
+    status: 'ok',
+    razorpayKeyId: process.env.RAZORPAY_KEY_ID || ''
+  });
 });
 
 app.use((req, res) => {
