@@ -12,6 +12,7 @@ const paymentRoutes = require('./routes/payments');
 const authRoutes = require('./routes/auth');
 
 const app = express();
+app.set('trust proxy', true);
 const PORT = process.env.PORT || 3000;
 const HTTPS_PORT = process.env.HTTPS_PORT || 3443;
 const DATA_DIR = process.env.DATA_DIR || __dirname;
@@ -23,6 +24,14 @@ app.use(helmet({
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Debug middleware to log request body
+app.use((req, res, next) => {
+  if (req.path.startsWith('/api/')) {
+    console.log(`[${new Date().toISOString()}] ${req.method} ${req.path}`, req.body);
+  }
+  next();
+});
 
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/uploads', express.static(path.join(DATA_DIR, 'uploads')));
