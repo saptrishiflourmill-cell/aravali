@@ -47,6 +47,10 @@ try {
 
 exports.createOrder = async (req, res) => {
   try {
+    console.log('[createOrder] Request received:', req.body);
+    console.log('[createOrder] Razorpay configured:', !!razorpay);
+    console.log('[createOrder] RAZORPAY_KEY_ID:', process.env.RAZORPAY_KEY_ID);
+    
     if (!razorpay) {
       return res.status(503).json({
         error: 'Payment gateway not configured. Admin must set RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET.',
