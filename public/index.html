@@ -176,6 +176,134 @@
       color: #e2e8f0;
     }
 
+    .ticket-cards {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .ticket-card {
+      position: relative;
+      background: rgba(255,255,255,0.04);
+      border: 1.5px solid rgba(255,255,255,0.08);
+      border-radius: 16px;
+      padding: 16px 12px 14px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .ticket-card:hover {
+      background: rgba(255,255,255,0.07);
+      transform: translateY(-2px);
+    }
+    .ticket-card:active {
+      transform: translateY(0) scale(0.97);
+    }
+    .ticket-card.selected {
+      background: rgba(255,255,255,0.08);
+      border-color: #8b5cf6;
+      box-shadow: 0 0 0 3px rgba(139,92,246,0.15), 0 4px 20px rgba(139,92,246,0.1);
+      transform: translateY(-2px);
+    }
+    .ticket-card.selected.single-card { border-color: #8b5cf6; box-shadow: 0 0 0 3px rgba(139,92,246,0.2), 0 4px 20px rgba(139,92,246,0.15); }
+    .ticket-card.selected.couple-card { border-color: #ec4899; box-shadow: 0 0 0 3px rgba(236,72,153,0.2), 0 4px 20px rgba(236,72,153,0.15); }
+    .ticket-card.selected.vip-card { border-color: #d4af37; box-shadow: 0 0 0 3px rgba(212,175,55,0.2), 0 4px 20px rgba(212,175,55,0.15); }
+    .ticket-card .tc-icon {
+      font-size: 28px;
+      display: block;
+      margin-bottom: 6px;
+      transition: transform 0.3s ease;
+    }
+    .ticket-card.selected .tc-icon {
+      transform: scale(1.1);
+    }
+    .ticket-card .tc-name {
+      font-size: 13px;
+      font-weight: 700;
+      color: #f1f5f9;
+      display: block;
+      margin-bottom: 2px;
+    }
+    .ticket-card .tc-persons {
+      font-size: 11px;
+      color: #64748b;
+      display: block;
+      margin-bottom: 4px;
+    }
+    .ticket-card .tc-price {
+      font-size: 15px;
+      font-weight: 800;
+      color: #fff;
+      display: block;
+      font-family: 'Inter', sans-serif;
+    }
+    .ticket-card .tc-price.free {
+      color: #34d399;
+    }
+    .ticket-card .tc-check {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: transparent;
+      border: 2px solid rgba(255,255,255,0.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      color: transparent;
+      transition: all 0.3s ease;
+    }
+    .ticket-card.selected .tc-check {
+      background: linear-gradient(135deg, #8b5cf6, #ec4899);
+      border-color: transparent;
+      color: #fff;
+      box-shadow: 0 2px 8px rgba(139,92,246,0.3);
+    }
+    .ticket-card .tc-accent {
+      height: 3px;
+      border-radius: 0 0 3px 3px;
+      margin: 10px -12px -14px;
+      transition: all 0.3s ease;
+    }
+    .ticket-card .tc-accent.sgl { background: #8b5cf6; }
+    .ticket-card .tc-accent.cpl { background: #ec4899; }
+    .ticket-card .tc-accent.vip { background: #d4af37; }
+    .ticket-card:not(.selected) .tc-accent { opacity: 0.3; }
+    .ticket-card.selected .tc-accent { opacity: 1; height: 3px; }
+    .ticket-card .tc-badge {
+      display: inline-block;
+      font-size: 8px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding: 2px 8px;
+      border-radius: 6px;
+      margin-bottom: 6px;
+    }
+    .ticket-card .tc-badge.sgl { background: rgba(139,92,246,0.12); color: #a78bfa; }
+    .ticket-card .tc-badge.cpl { background: rgba(236,72,153,0.12); color: #f472b6; }
+    .ticket-card .tc-badge.vip { background: rgba(212,175,55,0.12); color: #d4af37; }
+
+    @media (max-width: 480px) {
+      .ticket-cards { grid-template-columns: 1fr; gap: 8px; }
+      .ticket-card { padding: 14px 12px 12px; display: flex; align-items: center; text-align: left; gap: 12px; }
+      .ticket-card .tc-icon { margin-bottom: 0; font-size: 24px; min-width: 36px; text-align: center; }
+      .ticket-card .tc-body { flex: 1; }
+      .ticket-card .tc-name { margin-bottom: 0; }
+      .ticket-card .tc-persons { margin-bottom: 0; }
+      .ticket-card .tc-price { font-size: 14px; }
+      .ticket-card .tc-accent { display: none; }
+      .ticket-card .tc-check { top: 50%; transform: translateY(-50%); }
+      .ticket-card.selected .tc-check { transform: translateY(-50%); }
+      .ticket-card .tc-badge { margin-bottom: 0; }
+      .ticket-card.selected .tc-icon { transform: none; }
+    }
+
     .form-row {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -806,12 +934,42 @@
           </div>
 
           <div class="form-group">
-            <label>Ticket Category</label>
-            <select id="ticketCategory" name="ticketCategory" required>
-              <option value="Single">Single (Male/Female) — ₹10</option>
-              <option value="Couple">Couple (Male + Female) — ₹20</option>
-              <option value="VIP Couple">VIP Couple (Male + Female) — ₹30</option>
-            </select>
+            <label>Choose Your Ticket</label>
+            <div class="ticket-cards" id="ticketCards">
+              <div class="ticket-card single-card selected" data-value="Single" onclick="selectCategory(this)">
+                <div class="tc-check">&#10003;</div>
+                <span class="tc-icon">&#127915;</span>
+                <div class="tc-body">
+                  <span class="tc-badge sgl">Standard</span>
+                  <span class="tc-name">Single</span>
+                  <span class="tc-persons">1 Person</span>
+                  <span class="tc-price" id="priceSingle">&#8377;10</span>
+                </div>
+                <div class="tc-accent sgl"></div>
+              </div>
+              <div class="ticket-card couple-card" data-value="Couple" onclick="selectCategory(this)">
+                <div class="tc-check">&#10003;</div>
+                <span class="tc-icon">&#128107;</span>
+                <div class="tc-body">
+                  <span class="tc-badge cpl">Couple Pass</span>
+                  <span class="tc-name">Couple</span>
+                  <span class="tc-persons">Male + Female</span>
+                  <span class="tc-price" id="priceCouple">&#8377;20</span>
+                </div>
+                <div class="tc-accent cpl"></div>
+              </div>
+              <div class="ticket-card vip-card" data-value="VIP Couple" onclick="selectCategory(this)">
+                <div class="tc-check">&#10003;</div>
+                <span class="tc-icon">&#128081;</span>
+                <div class="tc-body">
+                  <span class="tc-badge vip">Premium</span>
+                  <span class="tc-name">VIP Couple</span>
+                  <span class="tc-persons">Male + Female</span>
+                  <span class="tc-price" id="priceVipCouple">&#8377;30</span>
+                </div>
+                <div class="tc-accent vip"></div>
+              </div>
+            </div>
           </div>
 
           <div class="price-display" id="priceDisplay">
@@ -1158,31 +1316,47 @@
       await loadMyTickets();
     }
 
-    async function fetchPricing(category) {
+    function getSelectedCategory() {
+      const sel = document.querySelector('.ticket-card.selected');
+      return sel ? sel.getAttribute('data-value') : 'Single';
+    }
+
+    function selectCategory(el) {
+      document.querySelectorAll('.ticket-card').forEach(c => c.classList.remove('selected'));
+      el.classList.add('selected');
+      fetchPricing();
+    }
+
+    async function fetchPricing() {
       try {
         const res = await fetch('/api/config');
         const data = await res.json();
-        if (data.pricing) {
-          const priceEl = document.getElementById('priceAmount');
-          const btnText = document.getElementById('btnText');
-          if (data.pricing.freePromoActive) {
-            priceEl.textContent = 'FREE';
-            btnText.innerHTML = '&#127881; Get Free Ticket';
-          } else {
-            const cat = category || document.getElementById('ticketCategory').value;
-            const catInfo = data.pricing.categories[cat];
-            if (catInfo) {
-              priceEl.textContent = catInfo.display;
-              btnText.innerHTML = '&#127915; Pay ' + catInfo.display;
-            }
-          }
+        if (!data.pricing) return;
+        const priceEl = document.getElementById('priceAmount');
+        const btnText = document.getElementById('btnText');
+        const cat = getSelectedCategory();
+        const catInfo = data.pricing.categories[cat];
+
+        if (data.pricing.freePromoActive) {
+          priceEl.textContent = 'FREE';
+          btnText.innerHTML = '&#127881; Get Free Ticket';
+          document.querySelectorAll('.ticket-card .tc-price').forEach(el => {
+            const c = el.closest('.ticket-card');
+            const val = c.getAttribute('data-value');
+            el.textContent = data.pricing.categories[val] ? data.pricing.categories[val].display : '';
+          });
+        } else if (catInfo) {
+          priceEl.textContent = catInfo.display;
+          btnText.innerHTML = '&#127915; Pay ' + catInfo.display;
+          document.querySelectorAll('.ticket-card .tc-price').forEach(el => {
+            const c = el.closest('.ticket-card');
+            const val = c.getAttribute('data-value');
+            el.textContent = data.pricing.categories[val] ? data.pricing.categories[val].display : '';
+          });
         }
       } catch (e) {}
     }
     fetchPricing();
-    document.getElementById('ticketCategory').addEventListener('change', function() {
-      fetchPricing(this.value);
-    });
 
     document.getElementById('ticketForm').addEventListener('submit', async function(e) {
       e.preventDefault();
@@ -1190,15 +1364,15 @@
       btn.disabled = true;
       btn.querySelector('#btnText').textContent = 'Creating order...';
 
-      const catEl = document.getElementById('ticketCategory');
+      const cat = getSelectedCategory();
       const formData = {
         fullName: document.getElementById('fullName').value,
         email: document.getElementById('email').value,
         phone: document.getElementById('phone').value,
         eventDate: '2026-08-22',
         reference: document.getElementById('reference').value,
-        ticketType: catEl.value,
-        quantity: catEl.value === 'Single' ? 1 : 2,
+        ticketType: cat,
+        quantity: cat === 'Single' ? 1 : 2,
       };
 
       try {
@@ -1277,17 +1451,16 @@
               if (!verifyRes.ok) {
                 showToast(verifyData.error || 'Payment verification failed', 'error');
                 btn.disabled = false;
-                btn.querySelector('#btnText').textContent = 'Pay \u20B910';
+                btn.querySelector('#btnText').textContent = document.getElementById('priceAmount').textContent === 'FREE' ? 'Get Free Ticket' : 'Pay ' + document.getElementById('priceAmount').textContent;
                 return;
               }
-
               await showTicketAfterPayment(verifyData);
               showToast('Payment successful! Ticket booked!', 'success');
               fetchPricing();
             } catch (verifyErr) {
               showToast('Error verifying payment: ' + verifyErr.message, 'error');
               btn.disabled = false;
-              btn.querySelector('#btnText').textContent = 'Pay \u20B910';
+              btn.querySelector('#btnText').textContent = document.getElementById('priceAmount').textContent === 'FREE' ? 'Get Free Ticket' : 'Pay ' + document.getElementById('priceAmount').textContent;
             }
           },
           modal: {
@@ -1295,7 +1468,7 @@
               sessionStorage.removeItem('pendingOrder');
               showToast('Payment cancelled', 'error');
               btn.disabled = false;
-              btn.querySelector('#btnText').textContent = 'Pay \u20B910';
+              btn.querySelector('#btnText').textContent = document.getElementById('priceAmount').textContent === 'FREE' ? 'Get Free Ticket' : 'Pay ' + document.getElementById('priceAmount').textContent;
             }
           },
           prefill: {
@@ -1313,7 +1486,7 @@
       } catch (err) {
         showToast('Error: ' + err.message, 'error');
         btn.disabled = false;
-        btn.querySelector('#btnText').textContent = document.getElementById('priceAmount').textContent === 'FREE' ? 'Get Free Ticket' : 'Pay \u20B910';
+        btn.querySelector('#btnText').textContent = document.getElementById('priceAmount').textContent === 'FREE' ? 'Get Free Ticket' : 'Pay ' + document.getElementById('priceAmount').textContent;
       }
     });
 
@@ -1381,6 +1554,8 @@
       document.getElementById('pendingOrderBanner').style.display = 'none';
       document.getElementById('ticketForm').reset();
       document.getElementById('purchaseBtn').disabled = false;
+      document.querySelectorAll('.ticket-card').forEach(c => c.classList.remove('selected'));
+      document.querySelector('.ticket-card.single-card').classList.add('selected');
       fetchPricing();
     }
 
