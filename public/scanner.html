@@ -151,6 +151,41 @@
     }
     @keyframes spin { to { transform: rotate(360deg); } }
     @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+    .persons-badge {
+      margin: 14px auto 16px;
+      width: fit-content;
+      background: linear-gradient(135deg, rgba(16,185,129,0.15), rgba(16,185,129,0.08));
+      border: 2px solid rgba(16,185,129,0.3);
+      border-radius: 20px;
+      padding: 12px 28px;
+      text-align: center;
+      animation: badgePulse 2s ease-in-out infinite;
+    }
+    .persons-badge .pb-count {
+      font-size: 56px;
+      font-weight: 900;
+      color: #6ee7b7;
+      line-height: 1;
+      letter-spacing: -2px;
+      text-shadow: 0 0 30px rgba(16,185,129,0.3);
+    }
+    .persons-badge .pb-label {
+      font-size: 14px;
+      font-weight: 700;
+      color: #6ee7b7;
+      letter-spacing: 2px;
+      margin-top: 2px;
+    }
+    .persons-badge .pb-icons {
+      font-size: 22px;
+      margin-top: 4px;
+      letter-spacing: 4px;
+    }
+    @keyframes badgePulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(16,185,129,0.2); }
+      50% { box-shadow: 0 0 20px 4px rgba(16,185,129,0.15); }
+    }
   </style>
 </head>
 <body>
@@ -320,15 +355,22 @@
 
     function showSuccessResult(data) {
       const t = data.ticket;
+      const count = t.quantity || 1;
+      const personsWord = count + (count > 1 ? ' PERSONS' : ' PERSON');
+      const personsIcons = count > 1 ? '&#128100;&#128100;' : '&#128100;';
       document.getElementById('scanResult').innerHTML = `
         <div class="result-card success">
           <div class="result-icon">&#10003;</div>
           <h3>Entry Approved</h3>
           <p>Welcome, ${escHtml(t.fullName)}!</p>
+          <div class="persons-badge">
+            <div class="pb-count">${count}</div>
+            <div class="pb-label">${personsWord}</div>
+            <div class="pb-icons">${personsIcons}</div>
+          </div>
           <div style="margin-top:12px;text-align:left">
             <div class="detail-row"><span class="lbl">Ticket ID</span><span class="val">${escHtml(t.ticketId)}</span></div>
             <div class="detail-row"><span class="lbl">Category</span><span class="val">${escHtml(t.ticketType)}</span></div>
-            <div class="detail-row"><span class="lbl">Persons Allowed</span><span class="val">${escHtml(t.quantity || 1)}</span></div>
             <div class="detail-row"><span class="lbl">Attendee</span><span class="val">${escHtml(t.fullName)}</span></div>
             <div class="detail-row"><span class="lbl">Amount Paid</span><span class="val">${t.price === 0 ? 'FREE' : '₹' + (t.price / 100)}</span></div>
             <div class="detail-row"><span class="lbl">Event Date</span><span class="val">${escHtml(t.eventDate)}</span></div>
