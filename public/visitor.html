@@ -6,7 +6,7 @@
   <title>Ticket Info - Event Ticket System</title>
   <link rel="stylesheet" href="/css/style.css">
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Great+Vibes&display=swap');
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -52,6 +52,14 @@
       padding: 16px 24px; background: #1a1a2e;
       color: rgba(255,255,255,0.5); font-size: 11px; text-align: center;
     }
+    .ticket-card .footer .designed-by {
+      font-family: 'Great Vibes', cursive;
+      font-size: 14px;
+      color: #a78bfa;
+      font-weight: 400;
+      letter-spacing: 0.5px;
+      margin-top: 4px;
+    }
   </style>
 </head>
 <body>
@@ -73,7 +81,6 @@
         <div class="accent"></div>
         <div class="body">
           <h1>&#127881; Event Ticket</h1>
-          <p class="subtitle" id="ticketIdDisplay">-</p>
           <div class="info-grid">
             <div class="info-row"><span class="lbl">Attendee</span><span class="val" id="detailName"></span></div>
             <div class="info-row"><span class="lbl">Email</span><span class="val" id="detailEmail"></span></div>
@@ -86,7 +93,8 @@
           </div>
         </div>
         <div class="footer">
-          Summer Music Fest &bull; Non-transferable
+          Aravali Fashion Show 2026 &bull; Non-transferable
+          <div class="designed-by">Designed by Harman</div>
         </div>
       </div>
     </div>
@@ -134,7 +142,6 @@
       document.getElementById('loadingState').style.display = 'none';
       document.getElementById('ticketContent').style.display = 'block';
 
-      document.getElementById('ticketIdDisplay').textContent = 'ID: ' + t.ticketId;
       document.getElementById('detailName').textContent = t.fullName;
       document.getElementById('detailEmail').textContent = t.email;
       document.getElementById('detailType').textContent = t.ticketType;

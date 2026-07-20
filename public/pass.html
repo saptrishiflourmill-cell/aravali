@@ -6,7 +6,7 @@
   <title>Event Pass - Aravali Fashion Show 2026</title>
   <link rel="stylesheet" href="/css/style.css">
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700;800&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700;800&family=Great+Vibes&display=swap');
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -118,23 +118,6 @@
       text-transform: uppercase;
       margin-top: 4px;
       font-weight: 500;
-    }
-    .ticket-id-bar {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 8px;
-      margin-top: 6px;
-    }
-    .ticket-id-bar .dot-sep {
-      width: 3px; height: 3px; border-radius: 50%;
-      background: rgba(212,175,55,0.2);
-    }
-    .ticket-id-val {
-      font-size: 9px;
-      color: rgba(255,255,255,0.2);
-      font-family: 'Inter', monospace;
-      letter-spacing: 1.5px;
     }
     .ticket-main {
       display: flex;
@@ -341,11 +324,6 @@
           <div class="ticket-top">
             <div class="ticket-event-name">Aravali Fashion Show 2026</div>
             <div class="ticket-event-sub">&#9733; Entry Pass &#9733;</div>
-            <div class="ticket-id-bar">
-              <span class="ticket-id-val" id="passTicketId">-</span>
-              <span class="dot-sep"></span>
-              <span class="ticket-id-val">VIP</span>
-            </div>
           </div>
           <div class="ticket-main">
             <div class="ticket-qr-col">
@@ -371,7 +349,7 @@
                 </div>
                 <div class="tig-item">
                   <div class="tig-label">Time</div>
-                  <div class="tig-value">7:00 PM</div>
+                  <div class="tig-value">6:00 PM</div>
                 </div>
                 <div class="tig-item">
                   <div class="tig-label">Category</div>
@@ -398,6 +376,7 @@
           <div class="ticket-foot">
             <img src="/logo.png" alt="">
             <span class="ticket-foot-label">&#127928; Aravali Fashion Show 2026</span>
+            <span class="ticket-foot-label" style="font-family:'Great Vibes',cursive;font-size:13px;color:#d4af37;font-weight:400;letter-spacing:0.5px">Designed by Harman</span>
           </div>
         </div>
       </div>
@@ -449,7 +428,6 @@
       document.getElementById('loadingState').style.display = 'none';
       document.getElementById('passContent').style.display = 'block';
 
-      document.getElementById('passTicketId').textContent = t.ticketId;
       document.getElementById('passName').textContent = t.fullName;
       document.getElementById('passEmail').textContent = t.email;
       document.getElementById('passDate').textContent = t.eventDate;

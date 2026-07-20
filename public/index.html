@@ -6,7 +6,7 @@
   <title>Event Ticket Purchase</title>
   <link rel="stylesheet" href="/css/style.css">
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700;800&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700;800&family=Great+Vibes&display=swap');
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -862,7 +862,7 @@
       <div class="event-details-bar">
         <span>&#128197; <strong>22 August 2026</strong></span>
         <span>&#128205; <strong>Sawariya Resort, Alwar</strong></span>
-        <span>&#128338; <strong>7:00 PM</strong></span>
+        <span>&#128338; <strong>6:00 PM</strong></span>
       </div>
       <div id="countdown" style="display:flex;justify-content:center;gap:12px;margin-top:16px;flex-wrap:wrap">
         <div class="cd-item" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:10px 14px;min-width:60px;text-align:center">
@@ -902,6 +902,12 @@
       <div class="glass-card">
         <div class="card-title">Book Your Ticket</div>
         <div class="card-subtitle">Enter your details to purchase your event pass</div>
+        <div style="text-align:center;margin-bottom:16px">
+          <span style="display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,rgba(212,175,55,0.12),rgba(139,92,246,0.08));border:1px solid rgba(212,175,55,0.25);border-radius:50px;padding:5px 20px 5px 14px;font-size:15px;font-weight:400;font-family:'Great Vibes',cursive;letter-spacing:0.5px;color:#d4af37">
+            <span style="width:7px;height:7px;border-radius:50%;background:linear-gradient(135deg,#d4af37,#ec4899);box-shadow:0 0 12px #d4af37"></span>
+            Designed by Harman
+          </span>
+        </div>
 
         <form id="ticketForm">
           <div class="form-note" style="font-size:12px;color:#a78bfa;margin-bottom:12px;text-align:center;background:rgba(139,92,246,0.08);padding:8px 12px;border-radius:10px;border:1px solid rgba(139,92,246,0.12)">
@@ -924,13 +930,13 @@
           </div>
 
           <div class="form-group">
-            <label>How did you hear about us?</label>
-            <select id="reference" name="reference" required>
-              <option value="">Select an option</option>
-              <option value="Instagram">Instagram</option>
-              <option value="Website">Website</option>
-              <option value="By Harman">By Harman</option>
-            </select>
+            <label>Event Time</label>
+            <input type="time" id="eventTime" name="eventTime" value="18:00" required>
+          </div>
+
+          <div class="form-group">
+            <label>How did you hear about us? <span style="color:#64748b;font-weight:400;font-size:11px">(optional)</span></label>
+            <input type="text" id="reference" name="reference" placeholder="e.g., Instagram, Website, Friend, etc.">
           </div>
 
           <div class="form-group">
@@ -943,7 +949,7 @@
                   <span class="tc-badge sgl">Standard</span>
                   <span class="tc-name">Single</span>
                   <span class="tc-persons">1 Person</span>
-                  <span class="tc-price" id="priceSingle">&#8377;10</span>
+                  <span class="tc-price" id="priceSingle">&#8377;349</span>
                 </div>
                 <div class="tc-accent sgl"></div>
               </div>
@@ -954,7 +960,7 @@
                   <span class="tc-badge cpl">Couple Pass</span>
                   <span class="tc-name">Couple</span>
                   <span class="tc-persons">Male + Female</span>
-                  <span class="tc-price" id="priceCouple">&#8377;20</span>
+                  <span class="tc-price" id="priceCouple">&#8377;599</span>
                 </div>
                 <div class="tc-accent cpl"></div>
               </div>
@@ -965,7 +971,7 @@
                   <span class="tc-badge vip">Premium</span>
                   <span class="tc-name">VIP Couple</span>
                   <span class="tc-persons">Male + Female</span>
-                  <span class="tc-price" id="priceVipCouple">&#8377;30</span>
+                  <span class="tc-price" id="priceVipCouple">&#8377;999</span>
                 </div>
                 <div class="tc-accent vip"></div>
               </div>
@@ -974,7 +980,7 @@
 
           <div class="price-display" id="priceDisplay">
             <span class="pd-label">Ticket Price</span>
-            <span class="pd-value"><span id="priceAmount">&#8377;1</span><span> INR</span></span>
+            <span class="pd-value"><span id="priceAmount">&#8377;349</span><span> INR</span></span>
           </div>
 
           <button type="submit" class="btn-purchase" id="purchaseBtn">
@@ -996,11 +1002,6 @@
             <div class="ticket-top">
               <div class="ticket-event-name">Aravali Fashion Show 2026</div>
               <div class="ticket-event-sub">&#9733; Entry Pass &#9733;</div>
-              <div class="ticket-id-bar">
-                <span class="ticket-id-val" id="successTicketId"></span>
-                <span class="dot-sep"></span>
-                <span class="ticket-id-val">VIP</span>
-              </div>
             </div>
             <div class="ticket-main">
               <div class="ticket-qr-col">
@@ -1049,6 +1050,7 @@
             <div class="ticket-foot">
               <img src="/logo.png" alt="">
               <span class="ticket-foot-label">&#127928; Aravali Fashion Show 2026</span>
+              <span class="ticket-foot-label" style="font-family:'Great Vibes',cursive;font-size:13px;color:#d4af37;font-weight:400;letter-spacing:0.5px">Designed by Harman</span>
             </div>
           </div>
         </div>
@@ -1090,7 +1092,7 @@
       </div>
     </div>
 
-    <div class="footer-text">&#127928; SUMMER MUSIC FEST &#8226; EVENT TICKET SYSTEM</div>
+    <div class="footer-text">&#127928; ARAVALI FASHION SHOW 2026 &#8226; EVENT TICKET SYSTEM &#8226; <span style="font-family:'Great Vibes',cursive;font-size:14px;color:#a78bfa;font-weight:400;letter-spacing:0.5px">Designed by Harman</span></div>
   </div>
 
   <script>
@@ -1217,7 +1219,7 @@
       return d.innerHTML;
     }
 
-    const EVENT_DATE = new Date('2026-08-22T19:00:00+05:30');
+    const EVENT_DATE = new Date('2026-08-22T18:00:00+05:30');
 
     function updateCountdown() {
       const now = new Date();
@@ -1297,7 +1299,6 @@
     async function showTicketAfterPayment(verifyData) {
       document.getElementById('formCard').style.display = 'none';
       document.getElementById('successCard').style.display = 'block';
-      document.getElementById('successTicketId').textContent = verifyData.ticket.ticketId;
       document.getElementById('qrCodeImg').src = (verifyData.qrCodeUrl || '') + '?t=' + Date.now();
       window.lastTicketData = verifyData;
       document.getElementById('passName').textContent = verifyData.ticket.fullName;

@@ -44,18 +44,18 @@ app.get('/api/health', (req, res) => {
 
 app.get('/api/config', (req, res) => {
   const totalTickets = Ticket.count();
-  const freePromoActive = totalTickets < 3;
+  const freePromoActive = totalTickets < 15;
   res.json({
     status: 'ok',
     razorpayKeyId: process.env.RAZORPAY_KEY_ID || '',
     pricing: {
       freePromoActive,
-      remainingFree: Math.max(0, 3 - totalTickets),
+      remainingFree: Math.max(0, 15 - totalTickets),
       totalTickets,
       categories: {
-        'Single': { amount: 1000, display: '₹10' },
-        'Couple': { amount: 2000, display: '₹20' },
-        'VIP Couple': { amount: 3000, display: '₹30' },
+        'Single': { amount: 34900, display: '₹349' },
+        'Couple': { amount: 59900, display: '₹599' },
+        'VIP Couple': { amount: 99900, display: '₹999' },
       },
     }
   });
