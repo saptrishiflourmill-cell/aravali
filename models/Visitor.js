@@ -21,16 +21,31 @@ class Visitor {
     return queryOne('SELECT * FROM visitors WHERE email = ?', [email]);
   }
 
+  static findByPhone(phone) {
+    return queryOne('SELECT * FROM visitors WHERE phone = ?', [phone]);
+  }
+
+  static findByIdentifier(identifier) {
+    if (identifier.includes('@')) {
+      return this.findByEmail(identifier);
+    }
+    return this.findByPhone(identifier);
+  }
+
   static findByToken(token) {
     return queryOne('SELECT * FROM visitors WHERE token = ?', [token]);
   }
 
   static create(data) {
+    const email = data.email || ''
+    const phone = data.phone || ''
+    const name = data.name || (email ? email.split('@')[0] : phone)
     execute(
-      'INSERT INTO visitors (email, name) VALUES (?, ?)',
-      [data.email, data.name || data.email.split('@')[0]]
+      'INSERT INTO visitors (email, phone, name) VALUES (?, ?, ?)',
+      [email, phone, name]
     );
-    return this.findByEmail(data.email);
+    if (email) return this.findByEmail(email);
+    return this.findByPhone(phone);
   }
 
   static updateToken(id, token) {

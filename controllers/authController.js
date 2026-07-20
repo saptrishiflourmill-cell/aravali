@@ -69,14 +69,26 @@ exports.check = (req, res) => {
 
 exports.emailLogin = (req, res) => {
   try {
-    const { email } = req.body;
-    if (!email || !email.includes('@')) {
+    const { email, phone } = req.body;
+    const identifier = email || phone;
+
+    if (!identifier) {
+      return res.status(400).json({ error: 'Email or mobile number required' });
+    }
+
+    if (email && !email.includes('@')) {
       return res.status(400).json({ error: 'Valid email required' });
     }
 
-    let visitor = Visitor.findByEmail(email);
+    let visitor;
+    if (email) {
+      visitor = Visitor.findByEmail(email);
+    } else {
+      visitor = Visitor.findByPhone(phone);
+    }
+
     if (!visitor) {
-      visitor = Visitor.create({ email });
+      visitor = Visitor.create({ email, phone });
     }
 
     const token = Visitor.generateToken();
@@ -85,14 +97,14 @@ exports.emailLogin = (req, res) => {
     res.json({
       success: true,
       token,
-      visitor: { id: visitor.id, email: visitor.email, name: visitor.name }
+      visitor: { id: visitor.id, email: visitor.email, phone: visitor.phone, name: visitor.name }
     });
   } catch (err) {
-    console.error('Email login error:', err);
+    console.error('Login error:', err);
     res.status(500).json({ error: 'Login failed' });
   }
 };
 
 exports.getVisitor = (req, res) => {
-  res.json({ visitor: { id: req.visitor.id, email: req.visitor.email, name: req.visitor.name } });
+  res.json({ visitor: { id: req.visitor.id, email: req.visitor.email, phone: req.visitor.phone, name: req.visitor.name } });
 };

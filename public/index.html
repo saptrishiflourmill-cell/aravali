@@ -422,8 +422,8 @@
       position: absolute;
       inset: 0;
       border-radius: 20px;
-      padding: 1px;
-      background: linear-gradient(135deg, rgba(212,175,55,0.25), rgba(212,175,55,0.05), rgba(212,175,55,0.2));
+      padding: 1.5px;
+      background: linear-gradient(135deg, rgba(212,175,55,0.5), rgba(212,175,55,0.15), rgba(212,175,55,0.4), rgba(212,175,55,0.1), rgba(212,175,55,0.3));
       -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
       -webkit-mask-composite: xor;
       mask-composite: exclude;
@@ -433,7 +433,7 @@
     .ticket-pattern {
       position: absolute;
       inset: 0;
-      opacity: 0.03;
+      opacity: 0.025;
       background-image:
         repeating-linear-gradient(45deg, transparent, transparent 20px, rgba(212,175,55,0.3) 20px, rgba(212,175,55,0.3) 21px),
         repeating-linear-gradient(-45deg, transparent, transparent 20px, rgba(212,175,55,0.3) 20px, rgba(212,175,55,0.3) 21px);
@@ -444,8 +444,8 @@
       position: absolute;
       inset: 0;
       background:
-        radial-gradient(ellipse at 15% 20%, rgba(212,175,55,0.08) 0%, transparent 50%),
-        radial-gradient(ellipse at 85% 80%, rgba(139,92,246,0.06) 0%, transparent 50%);
+        radial-gradient(ellipse at 15% 20%, rgba(212,175,55,0.1) 0%, transparent 50%),
+        radial-gradient(ellipse at 85% 80%, rgba(139,92,246,0.08) 0%, transparent 50%);
       pointer-events: none;
       z-index: 1;
     }
@@ -460,8 +460,20 @@
       padding: 18px 24px 14px;
       text-align: center;
       border-bottom: 1px solid rgba(212,175,55,0.08);
-      background: linear-gradient(180deg, rgba(212,175,55,0.03) 0%, transparent 100%);
+      background: linear-gradient(180deg, rgba(212,175,55,0.04) 0%, transparent 100%);
+      position: relative;
     }
+    .ticket-top::before,
+    .ticket-top::after {
+      content: '\2726';
+      position: absolute;
+      font-size: 8px;
+      color: rgba(212,175,55,0.2);
+      top: 50%;
+      transform: translateY(-50%);
+    }
+    .ticket-top::before { left: 16px; }
+    .ticket-top::after { right: 16px; }
     .ticket-event-name {
       font-family: 'Playfair Display', serif;
       font-size: clamp(16px, 4vw, 20px);
@@ -480,24 +492,6 @@
       margin-top: 4px;
       font-weight: 500;
     }
-    .ticket-id-bar {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 8px;
-      margin-top: 6px;
-    }
-    .ticket-id-bar .dot-sep {
-      width: 3px; height: 3px; border-radius: 50%;
-      background: rgba(212,175,55,0.2);
-    }
-    .ticket-id-val {
-      font-size: 9px;
-      color: rgba(255,255,255,0.2);
-      font-family: 'Inter', monospace;
-      letter-spacing: 1.5px;
-    }
-    /* -- Main body: QR left + Info right -- */
     .ticket-main {
       display: flex;
       padding: 0;
@@ -516,7 +510,7 @@
       background: #fff;
       border-radius: 12px;
       padding: 8px;
-      box-shadow: 0 0 30px rgba(212,175,55,0.06);
+      box-shadow: 0 0 30px rgba(212,175,55,0.1);
     }
     .ticket-qr-wrap img {
       display: block;
@@ -526,15 +520,15 @@
     }
     .ticket-qr-corner {
       position: absolute;
-      width: 18px; height: 18px;
+      width: 20px; height: 20px;
       border-color: #d4af37;
       border-style: solid;
-      opacity: 0.5;
+      opacity: 0.6;
     }
-    .ticket-qr-corner.tl { top: -2px; left: -2px; border-width: 2px 0 0 2px; border-radius: 4px 0 0 0; }
-    .ticket-qr-corner.tr { top: -2px; right: -2px; border-width: 2px 2px 0 0; border-radius: 0 4px 0 0; }
-    .ticket-qr-corner.bl { bottom: -2px; left: -2px; border-width: 0 0 2px 2px; border-radius: 0 0 0 4px; }
-    .ticket-qr-corner.br { bottom: -2px; right: -2px; border-width: 0 2px 2px 0; border-radius: 0 0 4px 0; }
+    .ticket-qr-corner.tl { top: -3px; left: -3px; border-width: 2.5px 0 0 2.5px; border-radius: 4px 0 0 0; }
+    .ticket-qr-corner.tr { top: -3px; right: -3px; border-width: 2.5px 2.5px 0 0; border-radius: 0 4px 0 0; }
+    .ticket-qr-corner.bl { bottom: -3px; left: -3px; border-width: 0 0 2.5px 2.5px; border-radius: 0 0 0 4px; }
+    .ticket-qr-corner.br { bottom: -3px; right: -3px; border-width: 0 2.5px 2.5px 0; border-radius: 0 0 4px 0; }
     .ticket-qr-label {
       font-size: 7px;
       letter-spacing: 3px;
@@ -582,17 +576,24 @@
       color: #f1f5f9;
       line-height: 1.2;
       letter-spacing: 0.5px;
+      text-shadow: 0 0 20px rgba(241,245,249,0.05);
     }
     .ticket-info-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 4px 16px;
+      gap: 6px 16px;
     }
-    .tig-item {}
+    .tig-item {
+      border-bottom: 1px solid rgba(212,175,55,0.06);
+      padding-bottom: 3px;
+    }
+    .tig-item:nth-last-child(-n+2) {
+      border-bottom: none;
+    }
     .tig-label {
       font-size: 7px;
       font-weight: 700;
-      color: rgba(148,163,184,0.35);
+      color: rgba(212,175,55,0.4);
       text-transform: uppercase;
       letter-spacing: 2px;
     }
@@ -604,7 +605,9 @@
       line-height: 1.3;
     }
     .ticket-email-row {
-      margin-top: 2px;
+      margin-top: 4px;
+      border-top: 1px solid rgba(212,175,55,0.06);
+      padding-top: 4px;
     }
     .ticket-email-row .tig-value {
       font-size: 9px;
@@ -614,27 +617,34 @@
     .ticket-badge {
       display: inline-flex;
       align-items: center;
-      gap: 4px;
+      gap: 6px;
       font-size: 8px;
       font-weight: 700;
       letter-spacing: 1.5px;
       text-transform: uppercase;
       color: #d4af37;
-      margin-top: 2px;
+      margin-top: 6px;
+      padding: 3px 10px;
+      border: 1px solid rgba(212,175,55,0.15);
+      border-radius: 20px;
+      background: rgba(212,175,55,0.04);
     }
     .ticket-badge .badge-dot {
       width: 5px; height: 5px; border-radius: 50%;
       background: #10b981;
       box-shadow: 0 0 6px rgba(16,185,129,0.4);
     }
+    .ticket-badge.used { border-color: rgba(245,158,11,0.2); color: #f59e0b; }
+    .ticket-badge.used .badge-dot { background: #f59e0b; box-shadow: 0 0 6px rgba(245,158,11,0.4); }
     /* -- Footer -- */
     .ticket-foot {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 8px 24px;
+      padding: 10px 24px;
       border-top: 1px solid rgba(212,175,55,0.06);
       background: rgba(0,0,0,0.15);
+      gap: 8px;
     }
     .ticket-foot img { height: 16px; width: auto; opacity: 0.25; }
     .ticket-foot-label {
@@ -843,6 +853,7 @@
     }
   </style>
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 </head>
 <body>
   <div id="bg-gradient"></div>
@@ -889,10 +900,10 @@
       <div class="auth-card">
         <div class="auth-text">
           <div class="at-title">&#128100; Sign in to save your tickets</div>
-          <div class="at-sub">Access your passes anytime, anywhere</div>
+          <div class="at-sub">Enter your email or mobile number to access your passes</div>
         </div>
         <div class="auth-input-wrap">
-          <input type="email" id="authEmail" placeholder="Enter your email" class="auth-input" required>
+          <input type="text" id="authIdentifier" placeholder="Email or mobile number" class="auth-input" required>
           <button class="auth-login-btn" onclick="handleEmailLogin()">Sign In</button>
         </div>
       </div>
@@ -911,7 +922,7 @@
 
         <form id="ticketForm">
           <div class="form-note" style="font-size:12px;color:#a78bfa;margin-bottom:12px;text-align:center;background:rgba(139,92,246,0.08);padding:8px 12px;border-radius:10px;border:1px solid rgba(139,92,246,0.12)">
-            &#128274; Email is required to save &amp; access your tickets later
+            &#128274; Email or mobile number helps you save &amp; access your tickets later
           </div>
 
           <div class="form-group">
@@ -1055,13 +1066,13 @@
           </div>
         </div>
         <div class="p-actions" style="padding:16px 20px 20px">
-          <button class="p-btn dl" onclick="downloadQR()">Download QR</button>
+          <button class="p-btn dl" onclick="downloadQR()">&#128229; Download Pass</button>
           <button class="p-btn again" onclick="purchaseAnother()">Book Another</button>
         </div>
         <div id="saveSection" class="save-section" style="display:none;padding:0 20px 20px;border-top:1px solid rgba(139,92,246,0.12);margin-top:0">
           <div class="save-text" style="font-size:13px;color:#94a3b8;margin-bottom:10px;text-align:center;padding-top:16px">&#128274; Save this ticket to access it anytime</div>
           <div class="save-row" style="display:flex;gap:8px">
-            <input type="email" id="saveEmail" placeholder="Enter your email" class="save-input" style="flex:1;padding:10px 12px;background:rgba(139,92,246,0.06);border:1px solid rgba(139,92,246,0.12);border-radius:10px;font-size:13px;font-family:inherit;color:#e2e8f0;outline:none">
+            <input type="text" id="saveIdentifier" placeholder="Email or mobile number" class="save-input" style="flex:1;padding:10px 12px;background:rgba(139,92,246,0.06);border:1px solid rgba(139,92,246,0.12);border-radius:10px;font-size:13px;font-family:inherit;color:#e2e8f0;outline:none">
             <button class="save-btn" onclick="saveToMyTickets()" style="padding:10px 18px;background:linear-gradient(135deg,#7c3aed,#6d28d9);color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;white-space:nowrap">Save</button>
           </div>
           <div id="saveMessage" style="font-size:12px;margin-top:6px;text-align:center;display:none"></div>
@@ -1106,18 +1117,20 @@
     }
 
     function handleEmailLogin() {
-      const email = document.getElementById('authEmail').value.trim();
-      if (!email || !email.includes('@')) {
-        showToast('Please enter a valid email', 'error');
+      const identifier = document.getElementById('authIdentifier').value.trim();
+      if (!identifier) {
+        showToast('Please enter your email or mobile number', 'error');
         return;
       }
+      const isEmail = identifier.includes('@');
       const btn = document.querySelector('.auth-login-btn');
       btn.disabled = true;
       btn.textContent = 'Signing in...';
+      const body = isEmail ? { email: identifier } : { phone: identifier };
       fetch('/api/auth/email-login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email })
+        body: JSON.stringify(body)
       })
       .then(r => r.json().then(data => ({ status: r.status, data })))
       .then(({ status, data }) => {
@@ -1130,14 +1143,14 @@
         visitorToken = data.token;
         visitorData = data.visitor;
         localStorage.setItem('visitorToken', data.token);
-        localStorage.setItem('visitorName', data.visitor.name || email);
+        localStorage.setItem('visitorName', data.visitor.name || identifier);
         updateUserUI();
         loadMyTickets();
         btn.disabled = false;
         btn.textContent = 'Sign In';
       })
       .catch(err => {
-        console.error('Email login error:', err);
+        console.error('Login error:', err);
         showToast('Network error during sign-in', 'error');
         btn.disabled = false;
         btn.textContent = 'Sign In';
@@ -1192,7 +1205,6 @@
               : '<span style="color:#fbbf24">Used</span>';
             return `<div class="ticket-mini">
               <div class="tm-info">
-                <div class="tm-id">${escHtml(t.ticketId)}</div>
                 <div class="tm-name">${escHtml(t.fullName)}</div>
                 <div class="tm-date">${escHtml(t.ticketType || 'Single')} &middot; ${escHtml(t.eventDate)} &middot; ${statusBadge}</div>
               </div>
@@ -1493,46 +1505,56 @@
 
     function downloadQR() {
       if (window.lastTicketData) {
-        const link = document.createElement('a');
-        link.download = window.lastTicketData.ticket.ticketId + '-qr.png';
-        link.href = document.getElementById('qrCodeImg').src;
-        link.click();
-        showToast('QR code downloaded', 'success');
+        const ticketEl = document.querySelector('#successCard .ticket');
+        if (!ticketEl) { showToast('Ticket not found', 'error'); return; }
+        showToast('Generating pass image...', 'success');
+        html2canvas(ticketEl, {
+          scale: 2,
+          backgroundColor: null,
+          useCORS: true,
+          logging: false
+        }).then(canvas => {
+          const link = document.createElement('a');
+          link.download = 'Aravali-Fashion-Show-2026-Pass.png';
+          link.href = canvas.toDataURL('image/png');
+          link.click();
+          showToast('Pass downloaded!', 'success');
+        }).catch(() => {
+          showToast('Could not generate image. Use Print instead.', 'error');
+        });
       }
     }
 
     function printQR() {
-      const qrImg = document.getElementById('qrCodeImg').src;
-      const data = window.lastTicketData;
+      if (!window.lastTicketData) return;
       const win = window.open('', '_blank');
-      win.document.write('<html><head><title>Print Pass</title><style>body{text-align:center;padding:40px;font-family:Inter,sans-serif;background:#fff}img{max-width:300px;margin:20px 0}h2{color:#1a1a2e}.info{color:#64748b;margin:4px 0}</style></head><body>');
-      win.document.write('<h2>Event Entry Pass</h2>');
-      if (data) {
-        win.document.write('<p class="info">' + data.ticket.fullName + ' &middot; General Entry</p>');
-        win.document.write('<p class="info">' + data.ticket.eventDate + ' &middot; ID: ' + data.ticket.ticketId + '</p>');
-      }
-      win.document.write('<img src="' + qrImg + '" onload="window.print();window.close()">');
-      win.document.write('</body></html>');
+      win.document.write('<!DOCTYPE html><html><head><title>Aravali Fashion Show 2026 - Pass</title>');
+      win.document.write('<style>body{margin:0;padding:20px;font-family:Inter,sans-serif;display:flex;justify-content:center;align-items:center;min-height:100vh;background:#0f0f1a;}.ticket-print{max-width:480px;width:100%}img{width:100%;border-radius:20px;box-shadow:0 20px 60px rgba(0,0,0,0.5)}@media print{body{background:#fff;padding:0}img{border-radius:0;box-shadow:none}}</style></head><body>');
+      win.document.write('<div class="ticket-print">');
+      win.document.write('<img src="' + document.getElementById('qrCodeImg').src + '" style="display:none" onload="var t=this.parentElement;var c=document.querySelector(\'#successCard .ticket\');if(c){t.innerHTML=c.outerHTML;setTimeout(function(){window.print();window.close()},500)}">');
+      win.document.write('</div></body></html>');
       win.document.close();
     }
 
     async function saveToMyTickets() {
-      const email = document.getElementById('saveEmail').value.trim();
-      if (!email || !email.includes('@')) { showToast('Enter a valid email', 'error'); return; }
+      const identifier = document.getElementById('saveIdentifier').value.trim();
+      if (!identifier) { showToast('Enter your email or mobile number', 'error'); return; }
+      const isEmail = identifier.includes('@');
+      const body = isEmail ? { email: identifier } : { phone: identifier };
       const msg = document.getElementById('saveMessage');
       const btn = document.querySelector('.save-btn');
       btn.disabled = true; btn.textContent = 'Saving...';
       try {
         const loginRes = await fetch('/api/auth/email-login', {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email })
+          body: JSON.stringify(body)
         });
         const loginData = await loginRes.json();
         if (!loginData.success) { showToast(loginData.error || 'Login failed', 'error'); btn.disabled = false; btn.textContent = 'Save'; return; }
         visitorToken = loginData.token;
         visitorData = loginData.visitor;
         localStorage.setItem('visitorToken', loginData.token);
-        localStorage.setItem('visitorName', loginData.visitor.name || email);
+        localStorage.setItem('visitorName', loginData.visitor.name || identifier);
         const ticketId = window.lastTicketData?.ticket?.ticketId;
         if (!ticketId) { showToast('No ticket to save', 'error'); btn.disabled = false; btn.textContent = 'Save'; return; }
         const linkRes = await fetch('/api/tickets/link', {

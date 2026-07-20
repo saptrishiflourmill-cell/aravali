@@ -45,6 +45,14 @@ async function initDb() {
     try { db.run("ALTER TABLE tickets ADD COLUMN quantity INTEGER DEFAULT 1"); } catch (e) {}
   }
 
+  const visitorCols = [];
+  const vPragma = db.prepare("PRAGMA table_info(visitors)");
+  while (vPragma.step()) { visitorCols.push(vPragma.getAsObject()); }
+  vPragma.free();
+  if (!visitorCols.find(c => c.name === 'phone')) {
+    try { db.run("ALTER TABLE visitors ADD COLUMN phone TEXT DEFAULT ''"); } catch (e) {}
+  }
+
   const stmt = db.prepare('SELECT COUNT(*) as count FROM users');
   const exists = stmt.step() ? stmt.getAsObject() : { count: 0 };
   stmt.free();
