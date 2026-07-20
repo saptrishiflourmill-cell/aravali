@@ -14,13 +14,13 @@ if (!fs.existsSync(qrDir)) {
 }
 
 function getPriceForType(ticketType) {
-  const prices = { 'Single': 1000, 'Couple': 2000, 'VIP Couple': 3000 };
-  return prices[ticketType] || 1000;
+  const prices = { 'Single': 34900, 'Couple': 59900, 'VIP Couple': 99900 };
+  return prices[ticketType] || 34900;
 }
 
 function getDisplayPrice(ticketType) {
-  const prices = { 'Single': '₹10', 'Couple': '₹20', 'VIP Couple': '₹30' };
-  return prices[ticketType] || '₹10';
+  const prices = { 'Single': '₹349', 'Couple': '₹599', 'VIP Couple': '₹999' };
+  return prices[ticketType] || '₹349';
 }
 
 function getLocalIp() {
@@ -70,10 +70,10 @@ exports.createOrder = async (req, res) => {
 
     const totalTickets = Ticket.count();
     const ticketType = req.body.ticketType || 'Single';
-    if (totalTickets < 3) {
+    if (totalTickets < 15) {
       return res.json({
         free: true,
-        remainingFree: 3 - totalTickets,
+        remainingFree: 15 - totalTickets,
         fullName,
         email,
         phone,
@@ -119,8 +119,8 @@ exports.createFreeTicket = async (req, res) => {
     }
 
     const totalTickets = Ticket.count();
-    if (totalTickets >= 3) {
-      return res.status(400).json({ error: 'Free ticket promotion has ended. Tickets are now ₹10.' });
+    if (totalTickets >= 15) {
+      return res.status(400).json({ error: 'Free ticket promotion has ended. Tickets are now ₹349 onwards.' });
     }
 
     const visitorToken = req.body.visitorToken || (req.headers.authorization && req.headers.authorization.startsWith('Bearer ') ? req.headers.authorization.slice(7) : null);
