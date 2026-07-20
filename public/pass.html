@@ -43,6 +43,11 @@
       margin: 0 auto 16px;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
+
+    @keyframes goldGlow {
+      0%, 100% { text-shadow: 0 0 8px rgba(212,175,55,0.3); }
+      50% { text-shadow: 0 0 20px rgba(212,175,55,0.6), 0 0 40px rgba(212,175,55,0.2); }
+    }
     .error-state { text-align: center; padding: 60px 20px; }
     .error-state h3 { color: #fff; font-size: 20px; margin-bottom: 8px; }
     .error-state p { color: #64748b; font-size: 14px; margin-bottom: 20px; }
@@ -404,7 +409,7 @@
           <div class="ticket-foot">
             <img src="/logo.png" alt="">
             <span class="ticket-foot-label">&#127928; Aravali Fashion Show 2026</span>
-            <span class="ticket-foot-label" style="font-family:'Great Vibes',cursive;font-size:13px;color:#d4af37;font-weight:400;letter-spacing:0.5px">Designed by Harman</span>
+            <span class="ticket-foot-label" style="font-family:'Great Vibes',cursive;font-size:15px;color:#d4af37;font-weight:400;letter-spacing:0.5px;animation:goldGlow 2.5s ease-in-out infinite">&#10022; Designed by Harman &#10022;</span>
           </div>
         </div>
       </div>
