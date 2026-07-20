@@ -29,8 +29,8 @@ function generateQrToken() {
 }
 
 function getNextTicketId() {
-  const row = queryOne('SELECT COUNT(*) as count FROM tickets');
-  const num = (row ? row.count : 0) + 1;
+  const row = queryOne('SELECT id FROM tickets ORDER BY id DESC LIMIT 1');
+  const num = (row ? row.id : 0) + 1;
   return 'TKT-' + String(num).padStart(6, '0');
 }
 
